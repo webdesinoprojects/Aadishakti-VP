@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1780302231475",
+    "title": "Production Manager",
+    "department": "Factory",
+    "location": "Mundra",
+    "type": "Full-time",
+    "experience": "5-8 years",
+    "salaryRange": "Negotiable",
+    "description": "<p>We are looking for an experienced Production Manager to oversee our Mundra facility operations.</p>",
+    "requirements": [
+      "Bachelor's degree in Engineering",
+      "5+ years in manufacturing",
+      "Strong leadership skills"
+    ],
+    "status": "Active",
+    "createdAt": "2026-06-01T08:23:51.475Z",
+    "updatedAt": "2026-06-01T08:23:51.475Z"
+  }
+]

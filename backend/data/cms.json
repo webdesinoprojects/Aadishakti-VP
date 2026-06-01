@@ -1,0 +1,49 @@
+{
+  "updatedAt": "2026-06-01T07:30:02.919Z",
+  "home": {
+    "heroSlides": [
+      {
+        "image": "/plant/Plant Pic 02.jpeg",
+        "eyebrow": "// EST. 2004 · MUNDRA · ROORKEE",
+        "titleA": "India's",
+        "titleB": "Sovereign",
+        "titleC": "of Secondary Lead",
+        "subtitle": "Two state-of-the-art refineries. One unwavering standard of purity."
+      },
+      {
+        "image": "/office/WhatsApp Image 2026-03-11 at 16.03.15.jpeg",
+        "eyebrow": "// PROCESS DISCIPLINE · GLOBAL BENCHMARKS",
+        "titleA": "Engineered",
+        "titleB": "Precision",
+        "titleC": "in Lead Recycling",
+        "subtitle": "Consistent metallurgy backed by quality systems, safety culture, and export-grade reliability."
+      },
+      {
+        "image": "/office/WhatsApp Image 2026-03-11 at 16.03.43.jpeg",
+        "eyebrow": "// CIRCULAR ECONOMY · RESPONSIBLE GROWTH",
+        "titleA": "Building",
+        "titleB": "Sustainable",
+        "titleC": "Industrial Value",
+        "subtitle": "From battery scrap recovery to high-purity output, every step is built for long-term partnerships."
+      }
+    ]
+  },
+  "global": {
+    "contactEmail": "marketing@aadishakti.com",
+    "contactPhone": "+91-8743000299",
+    "address": "30, Third Floor, Shivaji Marg, Block C, Moti Nagar, New Delhi - 110015"
+  },
+  "pageHeroImages": {
+    "ABOUT US": "/images/PMUD5812.JPG",
+    "BUSINESSES": "/plant/Plant Pic 02.jpeg",
+    "PRODUCTS": "/product-lead-alloy.jpg",
+    "SUSTAINABILITY": "/plant/Rotary 1.jpeg",
+    "INVESTORS": "/plant/IMG_20251228_113451171_HDR_AE.jpg",
+    "CAREERS": "/office/WhatsApp Image 2026-03-11 at 16.03.15.jpeg",
+    "CONTACT": "/office/WhatsApp Image 2026-03-11 at 16.03.43.jpeg",
+    "SOURCING": "/plant/14 (18).jpg"
+  },
+  "nav": {
+    "ctaText": "GET IN TOUCH"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "metrics": {
+    "revenue": {
+      "value": "780",
+      "year": "2023-24",
+      "unit": "₹ Crore"
+    },
+    "production": {
+      "value": "60000",
+      "unit": "MT"
+    },
+    "ebitdaMargin": {
+      "value": "18.5",
+      "unit": "%"
+    },
+    "yoyGrowth": {
+      "value": "54",
+      "unit": "%"
+    }
+  },
+  "revenueChart": [
+    {
+      "year": "2019-20",
+      "revenue": 240
+    },
+    {
+      "year": "2020-21",
+      "revenue": 310
+    },
+    {
+      "year": "2021-22",
+      "revenue": 340
+    },
+    {
+      "year": "2022-23",
+      "revenue": 520
+    },
+    {
+      "year": "2023-24",
+      "revenue": 780
+    }
+  ],
+  "productionChart": [
+    {
+      "year": "2019-20",
+      "production": 22000
+    },
+    {
+      "year": "2020-21",
+      "production": 28000
+    },
+    {
+      "year": "2021-22",
+      "production": 30000
+    },
+    {
+      "year": "2022-23",
+      "production": 45000
+    },
+    {
+      "year": "2023-24",
+      "production": 60000
+    }
+  ],
+  "documents": {
+    "annualReport": {
+      "filename": "",
+      "url": "",
+      "uploadDate": ""
+    },
+    "investorDeck": {
+      "filename": "",
+      "url": "",
+      "uploadDate": ""
+    },
+    "financialSummary": {
+      "filename": "",
+      "url": "",
+      "uploadDate": ""
+    }
+  },
+  "updatedAt": "2026-06-01T08:23:51.475Z"
+}

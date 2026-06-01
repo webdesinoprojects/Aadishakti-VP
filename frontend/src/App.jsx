@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+﻿import React, { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -18,7 +18,9 @@ import Sourcing from "./pages/Sourcing";
 
 function ScrollToTop() {
   const { pathname, search } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname, search]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname, search]);
   return null;
 }
 
@@ -50,7 +52,10 @@ export default function App() {
     const items = document.querySelectorAll(
       ".dominance-card, .corporate-card, .founder-card, .timeline-item, table.terminal-table"
     );
-    items.forEach((el) => { el.classList.add("reveal-item"); observer.observe(el); });
+    items.forEach((el) => {
+      el.classList.add("reveal-item");
+      observer.observe(el);
+    });
     return () => items.forEach((el) => observer.unobserve(el));
   }, [location.pathname]);
 
@@ -63,15 +68,15 @@ export default function App() {
       <main style={{ flex: 1, paddingTop: 0 }}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route path="/"              element={<PageTransition><Home /></PageTransition>} />
-            <Route path="/about"         element={<PageTransition><About /></PageTransition>} />
-            <Route path="/businesses"    element={<PageTransition><Businesses /></PageTransition>} />
-            <Route path="/products"      element={<PageTransition><Products /></PageTransition>} />
+            <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+            <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+            <Route path="/businesses" element={<PageTransition><Businesses /></PageTransition>} />
+            <Route path="/products" element={<PageTransition><Products /></PageTransition>} />
             <Route path="/sustainability" element={<PageTransition><Sustainability /></PageTransition>} />
-            <Route path="/investors"     element={<PageTransition><Investors /></PageTransition>} />
-            <Route path="/careers"       element={<PageTransition><Careers /></PageTransition>} />
-            <Route path="/sourcing"      element={<PageTransition><Sourcing /></PageTransition>} />
-            <Route path="/contact"       element={<PageTransition><Contact /></PageTransition>} />
+            <Route path="/investors" element={<PageTransition><Investors /></PageTransition>} />
+            <Route path="/careers" element={<PageTransition><Careers /></PageTransition>} />
+            <Route path="/sourcing" element={<PageTransition><Sourcing /></PageTransition>} />
+            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
           </Routes>
         </AnimatePresence>
       </main>

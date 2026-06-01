@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import SectionLabel from "../components/SectionLabel";
 import AnimatedNumber from "../components/AnimatedNumber";
 import ScrollReveal from "../components/ScrollReveal";
 import { ASSETS } from "../assets/assetMap";
+import { useCms } from "../context/CmsContext";
 
-/* ── Data ── */
+/* â”€â”€ Data â”€â”€ */
 const heroSlides = [
   {
     image: ASSETS.heroBg1,
-    eyebrow: "// EST. 2004 · MUNDRA · ROORKEE",
+    eyebrow: "// EST. 2004 Â· MUNDRA Â· ROORKEE",
     titleA: "India's",
     titleB: "Premier",
     titleC: "Secondary Lead Group",
@@ -18,7 +19,7 @@ const heroSlides = [
   },
   {
     image: ASSETS.heroBg2,
-    eyebrow: "// ISO 9001:2015 · BIS CERTIFIED · LME GRADE",
+    eyebrow: "// ISO 9001:2015 Â· BIS CERTIFIED Â· LME GRADE",
     titleA: "Engineered",
     titleB: "Precision",
     titleC: "in Lead Recycling",
@@ -26,11 +27,11 @@ const heroSlides = [
   },
   {
     image: ASSETS.heroBg3,
-    eyebrow: "// CIRCULAR ECONOMY · RESPONSIBLE GROWTH",
+    eyebrow: "// CIRCULAR ECONOMY Â· RESPONSIBLE GROWTH",
     titleA: "Building",
     titleB: "Sustainable",
     titleC: "Industrial Value",
-    subtitle: "From battery scrap recovery to high-purity output — every step built for long-term partnerships.",
+    subtitle: "From battery scrap recovery to high-purity output â€” every step built for long-term partnerships.",
   },
 ];
 
@@ -62,7 +63,7 @@ const strengths = [
       </svg>
     ),
     title: "LME Grade Purity",
-    desc: "99.97–99.985% Pb minimum — LME-registered quality accepted by global battery manufacturers.",
+    desc: "99.97â€“99.985% Pb minimum â€” LME-registered quality accepted by global battery manufacturers.",
   },
   {
     icon: (
@@ -94,10 +95,10 @@ const strengths = [
 ];
 
 const products = [
-  { key: "pureLead",   name: "Refined Pure Lead", spec: "99.97–99.985% Pb", desc: "LME-grade for battery and industrial applications.", img: ASSETS.products.pureLead },
+  { key: "pureLead",   name: "Refined Pure Lead", spec: "99.97â€“99.985% Pb", desc: "LME-grade for battery and industrial applications.", img: ASSETS.products.pureLead },
   { key: "leadAlloys", name: "Lead Alloys",        spec: "Sb, Ca, Sn variants", desc: "Custom metallurgy for automotive and energy storage.", img: ASSETS.products.leadAlloys },
-  { key: "redLead",   name: "Red Lead Oxide",     spec: "Pb₃O₄",           desc: "Consistent particle profile for battery and glass.", img: ASSETS.products.redLead },
-  { key: "greyOxide", name: "Grey Lead Oxide",    spec: "2PbO·Pb",         desc: "Controlled reactivity for electrochemical battery use.", img: ASSETS.products.greyOxide },
+  { key: "redLead",   name: "Red Lead Oxide",     spec: "Pbâ‚ƒOâ‚„",           desc: "Consistent particle profile for battery and glass.", img: ASSETS.products.redLead },
+  { key: "greyOxide", name: "Grey Lead Oxide",    spec: "2PbOÂ·Pb",         desc: "Controlled reactivity for electrochemical battery use.", img: ASSETS.products.greyOxide },
 ];
 
 const statsStrip = [
@@ -108,8 +109,8 @@ const statsStrip = [
 ];
 
 const sustainabilityStats = [
-  { value: "100%", label: "Battery Scrap Recycled — Nothing to Landfill" },
-  { value: "ZLD",  label: "Zero Liquid Discharge — All Water Recycled In-Plant" },
+  { value: "100%", label: "Battery Scrap Recycled â€” Nothing to Landfill" },
+  { value: "ZLD",  label: "Zero Liquid Discharge â€” All Water Recycled In-Plant" },
   { value: "ISO",  label: "ISO 14001:2015 Environmental Management System" },
 ];
 
@@ -119,30 +120,38 @@ const clientNames = [
   "Rocket Electric", "Genus Power Infrastructure", "Livguard Energy",
 ];
 
-/* ── Component ── */
+/* â”€â”€ Component â”€â”€ */
 export default function Home() {
+  const { cms } = useCms();
+  const liveHeroSlides = cms?.home?.heroSlides?.length ? cms.home.heroSlides : heroSlides;
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => setActiveSlide((p) => (p + 1) % heroSlides.length), 5500);
-    return () => clearInterval(timer);
-  }, []);
+    if (activeSlide >= liveHeroSlides.length) {
+      setActiveSlide(0);
+    }
+  }, [activeSlide, liveHeroSlides.length]);
 
-  const slide = heroSlides[activeSlide];
+  useEffect(() => {
+    const timer = setInterval(() => setActiveSlide((p) => (p + 1) % liveHeroSlides.length), 5500);
+    return () => clearInterval(timer);
+  }, [liveHeroSlides.length]);
+
+  const slide = liveHeroSlides[activeSlide] || heroSlides[0];
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
 
-      {/* ════════════════════════════════════════
-          SECTION 1 — HERO (100vh, white overlay)
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 1 â€” HERO (100vh, white overlay)
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section
         className="hero-section"
         style={{ minHeight: "100vh", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}
       >
         {/* Carousel backgrounds */}
         <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-          {heroSlides.map((s, idx) => (
+          {liveHeroSlides.map((s, idx) => (
             <div
               key={s.image}
               style={{
@@ -157,7 +166,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* White gradient overlay — white left, photo right */}
+        {/* White gradient overlay â€” white left, photo right */}
         <div
           style={{
             position: "absolute", inset: 0, zIndex: 2,
@@ -165,7 +174,7 @@ export default function Home() {
           }}
         />
 
-        {/* Content — dark text on white side */}
+        {/* Content â€” dark text on white side */}
         <div
           className="container"
           style={{ position: "relative", zIndex: 4, paddingBottom: "120px" }}
@@ -194,12 +203,12 @@ export default function Home() {
 
             <div style={{ marginTop: "36px", display: "flex", gap: "14px", flexWrap: "wrap" }}>
               <Link to="/businesses" className="btn-solid-red">Explore Operations</Link>
-              <Link to="/investors"  className="btn-ghost-steel">Investor Relations →</Link>
+              <Link to="/investors"  className="btn-ghost-steel">Investor Relations â†’</Link>
             </div>
 
             {/* Slide dots */}
             <div style={{ marginTop: "32px", display: "flex", gap: "10px", alignItems: "center" }}>
-              {heroSlides.map((_, idx) => (
+              {liveHeroSlides.map((_, idx) => (
                 <button
                   key={idx}
                   type="button"
@@ -217,7 +226,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Glassmorphism cert card — bottom right over photo */}
+        {/* Glassmorphism cert card â€” bottom right over photo */}
         <motion.div
           className="hero-glass-card"
           initial={{ opacity: 0, x: 40 }}
@@ -227,7 +236,7 @@ export default function Home() {
           {[
             { label: "ISO 9001:2015", value: "Quality Certified" },
             { label: "LME Grade Lead", value: "99.97% Pb Min." },
-            { label: "Est. 2004", value: "Mundra · Roorkee" },
+            { label: "Est. 2004", value: "Mundra Â· Roorkee" },
           ].map((row) => (
             <div key={row.label} className="hero-glass-row">
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
@@ -242,12 +251,12 @@ export default function Home() {
 
         {/* Prev / Next arrows */}
         <div style={{ position: "absolute", right: "clamp(16px, 3vw, 44px)", top: "50%", transform: "translateY(-50%)", zIndex: 6, display: "flex", flexDirection: "column", gap: "10px" }}>
-          {["‹", "›"].map((ch, i) => (
+          {["â€¹", "â€º"].map((ch, i) => (
             <button
               key={ch}
               type="button"
               aria-label={i === 0 ? "Previous slide" : "Next slide"}
-              onClick={() => setActiveSlide((p) => i === 0 ? (p - 1 + heroSlides.length) % heroSlides.length : (p + 1) % heroSlides.length)}
+              onClick={() => setActiveSlide((p) => i === 0 ? (p - 1 + liveHeroSlides.length) % liveHeroSlides.length : (p + 1) % liveHeroSlides.length)}
               style={{ width: "42px", height: "42px", borderRadius: "3px", border: "1px solid rgba(0,0,0,0.18)", background: "rgba(255,255,255,0.62)", backdropFilter: "blur(8px)", color: "var(--text-primary)", fontSize: "28px", lineHeight: 1, cursor: "pointer", transition: "all 0.2s ease", display: "flex", alignItems: "center", justifyContent: "center" }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "var(--red-core)"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "var(--red-core)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.62)"; e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.18)"; }}
@@ -278,9 +287,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 2 — CLIENT NAME TICKER
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 2 â€” CLIENT NAME TICKER
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-light)", padding: "0", overflow: "hidden" }}>
         <div style={{ display: "flex", alignItems: "center", height: "68px" }}>
           <div style={{ padding: "0 28px", flexShrink: 0, borderRight: "1px solid var(--border-light)", height: "100%", display: "flex", alignItems: "center" }}>
@@ -310,14 +319,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 3 — WHO WE ARE (expanded, image mosaic)
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 3 â€” WHO WE ARE (expanded, image mosaic)
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="section-padding" style={{ background: "var(--bg-primary)", minHeight: "600px" }}>
         <div className="container">
           <ScrollReveal>
             <div style={{ display: "grid", gridTemplateColumns: "55% 45%", gap: "56px", alignItems: "center" }}>
-              {/* Left — text */}
+              {/* Left â€” text */}
               <div>
                 <SectionLabel text="// WHO WE ARE" />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, lineHeight: 1.15, marginBottom: "20px" }}>
@@ -329,7 +338,7 @@ export default function Home() {
                   Mundra and Roorkee, we combine process discipline, scale, and supply consistency.
                 </p>
                 <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.7, marginBottom: "16px" }}>
-                  Our Mundra facility (AGRPL) operates in Kutch, Gujarat, adjacent to Adani Port — giving
+                  Our Mundra facility (AGRPL) operates in Kutch, Gujarat, adjacent to Adani Port â€” giving
                   us unmatched access to international battery scrap. Our Roorkee division (AMRPL) serves
                   North India's major battery manufacturers with domestic supply consistency.
                 </p>
@@ -341,7 +350,7 @@ export default function Home() {
                 <div style={{ display: "flex", gap: "48px" }}>
                   {[
                     { num: "50,000+", label: "MT Annual Capacity" },
-                    { num: "₹1000+",  label: "Crore Group Turnover" },
+                    { num: "â‚¹1000+",  label: "Crore Group Turnover" },
                     { num: "4+",      label: "Active Certifications" },
                   ].map((s) => (
                     <div key={s.label}>
@@ -356,7 +365,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right — image mosaic */}
+              {/* Right â€” image mosaic */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "220px 180px", gap: "4px" }}>
                 {[
                   { src: ASSETS.mundraPlant[0], alt: "Mundra plant exterior", style: { gridColumn: "1/2", gridRow: "1/2" } },
@@ -381,12 +390,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 4 — TWO ENTITIES (full-bleed photo + glass overlay)
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 4 â€” TWO ENTITIES (full-bleed photo + glass overlay)
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-          {/* AGRPL — Mundra */}
+          {/* AGRPL â€” Mundra */}
           <div className="entity-card">
             <img className="entity-card-bg" src={ASSETS.mundraPlant[0]} alt="AGRPL Mundra Plant" loading="lazy" />
             <div className="entity-card-overlay" />
@@ -396,7 +405,7 @@ export default function Home() {
                 Mundra Smelter Division
               </h3>
               <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
-                Export-oriented processing hub — 30,000 MT active, 120,000 MT by 2026. Port-adjacent logistics.
+                Export-oriented processing hub â€” 30,000 MT active, 120,000 MT by 2026. Port-adjacent logistics.
               </p>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
                 {["Mundra SEZ", "ISO 9001:2015", "Basel Compliant"].map((tag) => (
@@ -406,12 +415,12 @@ export default function Home() {
                 ))}
               </div>
               <Link to="/businesses?plant=mundra" style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Explore AGRPL →
+                Explore AGRPL â†’
               </Link>
             </div>
           </div>
 
-          {/* AMRPL — Roorkee */}
+          {/* AMRPL â€” Roorkee */}
           <div className="entity-card">
             <img className="entity-card-bg" src={ASSETS.roorkeeOffice[0]} alt="AMRPL Roorkee Plant" loading="lazy" />
             <div className="entity-card-overlay" />
@@ -421,7 +430,7 @@ export default function Home() {
                 Roorkee Domestic Division
               </h3>
               <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
-                Domestic supply hub — 40,000 MT capacity. OES spectrograph quality lab. North India distribution.
+                Domestic supply hub â€” 40,000 MT capacity. OES spectrograph quality lab. North India distribution.
               </p>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
                 {["Haridwar, UK", "ISO 14001:2015", "Hazardous Permit"].map((tag) => (
@@ -431,23 +440,23 @@ export default function Home() {
                 ))}
               </div>
               <Link to="/businesses?plant=roorkee" style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Explore AMRPL →
+                Explore AMRPL â†’
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 5 — CORE STRENGTHS
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 5 â€” CORE STRENGTHS
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="section-padding bg-diagonal-hatch" style={{ minHeight: "480px" }}>
         <div className="container">
           <ScrollReveal>
             <SectionLabel text="// WHY AADISHAKTI" />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}>
               <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>Our Core Strengths</h2>
-              <Link to="/about" className="btn-ghost-steel">Company Overview →</Link>
+              <Link to="/about" className="btn-ghost-steel">Company Overview â†’</Link>
             </div>
             <div className="grid-3" style={{ gap: "20px" }}>
               {strengths.map((s) => (
@@ -464,9 +473,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 6 — PRODUCTS TEASER (with photos)
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 6 â€” PRODUCTS TEASER (with photos)
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="section-padding bg-steel-grid" style={{ minHeight: "520px" }}>
         <div className="container">
           <ScrollReveal>
@@ -504,9 +513,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 7 — STATS STRIP (solid red)
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 7 â€” STATS STRIP (solid red)
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section style={{ background: "var(--red-core)", padding: "64px 0" }}>
         <div className="container">
           <ScrollReveal>
@@ -526,28 +535,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 8 — SUSTAINABILITY (dark photo)
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 8 â€” SUSTAINABILITY (dark photo)
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="dark-photo-section" style={{ minHeight: "500px" }}>
         <img className="dps-bg" src={ASSETS.sustainabilityBg} alt="Aadishakti plant operations" loading="lazy" />
         <div className="dps-content container" style={{ padding: "100px 0" }}>
           <ScrollReveal>
             <div className="grid-2" style={{ gridTemplateColumns: "1.1fr 0.9fr", gap: "60px", alignItems: "center" }}>
-              {/* Left — quote + link */}
+              {/* Left â€” quote + link */}
               <div>
                 <SectionLabel text="// SUSTAINABILITY" />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "#FFFFFF", lineHeight: 1.15, marginBottom: "24px" }}>
                   Responsible Circular Economy Practices
                 </h2>
                 <blockquote style={{ fontFamily: "var(--font-editorial)", fontStyle: "italic", fontSize: "clamp(16px, 1.5vw, 20px)", color: "rgba(255,255,255,0.82)", lineHeight: 1.65, borderLeft: "3px solid var(--red-core)", paddingLeft: "20px", marginBottom: "32px" }}>
-                  "Lead recycling is the most efficient form of circular economy — returning full industrial
+                  "Lead recycling is the most efficient form of circular economy â€” returning full industrial
                    value while protecting the environment from raw mining hazards."
                 </blockquote>
-                <Link to="/sustainability" className="btn-solid-red">Our Sustainability Commitment →</Link>
+                <Link to="/sustainability" className="btn-solid-red">Our Sustainability Commitment â†’</Link>
               </div>
 
-              {/* Right — glass stat cards */}
+              {/* Right â€” glass stat cards */}
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                 {sustainabilityStats.map((s) => (
                   <div key={s.value} className="glass-card-dark" style={{ padding: "22px 24px", display: "flex", alignItems: "center", gap: "20px" }}>
@@ -563,9 +572,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 9 — CLIENTS MARQUEE
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 9 â€” CLIENTS MARQUEE
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section style={{ background: "var(--bg-secondary)", padding: "48px 0", borderTop: "1px solid var(--border-light)" }}>
         <div className="container" style={{ marginBottom: "28px" }}>
           <SectionLabel text="// OUR VALUED CLIENTS" />
@@ -601,9 +610,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          SECTION 10 — INVESTORS PREVIEW
-          ════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION 10 â€” INVESTORS PREVIEW
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section style={{ background: "#111111", padding: "80px 0", minHeight: "400px" }}>
         <div className="container">
           <ScrollReveal>
@@ -615,13 +624,13 @@ export default function Home() {
                 </h2>
               </div>
               <Link to="/investors" className="btn-ghost-steel" style={{ color: "#B0B0B0", borderColor: "#3A3A3A" }}>
-                Open Investor Desk →
+                Open Investor Desk â†’
               </Link>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
               {[
-                { label: "Revenue Growth", value: "↑ Consistent YoY", desc: "Multi-year track record of volume and revenue expansion." },
+                { label: "Revenue Growth", value: "â†‘ Consistent YoY", desc: "Multi-year track record of volume and revenue expansion." },
                 { label: "Capacity Pipeline", value: "120,000 MT", desc: "Expansion to 120,000 MTPA by April 2026 at Mundra facility." },
                 { label: "Export Share", value: "48% Volume", desc: "Nearly half of output serves international battery manufacturers." },
               ].map((item) => (
@@ -639,7 +648,7 @@ export default function Home() {
 
             <div style={{ textAlign: "center", marginTop: "40px" }}>
               <Link to="/investors" className="btn-solid-red">
-                Access Full Investor Dashboard →
+                Access Full Investor Dashboard â†’
               </Link>
             </div>
           </ScrollReveal>
@@ -661,3 +670,5 @@ export default function Home() {
     </div>
   );
 }
+
+

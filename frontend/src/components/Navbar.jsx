@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ASSETS } from "../assets/assetMap";
+import { useCms } from "../context/CmsContext";
 
 const companyLinks = [
   { to: "/about",                    label: "About Us" },
   { to: "/businesses",               label: "Our Businesses" },
-  { to: "/businesses?plant=mundra",  label: "AGRPL — Mundra Plant",  sub: true },
-  { to: "/businesses?plant=roorkee", label: "AMRPL — Roorkee Plant", sub: true },
+  { to: "/businesses?plant=mundra",  label: "AGRPL â€” Mundra Plant",  sub: true },
+  { to: "/businesses?plant=roorkee", label: "AMRPL â€” Roorkee Plant", sub: true },
   { to: "/sustainability",            label: "Sustainability" },
   { to: "/careers",                  label: "Careers" },
 ];
 
 export default function Navbar() {
+  const { cms } = useCms();
+  const navCtaText = cms?.nav?.ctaText || "GET IN TOUCH";
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
@@ -42,11 +45,11 @@ export default function Navbar() {
           <img src={ASSETS.logo} alt="AadiShakti Logo" className="nav-logo" />
         </Link>
 
-        {/* ── Desktop Nav ── */}
+        {/* â”€â”€ Desktop Nav â”€â”€ */}
         <nav className="desktop-nav" aria-label="Primary">
           <Link to="/" className={`nav-link ${location.pathname === "/" ? "active" : ""}`}>HOME</Link>
 
-          {/* COMPANY — MEGA DROPDOWN */}
+          {/* COMPANY â€” MEGA DROPDOWN */}
           <div
             className="company-wrap"
             onMouseEnter={() => setCompanyOpen(true)}
@@ -60,7 +63,7 @@ export default function Navbar() {
             </button>
 
             <div className={`mega-dropdown ${companyOpen ? "open" : ""}`}>
-              {/* Left — links */}
+              {/* Left â€” links */}
               <div className="mega-left">
                 {companyLinks.map((item, idx) => (
                   <React.Fragment key={item.to + item.label}>
@@ -72,7 +75,7 @@ export default function Navbar() {
                 ))}
               </div>
 
-              {/* Right — contextual panel */}
+              {/* Right â€” contextual panel */}
               <div className="mega-right">
                 <img
                   src={ASSETS.megaMenuPhoto}
@@ -81,7 +84,7 @@ export default function Navbar() {
                 />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
-                    Est. 2004 · ISO 9001:2015
+                    Est. 2004 Â· ISO 9001:2015
                   </div>
                   <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
                     Two world-class plants. One standard of excellence.
@@ -96,7 +99,7 @@ export default function Navbar() {
           <Link to="/sourcing"    className={`nav-link ${location.pathname === "/sourcing"    ? "active" : ""}`}>SOURCING</Link>
         </nav>
 
-        <Link to="/contact" className="cta desktop-cta">GET IN TOUCH</Link>
+        <Link to="/contact" className="cta desktop-cta">{navCtaText}</Link>
 
         <button
           type="button"
@@ -109,18 +112,18 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* ── Mobile Drawer ── */}
+      {/* â”€â”€ Mobile Drawer â”€â”€ */}
       <aside className={`mobile-drawer ${mobileOpen ? "open" : ""}`}>
         <Link to="/" className="mobile-link">HOME</Link>
 
         <button type="button" className="mobile-link mobile-company" onClick={() => setMobileCo((v) => !v)}>
-          COMPANY {mobileCo ? "▲" : "▼"}
+          COMPANY {mobileCo ? "â–²" : "â–¼"}
         </button>
         {mobileCo && (
           <div className="mobile-submenu">
             {companyLinks.map((item) => (
               <Link key={item.to + item.label} to={item.to} className={`mobile-sub ${item.sub ? "sub" : ""}`}>
-                {item.sub ? `→ ${item.label}` : item.label}
+                {item.sub ? `â†’ ${item.label}` : item.label}
               </Link>
             ))}
           </div>
@@ -130,7 +133,7 @@ export default function Navbar() {
         <Link to="/investors" className="mobile-link">INVESTORS</Link>
         <Link to="/sourcing"  className="mobile-link">SOURCING</Link>
         <Link to="/contact"   className="mobile-link">CONTACT</Link>
-        <Link to="/contact"   className="cta mobile-cta">GET IN TOUCH</Link>
+        <Link to="/contact"   className="cta mobile-cta">{navCtaText}</Link>
       </aside>
 
       <style>{`
@@ -172,7 +175,7 @@ export default function Navbar() {
         .drop-item { display: block; padding: 10px 24px; font: 500 13px var(--font-primary); color: var(--text-secondary); }
         .drop-item:hover { background: var(--red-subtle); color: var(--red-core); }
         .drop-item.sub { padding-left: 36px; font-size: 12px; color: var(--text-muted); }
-        .drop-item.sub::before { content: "→ "; }
+        .drop-item.sub::before { content: "â†’ "; }
         .drop-divider { height: 1px; background: var(--border-light); margin: 6px 16px; }
 
         .cta {
@@ -218,3 +221,5 @@ export default function Navbar() {
     </header>
   );
 }
+
+

@@ -1,8 +1,10 @@
 ﻿import React from "react";
 import { Link } from "react-router-dom";
 import { ASSETS } from "../assets/assetMap";
+import { useCms } from "../context/CmsContext";
 
 export default function PageHero({ title, activePage }) {
+  const { cms } = useCms();
   const heroBgByPage = {
     "ABOUT US": ASSETS.founders.anilGoel,
     BUSINESSES: ASSETS.mundraPlant[0],
@@ -14,7 +16,7 @@ export default function PageHero({ title, activePage }) {
     SOURCING: ASSETS.mundraPlant[8],
   };
 
-  const heroImage = heroBgByPage[activePage] || ASSETS.heroFallback;
+  const heroImage = cms?.pageHeroImages?.[activePage] || heroBgByPage[activePage] || ASSETS.heroFallback;
 
   return (
     <div
@@ -120,3 +122,5 @@ export default function PageHero({ title, activePage }) {
     </div>
   );
 }
+
+

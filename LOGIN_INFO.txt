@@ -1,0 +1,58 @@
+╔═══════════════════════════════════════════════════════════╗
+║         AADISHAKTI ADMIN PANEL - LOGIN INFO              ║
+╚═══════════════════════════════════════════════════════════╝
+
+📍 ADMIN PANEL URL
+   http://localhost:5174
+
+👤 USERNAME
+   admin@aadishakti
+
+🔑 PASSWORD
+   admin123
+
+⚙️  CONFIGURATION FILE
+   backend/.env
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 HOW TO START
+
+1. Start Backend:
+   cd backend
+   npm run dev
+   → Runs on http://localhost:5000
+
+2. Start Admin Panel:
+   cd admin
+   npm run dev
+   → Runs on http://localhost:5174
+
+3. Login:
+   → Open http://localhost:5174
+   → Enter: admin@aadishakti
+   → Enter: admin123
+   → Click "Sign In"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  SECURITY NOTES
+
+✓ Password is hashed with bcrypt
+✓ JWT tokens expire after 8 hours
+✓ Change credentials in production!
+✓ Use HTTPS in production!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION
+
+→ ADMIN_CREDENTIALS.md - Full credential details
+→ START_ADMIN.md - Quick start guide
+→ ADMIN_SETUP.md - Complete setup instructions
+→ README_ADMIN.md - Full documentation
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Last Updated: June 1, 2026
+Status: ✅ CONFIGURED AND READY

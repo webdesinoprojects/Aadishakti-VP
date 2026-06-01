@@ -5,15 +5,29 @@ import path from "path";
 import fs from "fs/promises";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
+import crypto from "crypto";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const ADMIN_USER = process.env.ADMIN_USERNAME || process.env.ADMIN_USER || "admin@aadishakti";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const adminSessions = new Map();
 
-// Enable CORS for frontend developer server and production
-app.use(cors());
+// Enable CORS with specific origins to allow credentials
+const corsOptions = {
+  origin: ['http://localhost:5174', 'http://localhost:5173', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve uploads as static files
@@ -29,6 +43,7 @@ const initializeStorage = async () => {
 
   const enquiriesFile = path.join(dataDir, "enquiries.json");
   const applicationsFile = path.join(dataDir, "applications.json");
+  const cmsFile = path.join(dataDir, "cms.json");
 
   if (!existsSync(enquiriesFile)) {
     await fs.writeFile(enquiriesFile, JSON.stringify([], null, 2));
@@ -36,9 +51,87 @@ const initializeStorage = async () => {
   if (!existsSync(applicationsFile)) {
     await fs.writeFile(applicationsFile, JSON.stringify([], null, 2));
   }
+  if (!existsSync(cmsFile)) {
+    const defaultCms = {
+      updatedAt: new Date().toISOString(),
+      home: {
+        heroSlides: [
+          {
+            image: "/plant/Plant Pic 02.jpeg",
+            eyebrow: "// EST. 2004 · MUNDRA · ROORKEE",
+            titleA: "India's",
+            titleB: "Sovereign",
+            titleC: "of Secondary Lead",
+            subtitle: "Two state-of-the-art refineries. One unwavering standard of purity.",
+          },
+          {
+            image: "/office/WhatsApp Image 2026-03-11 at 16.03.15.jpeg",
+            eyebrow: "// PROCESS DISCIPLINE · GLOBAL BENCHMARKS",
+            titleA: "Engineered",
+            titleB: "Precision",
+            titleC: "in Lead Recycling",
+            subtitle: "Consistent metallurgy backed by quality systems, safety culture, and export-grade reliability.",
+          },
+          {
+            image: "/office/WhatsApp Image 2026-03-11 at 16.03.43.jpeg",
+            eyebrow: "// CIRCULAR ECONOMY · RESPONSIBLE GROWTH",
+            titleA: "Building",
+            titleB: "Sustainable",
+            titleC: "Industrial Value",
+            subtitle: "From battery scrap recovery to high-purity output, every step is built for long-term partnerships.",
+          },
+        ],
+      },
+      global: {
+        contactEmail: "marketing@aadishakti.com",
+        contactPhone: "+91-8743000299",
+        address: "30, Third Floor, Shivaji Marg, Block C, Moti Nagar, New Delhi - 110015",
+      },
+      pageHeroImages: {
+        "ABOUT US": "/images/PMUD5812.JPG",
+        BUSINESSES: "/plant/Plant Pic 02.jpeg",
+        PRODUCTS: "/product-lead-alloy.jpg",
+        SUSTAINABILITY: "/plant/Rotary 1.jpeg",
+        INVESTORS: "/plant/IMG_20251228_113451171_HDR_AE.jpg",
+        CAREERS: "/office/WhatsApp Image 2026-03-11 at 16.03.15.jpeg",
+        CONTACT: "/office/WhatsApp Image 2026-03-11 at 16.03.43.jpeg",
+        SOURCING: "/plant/14 (18).jpg",
+      },
+      nav: {
+        ctaText: "GET IN TOUCH",
+      },
+    };
+    await fs.writeFile(cmsFile, JSON.stringify(defaultCms, null, 2));
+  }
 };
 
 await initializeStorage();
+
+const cmsPath = path.join(__dirname, "data", "cms.json");
+
+const readCms = async () => {
+  const content = await fs.readFile(cmsPath, "utf-8");
+  return JSON.parse(content);
+};
+
+const writeCms = async (payload) => {
+  const next = {
+    ...payload,
+    updatedAt: new Date().toISOString(),
+  };
+  await fs.writeFile(cmsPath, JSON.stringify(next, null, 2));
+  return next;
+};
+
+const requireAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  if (!token || !adminSessions.has(token)) {
+    return res.status(401).json({ error: "Unauthorized admin access." });
+  }
+  req.admin = adminSessions.get(token);
+  next();
+};
 
 // Multer Storage Configuration for Resume Uploads
 const storage = multer.diskStorage({
@@ -89,6 +182,83 @@ app.get("/api/financials", (req, res) => {
     },
   };
   res.json(financialData);
+});
+
+// PUBLIC CMS endpoint for frontend pages
+app.get("/api/cms/public", async (req, res) => {
+  try {
+    const cms = await readCms();
+    res.json(cms);
+  } catch (error) {
+    console.error("Error loading CMS data:", error);
+    res.status(500).json({ error: "Failed to fetch CMS content." });
+  }
+});
+
+// ADMIN LOGIN
+app.post("/api/admin/login", (req, res) => {
+  const { username, password } = req.body || {};
+  if (username !== ADMIN_USER || password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Invalid admin credentials." });
+  }
+
+  const token = crypto.randomUUID();
+  adminSessions.set(token, { username, createdAt: Date.now() });
+  res.json({ token, username });
+});
+
+app.post("/api/admin/logout", requireAdmin, (req, res) => {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  adminSessions.delete(token);
+  res.json({ success: true });
+});
+
+// ADMIN AUTH aliases for newer admin panel
+app.post("/api/auth/login", (req, res) => {
+  const { username, password } = req.body || {};
+  if (username !== ADMIN_USER || password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Invalid credentials. Please try again." });
+  }
+
+  const token = crypto.randomUUID();
+  adminSessions.set(token, { username, createdAt: Date.now() });
+  res.json({ success: true, token, username, expiresIn: "8h" });
+});
+
+app.post("/api/auth/logout", requireAdmin, (req, res) => {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  adminSessions.delete(token);
+  res.json({ success: true, message: "Logged out successfully" });
+});
+
+app.get("/api/auth/verify", requireAdmin, (req, res) => {
+  res.json({ success: true, admin: req.admin });
+});
+
+// ADMIN CMS CRUD
+app.get("/api/admin/cms", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    res.json(cms);
+  } catch (error) {
+    console.error("Error loading admin CMS:", error);
+    res.status(500).json({ error: "Failed to load CMS for admin." });
+  }
+});
+
+app.put("/api/admin/cms", requireAdmin, async (req, res) => {
+  try {
+    if (!req.body || typeof req.body !== "object") {
+      return res.status(400).json({ error: "Invalid CMS payload." });
+    }
+    const updated = await writeCms(req.body);
+    res.json({ success: true, cms: updated });
+  } catch (error) {
+    console.error("Error updating CMS:", error);
+    res.status(500).json({ error: "Failed to save CMS content." });
+  }
 });
 
 // POST /api/enquiries - Receive customer / lead inquiries

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "pure-lead",
+    "name": "Pure Lead",
+    "code": "IS:27 / BS:334",
+    "purity": "99.97% Pb Minimum",
+    "description": "High-purity refined lead meeting international standards for battery manufacturing and industrial applications.",
+    "specifications": [
+      {
+        "parameter": "Lead (Pb) Min",
+        "value": "99.97%"
+      },
+      {
+        "parameter": "Bismuth (Bi)",
+        "value": "0.010% Max"
+      },
+      {
+        "parameter": "Copper (Cu)",
+        "value": "0.001% Max"
+      },
+      {
+        "parameter": "Silver (Ag)",
+        "value": "0.002% Max"
+      },
+      {
+        "parameter": "Arsenic (As)",
+        "value": "0.001% Max"
+      }
+    ],
+    "image": "/product-pure-lead.png",
+    "datasheet": "",
+    "lastEdited": "2026-06-01T08:23:51.475Z"
+  },
+  {
+    "id": "lead-alloy",
+    "name": "Lead Alloy",
+    "code": "Custom Grades",
+    "purity": "99.85% Pb Minimum",
+    "description": "Specialized lead alloys for specific industrial applications.",
+    "specifications": [
+      {
+        "parameter": "Lead (Pb) Min",
+        "value": "99.85%"
+      },
+      {
+        "parameter": "Antimony (Sb)",
+        "value": "0.10% Max"
+      },
+      {
+        "parameter": "Tin (Sn)",
+        "value": "0.05% Max"
+      }
+    ],
+    "image": "/product-lead-alloy.jpg",
+    "datasheet": "",
+    "lastEdited": "2026-06-01T08:23:51.475Z"
+  }
+]
