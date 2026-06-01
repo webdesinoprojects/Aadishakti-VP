@@ -11,7 +11,7 @@ import { useCms } from "../context/CmsContext";
 const heroSlides = [
   {
     image: ASSETS.heroBg1,
-    eyebrow: "// EST. 2004 Â· MUNDRA Â· ROORKEE",
+    eyebrow: "// EST. 2004 · MUNDRA · ROORKEE",
     titleA: "India's",
     titleB: "Premier",
     titleC: "Secondary Lead Group",
@@ -19,7 +19,7 @@ const heroSlides = [
   },
   {
     image: ASSETS.heroBg2,
-    eyebrow: "// ISO 9001:2015 Â· BIS CERTIFIED Â· LME GRADE",
+    eyebrow: "// ISO 9001:2015 · BIS CERTIFIED · LME GRADE",
     titleA: "Engineered",
     titleB: "Precision",
     titleC: "in Lead Recycling",
@@ -27,11 +27,11 @@ const heroSlides = [
   },
   {
     image: ASSETS.heroBg3,
-    eyebrow: "// CIRCULAR ECONOMY Â· RESPONSIBLE GROWTH",
+    eyebrow: "// CIRCULAR ECONOMY · RESPONSIBLE GROWTH",
     titleA: "Building",
     titleB: "Sustainable",
     titleC: "Industrial Value",
-    subtitle: "From battery scrap recovery to high-purity output â€” every step built for long-term partnerships.",
+    subtitle: "From battery scrap recovery to high-purity output — every step built for long-term partnerships.",
   },
 ];
 
@@ -63,7 +63,7 @@ const strengths = [
       </svg>
     ),
     title: "LME Grade Purity",
-    desc: "99.97â€“99.985% Pb minimum â€” LME-registered quality accepted by global battery manufacturers.",
+    desc: "99.97-99.985% Pb minimum — LME-registered quality accepted by global battery manufacturers.",
   },
   {
     icon: (
@@ -95,10 +95,10 @@ const strengths = [
 ];
 
 const products = [
-  { key: "pureLead",   name: "Refined Pure Lead", spec: "99.97â€“99.985% Pb", desc: "LME-grade for battery and industrial applications.", img: ASSETS.products.pureLead },
+  { key: "pureLead",   name: "Refined Pure Lead", spec: "99.97-99.985% Pb", desc: "LME-grade for battery and industrial applications.", img: ASSETS.products.pureLead },
   { key: "leadAlloys", name: "Lead Alloys",        spec: "Sb, Ca, Sn variants", desc: "Custom metallurgy for automotive and energy storage.", img: ASSETS.products.leadAlloys },
-  { key: "redLead",   name: "Red Lead Oxide",     spec: "Pbâ‚ƒOâ‚„",           desc: "Consistent particle profile for battery and glass.", img: ASSETS.products.redLead },
-  { key: "greyOxide", name: "Grey Lead Oxide",    spec: "2PbOÂ·Pb",         desc: "Controlled reactivity for electrochemical battery use.", img: ASSETS.products.greyOxide },
+  { key: "redLead",   name: "Red Lead Oxide",     spec: "Pb3O4",           desc: "Consistent particle profile for battery and glass.", img: ASSETS.products.redLead },
+  { key: "greyOxide", name: "Grey Lead Oxide",    spec: "2PbO·Pb",         desc: "Controlled reactivity for electrochemical battery use.", img: ASSETS.products.greyOxide },
 ];
 
 const statsStrip = [
@@ -109,8 +109,8 @@ const statsStrip = [
 ];
 
 const sustainabilityStats = [
-  { value: "100%", label: "Battery Scrap Recycled â€” Nothing to Landfill" },
-  { value: "ZLD",  label: "Zero Liquid Discharge â€” All Water Recycled In-Plant" },
+  { value: "100%", label: "Battery Scrap Recycled — Nothing to Landfill" },
+  { value: "ZLD",  label: "Zero Liquid Discharge — All Water Recycled In-Plant" },
   { value: "ISO",  label: "ISO 14001:2015 Environmental Management System" },
 ];
 
@@ -203,7 +203,7 @@ export default function Home() {
 
             <div style={{ marginTop: "36px", display: "flex", gap: "14px", flexWrap: "wrap" }}>
               <Link to="/businesses" className="btn-solid-red">Explore Operations</Link>
-              <Link to="/investors"  className="btn-ghost-steel">Investor Relations â†’</Link>
+              <Link to="/investors"  className="btn-ghost-steel">Investor Relations →</Link>
             </div>
 
             {/* Slide dots */}
@@ -236,7 +236,7 @@ export default function Home() {
           {[
             { label: "ISO 9001:2015", value: "Quality Certified" },
             { label: "LME Grade Lead", value: "99.97% Pb Min." },
-            { label: "Est. 2004", value: "Mundra Â· Roorkee" },
+            { label: "Est. 2004", value: "Mundra · Roorkee" },
           ].map((row) => (
             <div key={row.label} className="hero-glass-row">
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
@@ -251,7 +251,7 @@ export default function Home() {
 
         {/* Prev / Next arrows */}
         <div style={{ position: "absolute", right: "clamp(16px, 3vw, 44px)", top: "50%", transform: "translateY(-50%)", zIndex: 6, display: "flex", flexDirection: "column", gap: "10px" }}>
-          {["â€¹", "â€º"].map((ch, i) => (
+          {["‹", "›"].map((ch, i) => (
             <button
               key={ch}
               type="button"
@@ -338,7 +338,7 @@ export default function Home() {
                   Mundra and Roorkee, we combine process discipline, scale, and supply consistency.
                 </p>
                 <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.7, marginBottom: "16px" }}>
-                  Our Mundra facility (AGRPL) operates in Kutch, Gujarat, adjacent to Adani Port â€” giving
+                  Our Mundra facility (AGRPL) operates in Kutch, Gujarat, adjacent to Adani Port — giving
                   us unmatched access to international battery scrap. Our Roorkee division (AMRPL) serves
                   North India's major battery manufacturers with domestic supply consistency.
                 </p>
@@ -350,7 +350,7 @@ export default function Home() {
                 <div style={{ display: "flex", gap: "48px" }}>
                   {[
                     { num: "50,000+", label: "MT Annual Capacity" },
-                    { num: "â‚¹1000+",  label: "Crore Group Turnover" },
+                    { num: "₹1000+",  label: "Crore Group Turnover" },
                     { num: "4+",      label: "Active Certifications" },
                   ].map((s) => (
                     <div key={s.label}>
@@ -405,7 +405,7 @@ export default function Home() {
                 Mundra Smelter Division
               </h3>
               <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
-                Export-oriented processing hub â€” 30,000 MT active, 120,000 MT by 2026. Port-adjacent logistics.
+                Export-oriented processing hub — 30,000 MT active, 120,000 MT by 2026. Port-adjacent logistics.
               </p>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
                 {["Mundra SEZ", "ISO 9001:2015", "Basel Compliant"].map((tag) => (
@@ -415,7 +415,7 @@ export default function Home() {
                 ))}
               </div>
               <Link to="/businesses?plant=mundra" style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Explore AGRPL â†’
+                Explore AGRPL →
               </Link>
             </div>
           </div>
@@ -430,7 +430,7 @@ export default function Home() {
                 Roorkee Domestic Division
               </h3>
               <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
-                Domestic supply hub â€” 40,000 MT capacity. OES spectrograph quality lab. North India distribution.
+                Domestic supply hub — 40,000 MT capacity. OES spectrograph quality lab. North India distribution.
               </p>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
                 {["Haridwar, UK", "ISO 14001:2015", "Hazardous Permit"].map((tag) => (
@@ -440,7 +440,7 @@ export default function Home() {
                 ))}
               </div>
               <Link to="/businesses?plant=roorkee" style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Explore AMRPL â†’
+                Explore AMRPL →
               </Link>
             </div>
           </div>
@@ -456,7 +456,7 @@ export default function Home() {
             <SectionLabel text="// WHY AADISHAKTI" />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}>
               <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>Our Core Strengths</h2>
-              <Link to="/about" className="btn-ghost-steel">Company Overview â†’</Link>
+              <Link to="/about" className="btn-ghost-steel">Company Overview →</Link>
             </div>
             <div className="grid-3" style={{ gap: "20px" }}>
               {strengths.map((s) => (
@@ -550,10 +550,10 @@ export default function Home() {
                   Responsible Circular Economy Practices
                 </h2>
                 <blockquote style={{ fontFamily: "var(--font-editorial)", fontStyle: "italic", fontSize: "clamp(16px, 1.5vw, 20px)", color: "rgba(255,255,255,0.82)", lineHeight: 1.65, borderLeft: "3px solid var(--red-core)", paddingLeft: "20px", marginBottom: "32px" }}>
-                  "Lead recycling is the most efficient form of circular economy â€” returning full industrial
+                  "Lead recycling is the most efficient form of circular economy — returning full industrial
                    value while protecting the environment from raw mining hazards."
                 </blockquote>
-                <Link to="/sustainability" className="btn-solid-red">Our Sustainability Commitment â†’</Link>
+                <Link to="/sustainability" className="btn-solid-red">Our Sustainability Commitment →</Link>
               </div>
 
               {/* Right â€” glass stat cards */}
@@ -624,13 +624,13 @@ export default function Home() {
                 </h2>
               </div>
               <Link to="/investors" className="btn-ghost-steel" style={{ color: "#B0B0B0", borderColor: "#3A3A3A" }}>
-                Open Investor Desk â†’
+                Open Investor Desk →
               </Link>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
               {[
-                { label: "Revenue Growth", value: "â†‘ Consistent YoY", desc: "Multi-year track record of volume and revenue expansion." },
+                { label: "Revenue Growth", value: "↑ Consistent YoY", desc: "Multi-year track record of volume and revenue expansion." },
                 { label: "Capacity Pipeline", value: "120,000 MT", desc: "Expansion to 120,000 MTPA by April 2026 at Mundra facility." },
                 { label: "Export Share", value: "48% Volume", desc: "Nearly half of output serves international battery manufacturers." },
               ].map((item) => (
@@ -648,7 +648,7 @@ export default function Home() {
 
             <div style={{ textAlign: "center", marginTop: "40px" }}>
               <Link to="/investors" className="btn-solid-red">
-                Access Full Investor Dashboard â†’
+                Access Full Investor Dashboard →
               </Link>
             </div>
           </ScrollReveal>

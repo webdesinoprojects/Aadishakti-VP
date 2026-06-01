@@ -52,10 +52,10 @@ export default function Investors() {
               
               <div className="grid-4" style={{ marginBottom: "5rem" }}>
                 {[
-                  { label: "Revenue Target FY26", num: "â‚¹1,200 Cr", trend: "â†‘ 54%", active: true },
-                  { label: "Smelting Target FY26", num: "120,000 MT", trend: "â†‘ 71%", active: true },
-                  { label: "Active Revenue FY24", num: "â‚¹780 Cr", trend: "â†‘ 50%", active: false },
-                  { label: "Operating EBITDA FY24", num: "â‚¹118 Cr", trend: "â†’ Stable", active: false },
+                  { label: "Revenue Target FY26", num: "₹1,200 Cr", trend: "↑ 54%", active: true },
+                  { label: "Smelting Target FY26", num: "120,000 MT", trend: "↑ 71%", active: true },
+                  { label: "Active Revenue FY24", num: "₹780 Cr", trend: "↑ 50%", active: false },
+                  { label: "Operating EBITDA FY24", num: "₹118 Cr", trend: "→ Stable", active: false },
                 ].map((kpi, idx) => (
                   <div key={idx} className="corporate-card" style={{ borderLeftColor: kpi.active ? "var(--red-core)" : "var(--steel)" }}>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--muted)", fontWeight: "700", textTransform: "uppercase" }}>
@@ -64,7 +64,7 @@ export default function Investors() {
                     <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "36px", color: "var(--text-primary)", fontWeight: "700", marginTop: "8px", marginBottom: "8px", letterSpacing: "-0.02em" }}>
                       {kpi.num}
                     </h3>
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: kpi.trend.includes("â†‘") ? "var(--red-core)" : "var(--silver)" }}>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: kpi.trend.includes("↑") ? "var(--red-core)" : "var(--silver)" }}>
                       {kpi.trend}
                     </span>
                   </div>

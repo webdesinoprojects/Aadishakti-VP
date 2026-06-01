@@ -6,8 +6,8 @@ import { useCms } from "../context/CmsContext";
 const companyLinks = [
   { to: "/about",                    label: "About Us" },
   { to: "/businesses",               label: "Our Businesses" },
-  { to: "/businesses?plant=mundra",  label: "AGRPL â€” Mundra Plant",  sub: true },
-  { to: "/businesses?plant=roorkee", label: "AMRPL â€” Roorkee Plant", sub: true },
+  { to: "/businesses?plant=mundra",  label: "AGRPL — Mundra Plant",  sub: true },
+  { to: "/businesses?plant=roorkee", label: "AMRPL — Roorkee Plant", sub: true },
   { to: "/sustainability",            label: "Sustainability" },
   { to: "/careers",                  label: "Careers" },
 ];
@@ -84,7 +84,7 @@ export default function Navbar() {
                 />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
-                    Est. 2004 Â· ISO 9001:2015
+                    Est. 2004 · ISO 9001:2015
                   </div>
                   <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
                     Two world-class plants. One standard of excellence.
@@ -117,13 +117,13 @@ export default function Navbar() {
         <Link to="/" className="mobile-link">HOME</Link>
 
         <button type="button" className="mobile-link mobile-company" onClick={() => setMobileCo((v) => !v)}>
-          COMPANY {mobileCo ? "â–²" : "â–¼"}
+          COMPANY {mobileCo ? "▲" : "▼"}
         </button>
         {mobileCo && (
           <div className="mobile-submenu">
             {companyLinks.map((item) => (
               <Link key={item.to + item.label} to={item.to} className={`mobile-sub ${item.sub ? "sub" : ""}`}>
-                {item.sub ? `â†’ ${item.label}` : item.label}
+                {item.sub ? `→ ${item.label}` : item.label}
               </Link>
             ))}
           </div>
@@ -175,7 +175,7 @@ export default function Navbar() {
         .drop-item { display: block; padding: 10px 24px; font: 500 13px var(--font-primary); color: var(--text-secondary); }
         .drop-item:hover { background: var(--red-subtle); color: var(--red-core); }
         .drop-item.sub { padding-left: 36px; font-size: 12px; color: var(--text-muted); }
-        .drop-item.sub::before { content: "â†’ "; }
+        .drop-item.sub::before { content: "→ "; }
         .drop-divider { height: 1px; background: var(--border-light); margin: 6px 16px; }
 
         .cta {
