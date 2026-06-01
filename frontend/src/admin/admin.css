@@ -34,20 +34,6 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: var(--font-primary);
-  font-size: 14px;
-  color: var(--admin-text);
-  background: var(--admin-bg);
-  line-height: 1.5;
-}
-
 /* ============================================
    LAYOUT
    ============================================ */
@@ -95,6 +81,7 @@ body {
   flex: 1;
   padding: 32px;
   min-height: calc(100vh - 60px);
+  background: var(--admin-bg);
 }
 
 /* ============================================
@@ -108,7 +95,6 @@ body {
 
 .sidebar-logo {
   height: 32px;
-  filter: brightness(0) invert(1);
   margin-bottom: 8px;
 }
 

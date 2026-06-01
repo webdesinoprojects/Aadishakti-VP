@@ -261,6 +261,434 @@ app.put("/api/admin/cms", requireAdmin, async (req, res) => {
   }
 });
 
+// ─── HERO ────────────────────────────────────────────────────────────────────
+app.get("/api/admin/cms/hero", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    // Return the entire home object which includes heroSlides
+    res.json(cms.home || { heroSlides: [] });
+  } catch (e) {
+    console.error("Error loading hero:", e);
+    res.status(500).json({ error: "Failed to load hero content." });
+  }
+});
+
+app.put("/api/admin/cms/hero", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    if (!cms.home) cms.home = {};
+    // Update the home object with the new data
+    cms.home = { ...cms.home, ...req.body };
+    await writeCms(cms);
+    res.json({ success: true, data: cms.home });
+  } catch (e) {
+    console.error("Error updating hero:", e);
+    res.status(500).json({ error: "Failed to save hero content." });
+  }
+});
+
+// ─── PRODUCTS ────────────────────────────────────────────────────────────────
+app.get("/api/admin/cms/products", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    res.json(cms.products || []);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load products." });
+  }
+});
+
+app.post("/api/admin/cms/products", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    if (!cms.products) cms.products = [];
+    const item = { id: Date.now().toString(), ...req.body, createdAt: new Date().toISOString() };
+    cms.products.push(item);
+    await writeCms(cms);
+    res.status(201).json(item);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to create product." });
+  }
+});
+
+app.put("/api/admin/cms/products/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    const idx = (cms.products || []).findIndex((p) => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "Product not found." });
+    cms.products[idx] = { ...cms.products[idx], ...req.body, updatedAt: new Date().toISOString() };
+    await writeCms(cms);
+    res.json(cms.products[idx]);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update product." });
+  }
+});
+
+app.delete("/api/admin/cms/products/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    cms.products = (cms.products || []).filter((p) => p.id !== req.params.id);
+    await writeCms(cms);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to delete product." });
+  }
+});
+
+// ─── GALLERY ─────────────────────────────────────────────────────────────────
+app.get("/api/admin/cms/gallery", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    let items = cms.gallery || [];
+    if (req.query.category) items = items.filter((i) => i.category === req.query.category);
+    res.json(items);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load gallery." });
+  }
+});
+
+app.post("/api/admin/cms/gallery", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    if (!cms.gallery) cms.gallery = [];
+    const item = { id: Date.now().toString(), ...req.body, createdAt: new Date().toISOString() };
+    cms.gallery.push(item);
+    await writeCms(cms);
+    res.status(201).json(item);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to add gallery image." });
+  }
+});
+
+app.put("/api/admin/cms/gallery/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    const idx = (cms.gallery || []).findIndex((i) => i.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "Image not found." });
+    cms.gallery[idx] = { ...cms.gallery[idx], ...req.body };
+    await writeCms(cms);
+    res.json(cms.gallery[idx]);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update gallery image." });
+  }
+});
+
+app.delete("/api/admin/cms/gallery/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    cms.gallery = (cms.gallery || []).filter((i) => i.id !== req.params.id);
+    await writeCms(cms);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to delete gallery image." });
+  }
+});
+
+// ─── NEWS / ANNOUNCEMENTS ────────────────────────────────────────────────────
+app.get("/api/admin/cms/news", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    let items = cms.news || [];
+    if (req.query.status) items = items.filter((i) => i.status === req.query.status);
+    res.json(items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load news." });
+  }
+});
+
+app.post("/api/admin/cms/news", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    if (!cms.news) cms.news = [];
+    const item = { id: Date.now().toString(), ...req.body, createdAt: new Date().toISOString() };
+    cms.news.push(item);
+    await writeCms(cms);
+    res.status(201).json(item);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to create news." });
+  }
+});
+
+app.put("/api/admin/cms/news/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    const idx = (cms.news || []).findIndex((i) => i.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "News item not found." });
+    cms.news[idx] = { ...cms.news[idx], ...req.body, updatedAt: new Date().toISOString() };
+    await writeCms(cms);
+    res.json(cms.news[idx]);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update news." });
+  }
+});
+
+app.delete("/api/admin/cms/news/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    cms.news = (cms.news || []).filter((i) => i.id !== req.params.id);
+    await writeCms(cms);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to delete news." });
+  }
+});
+
+// ─── CAREERS / JOB LISTINGS ──────────────────────────────────────────────────
+app.get("/api/admin/cms/careers", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    let items = cms.jobListings || [];
+    if (req.query.status) items = items.filter((i) => i.status === req.query.status);
+    res.json(items);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load careers." });
+  }
+});
+
+app.post("/api/admin/cms/careers", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    if (!cms.jobListings) cms.jobListings = [];
+    const item = { id: Date.now().toString(), ...req.body, createdAt: new Date().toISOString() };
+    cms.jobListings.push(item);
+    await writeCms(cms);
+    res.status(201).json(item);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to create job listing." });
+  }
+});
+
+app.put("/api/admin/cms/careers/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    const idx = (cms.jobListings || []).findIndex((i) => i.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "Job listing not found." });
+    cms.jobListings[idx] = { ...cms.jobListings[idx], ...req.body, updatedAt: new Date().toISOString() };
+    await writeCms(cms);
+    res.json(cms.jobListings[idx]);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update job listing." });
+  }
+});
+
+app.delete("/api/admin/cms/careers/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    cms.jobListings = (cms.jobListings || []).filter((i) => i.id !== req.params.id);
+    await writeCms(cms);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to delete job listing." });
+  }
+});
+
+// ─── TEAM ────────────────────────────────────────────────────────────────────
+app.get("/api/admin/cms/team", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    res.json(cms.team || []);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load team." });
+  }
+});
+
+app.post("/api/admin/cms/team", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    if (!cms.team) cms.team = [];
+    const item = { id: Date.now().toString(), ...req.body, createdAt: new Date().toISOString() };
+    cms.team.push(item);
+    await writeCms(cms);
+    res.status(201).json(item);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to add team member." });
+  }
+});
+
+app.put("/api/admin/cms/team/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    const idx = (cms.team || []).findIndex((i) => i.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "Team member not found." });
+    cms.team[idx] = { ...cms.team[idx], ...req.body, updatedAt: new Date().toISOString() };
+    await writeCms(cms);
+    res.json(cms.team[idx]);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update team member." });
+  }
+});
+
+app.delete("/api/admin/cms/team/:id", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    cms.team = (cms.team || []).filter((i) => i.id !== req.params.id);
+    await writeCms(cms);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to delete team member." });
+  }
+});
+
+// ─── INVESTORS ───────────────────────────────────────────────────────────────
+app.get("/api/admin/cms/investors", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    res.json(cms.investors || {});
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load investors content." });
+  }
+});
+
+app.put("/api/admin/cms/investors", requireAdmin, async (req, res) => {
+  try {
+    const cms = await readCms();
+    cms.investors = { ...req.body, updatedAt: new Date().toISOString() };
+    await writeCms(cms);
+    res.json({ success: true, data: cms.investors });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update investors content." });
+  }
+});
+
+// ─── FILE UPLOAD ─────────────────────────────────────────────────────────────
+const imageStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, path.join(__dirname, "uploads")),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `img-${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`);
+  },
+});
+
+const imageUpload = multer({
+  storage: imageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed."));
+  },
+});
+
+app.post("/api/admin/upload", requireAdmin, imageUpload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded." });
+  res.json({ success: true, url: `http://localhost:${PORT}/uploads/${req.file.filename}` });
+});
+
+app.post("/api/admin/upload/multiple", requireAdmin, imageUpload.array("files", 10), (req, res) => {
+  if (!req.files?.length) return res.status(400).json({ error: "No files uploaded." });
+  const urls = req.files.map((f) => `http://localhost:${PORT}/uploads/${f.filename}`);
+  res.json({ success: true, urls });
+});
+
+// ─── CRM: ENQUIRIES ──────────────────────────────────────────────────────────
+app.get("/api/admin/crm/enquiries", requireAdmin, async (req, res) => {
+  try {
+    const { status, search } = req.query;
+    const dataPath = path.join(__dirname, "data", "enquiries.json");
+    let items = JSON.parse(await fs.readFile(dataPath, "utf-8"));
+    if (status && status !== "All") items = items.filter((e) => (e.status || "New") === status);
+    if (search) {
+      const s = search.toLowerCase();
+      items = items.filter(
+        (e) =>
+          e.fullName?.toLowerCase().includes(s) ||
+          e.companyName?.toLowerCase().includes(s) ||
+          e.workEmail?.toLowerCase().includes(s)
+      );
+    }
+    res.json(items.reverse());
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load enquiries." });
+  }
+});
+
+app.put("/api/admin/crm/enquiries/:id", requireAdmin, async (req, res) => {
+  try {
+    const dataPath = path.join(__dirname, "data", "enquiries.json");
+    const items = JSON.parse(await fs.readFile(dataPath, "utf-8"));
+    const idx = items.findIndex((e) => e.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "Enquiry not found." });
+    items[idx] = { ...items[idx], ...req.body, updatedAt: new Date().toISOString() };
+    await fs.writeFile(dataPath, JSON.stringify(items, null, 2));
+    res.json(items[idx]);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update enquiry." });
+  }
+});
+
+app.delete("/api/admin/crm/enquiries/:id", requireAdmin, async (req, res) => {
+  try {
+    const dataPath = path.join(__dirname, "data", "enquiries.json");
+    const items = JSON.parse(await fs.readFile(dataPath, "utf-8"));
+    const filtered = items.filter((e) => e.id !== req.params.id);
+    await fs.writeFile(dataPath, JSON.stringify(filtered, null, 2));
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to delete enquiry." });
+  }
+});
+
+// ─── CRM: JOB APPLICATIONS ───────────────────────────────────────────────────
+app.get("/api/admin/crm/applications", requireAdmin, async (req, res) => {
+  try {
+    const { status, search, role } = req.query;
+    const dataPath = path.join(__dirname, "data", "applications.json");
+    let items = JSON.parse(await fs.readFile(dataPath, "utf-8"));
+    if (status && status !== "All") items = items.filter((a) => (a.status || "New") === status);
+    if (role) items = items.filter((a) => a.roleCategory === role);
+    if (search) {
+      const s = search.toLowerCase();
+      items = items.filter(
+        (a) =>
+          a.fullName?.toLowerCase().includes(s) ||
+          a.email?.toLowerCase().includes(s) ||
+          a.roleCategory?.toLowerCase().includes(s)
+      );
+    }
+    res.json(items.reverse());
+  } catch (e) {
+    res.status(500).json({ error: "Failed to load applications." });
+  }
+});
+
+app.put("/api/admin/crm/applications/:id", requireAdmin, async (req, res) => {
+  try {
+    const dataPath = path.join(__dirname, "data", "applications.json");
+    const items = JSON.parse(await fs.readFile(dataPath, "utf-8"));
+    const idx = items.findIndex((a) => a.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "Application not found." });
+    items[idx] = { ...items[idx], ...req.body, updatedAt: new Date().toISOString() };
+    await fs.writeFile(dataPath, JSON.stringify(items, null, 2));
+    res.json(items[idx]);
+  } catch (e) {
+    res.status(500).json({ error: "Failed to update application." });
+  }
+});
+
+app.delete("/api/admin/crm/applications/:id", requireAdmin, async (req, res) => {
+  try {
+    const dataPath = path.join(__dirname, "data", "applications.json");
+    const items = JSON.parse(await fs.readFile(dataPath, "utf-8"));
+    const filtered = items.filter((a) => a.id !== req.params.id);
+    await fs.writeFile(dataPath, JSON.stringify(filtered, null, 2));
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to delete application." });
+  }
+});
+
+app.get("/api/admin/crm/applications/:id/cv", requireAdmin, async (req, res) => {
+  try {
+    const dataPath = path.join(__dirname, "data", "applications.json");
+    const items = JSON.parse(await fs.readFile(dataPath, "utf-8"));
+    const item = items.find((a) => a.id === req.params.id);
+    if (!item?.resumePath) return res.status(404).json({ error: "CV not found." });
+    const filePath = path.join(__dirname, item.resumePath);
+    if (!existsSync(filePath)) return res.status(404).json({ error: "CV file not found on disk." });
+    res.download(filePath, item.resumeOriginalName || "resume.pdf");
+  } catch (e) {
+    res.status(500).json({ error: "Failed to download CV." });
+  }
+});
+
 // POST /api/enquiries - Receive customer / lead inquiries
 app.post("/api/enquiries", async (req, res) => {
   try {

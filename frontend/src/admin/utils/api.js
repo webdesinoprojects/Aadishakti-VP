@@ -26,7 +26,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('admin_token');
-      window.location.href = '/login';
+      window.location.href = '/admin/login';
     }
     return Promise.reject(error);
   }
@@ -74,7 +74,9 @@ export const cmsAPI = {
 
   // Products
   getProducts: () => api.get('/api/admin/cms/products'),
+  createProduct: (data) => api.post('/api/admin/cms/products', data),
   updateProduct: (id, data) => api.put(`/api/admin/cms/products/${id}`, data),
+  deleteProduct: (id) => api.delete(`/api/admin/cms/products/${id}`),
 
   // Gallery
   getGallery: (category) => api.get('/api/admin/cms/gallery', { params: { category } }),

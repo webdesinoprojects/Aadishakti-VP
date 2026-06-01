@@ -12,32 +12,32 @@ const Sidebar = () => {
     {
       label: 'Content Management',
       items: [
-        { to: '/dashboard', icon: Home, label: 'Dashboard' },
-        { to: '/cms/hero', icon: Home, label: 'Home / Hero' },
-        { to: '/cms/products', icon: Package, label: 'Products' },
-        { to: '/cms/gallery', icon: Image, label: 'Gallery' },
-        { to: '/cms/news', icon: Newspaper, label: 'News & Announcements' },
-        { to: '/cms/team', icon: Users, label: 'Our Team' },
+        { to: '/admin/dashboard', icon: Home, label: 'Dashboard' },
+        { to: '/admin/cms/hero', icon: Home, label: 'Home / Hero' },
+        { to: '/admin/cms/products', icon: Package, label: 'Products' },
+        { to: '/admin/cms/gallery', icon: Image, label: 'Gallery' },
+        { to: '/admin/cms/news', icon: Newspaper, label: 'News & Announcements' },
+        { to: '/admin/cms/team', icon: Users, label: 'Our Team' },
       ],
     },
     {
       label: 'Operations',
       items: [
-        { to: '/cms/careers', icon: Briefcase, label: 'Careers & Jobs' },
-        { to: '/cms/investors', icon: TrendingUp, label: 'Investors Data' },
+        { to: '/admin/cms/careers', icon: Briefcase, label: 'Careers & Jobs' },
+        { to: '/admin/cms/investors', icon: TrendingUp, label: 'Investors Data' },
       ],
     },
     {
       label: 'CRM',
       items: [
-        { to: '/crm/enquiries', icon: Mail, label: 'Enquiries' },
-        { to: '/crm/applications', icon: FileText, label: 'Job Applications' },
+        { to: '/admin/crm/enquiries', icon: Mail, label: 'Enquiries' },
+        { to: '/admin/crm/applications', icon: FileText, label: 'Job Applications' },
       ],
     },
     {
       label: 'Settings',
       items: [
-        { to: '/settings', icon: Settings, label: 'Admin Settings' },
+        { to: '/admin/settings', icon: Settings, label: 'Admin Settings' },
       ],
     },
   ];
@@ -45,7 +45,7 @@ const Sidebar = () => {
   return (
     <div className="admin-sidebar">
       <div className="sidebar-header">
-        <img src="/f-logo.png" alt="Aadishakti" className="sidebar-logo" />
+        <img src="/logo.png" alt="Aadishakti" className="sidebar-logo" />
         <div className="sidebar-title">CMS Admin</div>
       </div>
 

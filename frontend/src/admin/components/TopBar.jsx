@@ -15,7 +15,7 @@ const TopBar = ({ breadcrumb }) => {
 
       <div className="topbar-actions">
         <a
-          href="http://localhost:5173"
+          href="/"
           target="_blank"
           rel="noopener noreferrer"
           className="view-website-link"

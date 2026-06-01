@@ -18,7 +18,7 @@ const Login = () => {
 
     try {
       await login(credentials);
-      navigate('/dashboard');
+      navigate('/admin/dashboard');
     } catch (err) {
       console.error('Login error:', err);
       showError(err.response?.data?.error || 'Invalid credentials. Please try again.');
@@ -46,7 +46,7 @@ const Login = () => {
       }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <img 
-            src="/f-logo.png" 
+            src="/logo.png" 
             alt="Aadishakti" 
             style={{ height: '48px', marginBottom: '16px' }}
           />

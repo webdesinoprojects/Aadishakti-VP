@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
+import AdminApp from "./admin/AdminApp";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -39,7 +40,13 @@ const PageTransition = ({ children }) => (
 export default function App() {
   const location = useLocation();
 
+  // Check if we're on an admin route
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   useEffect(() => {
+    // Skip intersection observer for admin routes
+    if (isAdminRoute) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -57,7 +64,12 @@ export default function App() {
       observer.observe(el);
     });
     return () => items.forEach((el) => observer.unobserve(el));
-  }, [location.pathname]);
+  }, [location.pathname, isAdminRoute]);
+
+  // Render admin panel without main site layout
+  if (isAdminRoute) {
+    return <AdminApp />;
+  }
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-primary)", color: "var(--text-secondary)" }}>
