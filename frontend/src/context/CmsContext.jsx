@@ -1,4 +1,5 @@
-﻿import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { buildApiUrl } from "../config/api";
 
 const CmsContext = createContext({
   cms: null,
@@ -12,7 +13,7 @@ export function CmsProvider({ children }) {
 
   const refreshCms = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/cms/public");
+      const res = await fetch(buildApiUrl("/api/cms/public"));
       if (!res.ok) throw new Error("Failed to load CMS");
       const data = await res.json();
       setCms(data);
@@ -34,3 +35,5 @@ export function CmsProvider({ children }) {
 export function useCms() {
   return useContext(CmsContext);
 }
+
+

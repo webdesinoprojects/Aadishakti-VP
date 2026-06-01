@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { buildApiUrl } from "../config/api";
 import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
 
 export default function Contact() {
@@ -43,7 +44,7 @@ export default function Contact() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/enquiries", {
+      const response = await fetch(buildApiUrl("/api/enquiries"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -324,3 +325,5 @@ export default function Contact() {
     </section>
   );
 }
+
+

@@ -1,4 +1,5 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
+import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
@@ -41,7 +42,7 @@ export default function Contact() {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/enquiries", {
+      const response = await fetch(buildApiUrl("/api/enquiries"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -620,5 +621,7 @@ export default function Contact() {
     </div>
   );
 }
+
+
 
 

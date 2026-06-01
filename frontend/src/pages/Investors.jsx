@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
@@ -11,7 +12,7 @@ export default function Investors() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/financials")
+    fetch(buildApiUrl("/api/financials"))
       .then((res) => {
         if (!res.ok) throw new Error("Could not fed projection feeds.");
         return res.json();
@@ -161,5 +162,7 @@ export default function Investors() {
     </div>
   );
 }
+
+
 
 

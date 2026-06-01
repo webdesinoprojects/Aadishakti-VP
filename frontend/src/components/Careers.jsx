@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { buildApiUrl } from "../config/api";
 import { Loader2 } from "lucide-react";
 
 export default function Careers() {
@@ -75,7 +76,7 @@ export default function Careers() {
       data.append("description", formData.description);
       data.append("resume", resume);
 
-      const response = await fetch("http://localhost:5000/api/careers", {
+      const response = await fetch(buildApiUrl("/api/careers"), {
         method: "POST",
         body: data,
       });
@@ -376,3 +377,5 @@ export default function Careers() {
     </section>
   );
 }
+
+

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
@@ -83,7 +84,7 @@ export default function Careers() {
       data.append("description", `Applying for ${selectedRole}. ${formData.description}`);
       data.append("resume", resume);
 
-      const response = await fetch("http://localhost:5000/api/careers", {
+      const response = await fetch(buildApiUrl("/api/careers"), {
         method: "POST",
         body: data,
       });
@@ -381,3 +382,5 @@ export default function Careers() {
     </div>
   );
 }
+
+

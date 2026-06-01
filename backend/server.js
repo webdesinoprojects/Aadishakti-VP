@@ -19,9 +19,17 @@ const ADMIN_USER = process.env.ADMIN_USERNAME || process.env.ADMIN_USER || "admi
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const adminSessions = new Map();
 
-// Enable CORS with specific origins to allow credentials
+// Allow CORS from configured frontend origins (comma-separated in FRONTEND_URL)
+const allowedOrigins = (
+  process.env.FRONTEND_URL ||
+  "http://localhost:5174,http://localhost:5173,http://localhost:3000"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const corsOptions = {
-  origin: ['http://localhost:5174', 'http://localhost:5173', 'http://localhost:3000'],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

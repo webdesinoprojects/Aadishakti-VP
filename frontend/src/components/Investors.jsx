@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { buildApiUrl } from "../config/api";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Loader2 } from "lucide-react";
 
@@ -9,7 +10,7 @@ export default function Investors() {
   const [activeTab, setActiveTab] = useState("revenue");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/financials")
+    fetch(buildApiUrl("/api/financials"))
       .then((res) => {
         if (!res.ok) throw new Error("Could not feed projection models.");
         return res.json();
@@ -242,3 +243,5 @@ export default function Investors() {
     </section>
   );
 }
+
+
