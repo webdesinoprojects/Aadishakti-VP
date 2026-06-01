@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1780290159455",
+    "fullName": "Test User",
+    "workEmail": "test@example.com",
+    "phone": "+91-9999999999",
+    "companyName": "Test Metal Industries",
+    "country": "India",
+    "inquiryType": "Product Inquiry",
+    "products": [
+      "Refined Lead Ingots",
+      "Lead Alloys"
+    ],
+    "estimatedQuantity": "25–100 MT",
+    "additionalDetails": "Test enquiry payload",
+    "submittedAt": "2026-06-01T05:02:39.456Z"
+  }
+]

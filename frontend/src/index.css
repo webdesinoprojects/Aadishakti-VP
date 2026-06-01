@@ -1,0 +1,490 @@
+﻿/* ==========================================================================
+   AadiShakti Group - White Corporate Theme Design System
+   ========================================================================== */
+
+:root {
+  /* Backgrounds */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F7F5;
+  --bg-tertiary: #F0EFED;
+  --bg-dark: #111111;
+  --bg-dark-card: #1A1A1A;
+
+  /* Text */
+  --text-primary: #0D0D0D;
+  --text-secondary: #3A3A3A;
+  --text-muted: #7A7A7A;
+  --text-light: #AAAAAA;
+  --text-white: #F5F5F2;
+
+  /* Brand Reds */
+  --red-deep: #8B0000;
+  --red-core: #CC2200;
+  --red-bright: #E8321F;
+  --red-subtle: rgba(204, 34, 0, 0.08);
+  --red-border: rgba(204, 34, 0, 0.2);
+
+  /* Borders */
+  --border-light: #E8E8E6;
+  --border-mid: #D4D4D2;
+  --border-strong: #BBBBBA;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.14);
+  --shadow-red: 0 4px 24px rgba(204, 34, 0, 0.20);
+
+  --gold: #B8963E;
+
+  /* Gradients */
+  --grad-hero: linear-gradient(160deg, #FFFFFF 0%, #F7F7F5 60%, #FFF5F3 100%);
+  --grad-hero-dark-strip: linear-gradient(135deg, #111111 0%, #1A0000 100%);
+  --grad-red: linear-gradient(135deg, #CC2200, #E8321F);
+  --grad-card: linear-gradient(145deg, #FFFFFF, #F7F7F5);
+
+  /* Typography */
+  --font-primary: 'Montserrat', sans-serif;
+  --font-editorial: 'Cormorant Garamond', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --fs-display: clamp(36px, 4.5vw, 64px);
+  --fs-hero: clamp(32px, 4vw, 56px);
+  --fs-h2: clamp(28px, 3vw, 44px);
+  --fs-h3: clamp(18px, 1.8vw, 24px);
+  --fs-lead: clamp(15px, 1.3vw, 18px);
+  --fs-body: clamp(14px, 1.1vw, 16px);
+  --fs-small: 13px;
+  --fs-label: 11px;
+  --fs-mono: 13px;
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --page-gutter: clamp(18px, 4vw, 64px);
+
+  /* Legacy aliases for existing components */
+  --black: var(--bg-primary);
+  --obsidian: var(--bg-primary);
+  --forge: var(--bg-secondary);
+  --iron: var(--bg-tertiary);
+  --steel: var(--border-light);
+  --ash: var(--text-muted);
+  --muted: var(--text-muted);
+  --silver: var(--text-secondary);
+  --light: var(--text-secondary);
+  --white: var(--text-primary);
+  --red-glow: var(--red-subtle);
+  --grad-text: none;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0; }
+
+html, body {
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-primary); color: var(--text-primary); line-height: 1.15; }
+a { color: inherit; text-decoration: none; transition: color var(--transition-fast); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border: 2px solid var(--bg-secondary); }
+::-webkit-scrollbar-thumb:hover { background: var(--red-core); }
+
+.container {
+  width: min(100% - (var(--page-gutter) * 2), 1280px);
+  margin-inline: auto;
+}
+.section-padding { padding: clamp(80px, 10vw, 140px) 0; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+
+@media (max-width: 1024px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; gap: 32px; } }
+@media (max-width: 768px) { :root { --page-gutter: 14px; } }
+
+.corporate-card, .dominance-card, .founder-card, .timeline-item {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--red-core);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  position: relative;
+}
+.corporate-card:hover, .dominance-card:hover, .founder-card:hover, .timeline-item:hover {
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--red-bright);
+  transform: translateY(-3px);
+}
+
+.spec-terminal-table {
+  width: 100%; border-collapse: collapse; margin-top: 1.5rem; background: #fff;
+  border: 1px solid var(--border-light);
+}
+.spec-terminal-table thead tr { background: var(--bg-secondary); border-bottom: 2px solid var(--red-core); }
+.spec-terminal-table th {
+  font-family: var(--font-primary); font-weight: 600; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--text-primary); padding: 14px 20px; text-align: left;
+}
+.spec-terminal-table td {
+  padding: 13px 20px; border-bottom: 1px solid var(--border-light);
+  font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary);
+}
+.spec-terminal-table tr:nth-child(even) td { background: var(--bg-tertiary); }
+.spec-terminal-table tr:hover td { background: var(--red-subtle); }
+.spec-terminal-table td.property-name { font-family: var(--font-primary); font-weight: 600; color: var(--text-primary); }
+
+.float-form-control {
+  width: 100%; background: #fff !important; border: 1px solid var(--border-mid); color: var(--text-primary);
+  padding: 13px 16px; font-family: var(--font-primary); font-size: 14px; outline: none; transition: all var(--transition-fast);
+}
+.float-form-control:focus { border-color: var(--red-core); box-shadow: 0 0 0 3px var(--red-subtle); }
+.float-form-label {
+  display: block; position: static; margin-bottom: 6px; font-family: var(--font-primary); font-weight: 600;
+  font-size: 12px; letter-spacing: 0.08em; color: var(--text-secondary); text-transform: uppercase;
+}
+.float-form-group { margin-bottom: 1rem; }
+
+.btn-solid-red {
+  display: inline-flex; align-items: center; justify-content: center; background: var(--red-core); color: #fff;
+  font-family: var(--font-primary); font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  border: none; height: 52px; padding: 0 28px; cursor: pointer; border-radius: 2px; transition: all 0.25s ease;
+}
+.btn-solid-red:hover { background: var(--red-bright); box-shadow: var(--shadow-red); }
+
+.btn-ghost-steel {
+  display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--text-primary);
+  font-family: var(--font-primary); font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1.5px solid var(--border-strong); height: 44px; padding: 0 24px; cursor: pointer; border-radius: 2px; transition: all var(--transition-fast);
+}
+.btn-ghost-steel:hover { border-color: var(--red-core); color: var(--red-core); }
+
+.about-founder-quote { font-family: var(--font-editorial); font-style: italic; font-size: 17px; color: var(--text-muted); line-height: 1.5; }
+.about-timeline-list { display: flex; overflow-x: auto; gap: 32px; padding: 24px 0; scrollbar-width: thin; }
+
+.section-title-large { font-size: var(--fs-h2); font-weight: 800; line-height: 1.2; color: var(--text-primary); }
+
+.recharts-tooltip-wrapper { font-family: var(--font-primary) !important; }
+
+@media (max-width: 768px) { .corporate-card { padding: 24px; } }
+
+/* ==========================================================================
+   GLASSMORPHISM UTILITIES
+   ========================================================================== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.glass-card-dark {
+  background: rgba(10, 10, 10, 0.45);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.30);
+}
+
+/* ==========================================================================
+   BACKGROUND PATTERNS
+   ========================================================================== */
+.bg-steel-grid {
+  background-color: var(--bg-secondary);
+  background-image:
+    linear-gradient(rgba(204,34,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(204,34,0,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-diagonal-hatch {
+  background-color: var(--bg-secondary);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(0,0,0,0.018) 8px,
+    rgba(0,0,0,0.018) 9px
+  );
+}
+
+/* ==========================================================================
+   ANNOUNCEMENT BAR — NAVBAR OFFSET
+   ========================================================================== */
+body.bar-visible .top-nav { top: 36px; }
+
+/* ==========================================================================
+   MARQUEE ANIMATIONS
+   ========================================================================== */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.clients-marquee-inner {
+  display: inline-flex;
+  animation: marquee-left 28s linear infinite;
+  width: max-content;
+}
+
+.clients-marquee-wrap:hover .clients-marquee-inner {
+  animation-play-state: paused;
+}
+
+/* ==========================================================================
+   HERO — GLASS CERT CARD
+   ========================================================================== */
+.hero-glass-card {
+  position: absolute;
+  bottom: 188px;
+  right: clamp(60px, 8vw, 180px);
+  width: 256px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 8px;
+  padding: 22px 26px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+  z-index: 5;
+}
+.hero-glass-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+.hero-glass-row:last-child { border-bottom: none; }
+
+@media (max-width: 960px) { .hero-glass-card { display: none; } }
+
+/* ==========================================================================
+   ENTITY CARDS (Businesses / Home)
+   ========================================================================== */
+.entity-card {
+  position: relative;
+  overflow: hidden;
+  height: 420px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.entity-card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.entity-card:hover .entity-card-bg { transform: scale(1.04); }
+
+.entity-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,10,10,0.62);
+  transition: background 0.3s ease;
+  z-index: 1;
+}
+
+.entity-card:hover .entity-card-overlay { background: rgba(10,10,10,0.48); }
+
+.entity-card-glass {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  background: rgba(8, 8, 8, 0.42);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding: 28px 32px;
+  transition: transform 0.3s ease;
+}
+
+.entity-card:hover .entity-card-glass { transform: translateY(-4px); }
+
+/* ==========================================================================
+   CORE STRENGTHS GRID
+   ========================================================================== */
+.strength-item {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--red-core);
+  padding: 26px 28px;
+  transition: all var(--transition-normal);
+}
+.strength-item:hover {
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--red-bright);
+  transform: translateY(-3px);
+}
+
+/* ==========================================================================
+   PRODUCT TEASER CARDS
+   ========================================================================== */
+.product-teaser-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+.product-teaser-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+.product-teaser-card .pt-img {
+  transition: transform 0.4s ease;
+}
+.product-teaser-card:hover .pt-img { transform: scale(1.04); }
+
+/* ==========================================================================
+   CERTIFICATION CARDS
+   ========================================================================== */
+.cert-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-top: 3px solid var(--red-core);
+  padding: 28px 20px;
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+.cert-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   MEGA DROPDOWN — COMPANY NAV
+   ========================================================================== */
+.mega-dropdown {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: -80px;
+  width: 520px;
+  background: #FFFFFF;
+  border-top: 2px solid var(--red-core);
+  border: 1px solid var(--border-light);
+  border-top: 2px solid var(--red-core);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  display: none;
+  grid-template-columns: 1fr 200px;
+  z-index: 900;
+}
+.mega-dropdown.open {
+  display: grid;
+  animation: fadeSlideDown 0.2s ease;
+}
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.mega-left { padding: 16px 0; }
+.mega-right {
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-light);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mega-right img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   HERO WHITE OVERLAY VARIANT
+   ========================================================================== */
+.hero-overlay-white {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgba(255,255,255,0.97) 0%,
+    rgba(255,255,255,0.92) 32%,
+    rgba(255,255,255,0.45) 58%,
+    rgba(255,255,255,0.08) 100%
+  );
+  z-index: 2;
+}
+
+/* Announcement bar — PageHero offset */
+body.bar-visible .page-hero { padding-top: 196px; }
+
+/* ==========================================================================
+   DARK PHOTO SECTION
+   ========================================================================== */
+.dark-photo-section {
+  position: relative;
+  overflow: hidden;
+}
+.dark-photo-section .dps-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.38) saturate(0.8);
+}
+.dark-photo-section .dps-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   STATS STRIP (RED)
+   ========================================================================== */
+.stats-strip-item {
+  text-align: center;
+  padding: 0 20px;
+  border-right: 1px solid rgba(255,255,255,0.18);
+}
+.stats-strip-item:last-child { border-right: none; }
+
+@media (max-width: 768px) {
+  .stats-strip-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.18); padding: 20px 0; }
+  .stats-strip-item:last-child { border-bottom: none; }
+}
+
+/* ==========================================================================
+   PRODUCT PHOTO BAND
+   ========================================================================== */
+.product-photo-band {
+  display: grid;
+  grid-template-columns: 40% 60%;
+  min-height: 280px;
+  overflow: hidden;
+}
+@media (max-width: 768px) {
+  .product-photo-band { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   SOURCING TABLE
+   ========================================================================== */
+.sourcing-table { width: 100%; border-collapse: collapse; }
+.sourcing-table th {
+  font-family: var(--font-primary); font-weight: 700; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-primary);
+  padding: 14px 20px; text-align: left;
+  background: var(--bg-secondary); border-bottom: 2px solid var(--red-core);
+}
+.sourcing-table td {
+  padding: 13px 20px; border-bottom: 1px solid var(--border-light);
+  font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary);
+}
+.sourcing-table tr:hover td { background: var(--red-subtle); }

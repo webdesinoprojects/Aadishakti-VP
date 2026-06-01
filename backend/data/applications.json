@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1780290960731",
+    "fullName": "Jane Doe",
+    "email": "jane@example.com",
+    "phone": "+91-8888888888",
+    "roleCategory": "Office",
+    "experience": "4",
+    "description": "Applying for Logistics Coordinator role",
+    "resumePath": "/uploads/resume-1780290960725-906372816.pdf",
+    "resumeOriginalName": "mock_resume.pdf",
+    "submittedAt": "2026-06-01T05:16:00.732Z"
+  }
+]
