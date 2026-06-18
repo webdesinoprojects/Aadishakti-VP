@@ -1,0 +1,319 @@
+{
+  "orders": [
+    {
+      "id": "ASPL/ORD/24-25/1256",
+      "date": "15 May 2024",
+      "status": "Delivered",
+      "amount": 2845600,
+      "product": "Pure Lead 99.97%",
+      "quantity": "100 MT",
+      "price": "2,60,000 / MT",
+      "gst": "4,68,000",
+      "history": [
+        {
+          "status": "Order Confirmed",
+          "date": "15 May 2024"
+        },
+        {
+          "status": "In Production",
+          "date": "16 May 2024"
+        },
+        {
+          "status": "Dispatched",
+          "date": "18 May 2024"
+        },
+        {
+          "status": "In Transit",
+          "date": "19 May 2024"
+        },
+        {
+          "status": "Delivered",
+          "date": "20 May 2024"
+        }
+      ],
+      "shipments": [
+        {
+          "id": "ASPL/SHIP/24-25/2077",
+          "date": "18 May 2024",
+          "quantity": "60 MT",
+          "status": "Delivered"
+        },
+        {
+          "id": "ASPL/SHIP/24-25/2078",
+          "date": "19 May 2024",
+          "quantity": "40 MT",
+          "status": "Delivered"
+        }
+      ],
+      "documents": [
+        {
+          "name": "COA - ASPL/SHIP/24-25/2077.pdf",
+          "date": "12 May 2024"
+        },
+        {
+          "name": "Invoice - INV/24-25/5561.pdf",
+          "date": "12 May 2024"
+        },
+        {
+          "name": "E-Way Bill - 7412 5689 1234.pdf",
+          "date": "12 May 2024"
+        }
+      ],
+      "invoices": [
+        {
+          "id": "INV/24-25/5561",
+          "amount": 2845600,
+          "status": "Paid"
+        }
+      ],
+      "payments": [
+        {
+          "id": "PAY-9921",
+          "amount": 2845600,
+          "date": "22 May 2024"
+        }
+      ]
+    },
+    {
+      "id": "ASPL/ORD/24-25/1189",
+      "date": "28 Apr 2024",
+      "status": "In Transit",
+      "amount": 1976800,
+      "product": "Lead Alloys",
+      "quantity": "65 MT",
+      "price": "2,80,000 / MT",
+      "gst": "3,27,600",
+      "history": [
+        {
+          "status": "Order Confirmed",
+          "date": "28 Apr 2024"
+        },
+        {
+          "status": "In Production",
+          "date": "02 May 2024"
+        },
+        {
+          "status": "Dispatched",
+          "date": "05 May 2024"
+        },
+        {
+          "status": "In Transit",
+          "date": "06 May 2024"
+        }
+      ],
+      "shipments": [
+        {
+          "id": "ASPL/SHIP/24-25/1988",
+          "date": "05 May 2024",
+          "quantity": "65 MT",
+          "status": "In Transit"
+        }
+      ],
+      "documents": [
+        {
+          "name": "Invoice - INV/24-25/4992.pdf",
+          "date": "05 May 2024"
+        }
+      ],
+      "invoices": [],
+      "payments": []
+    },
+    {
+      "id": "ASPL/ORD/24-25/1123",
+      "date": "10 Apr 2024",
+      "status": "Confirmed",
+      "amount": 1134500,
+      "product": "Red Lead Oxide",
+      "quantity": "40 MT",
+      "price": "2,40,000 / MT",
+      "gst": "1,72,800",
+      "history": [
+        {
+          "status": "Order Confirmed",
+          "date": "10 Apr 2024"
+        }
+      ],
+      "shipments": [],
+      "documents": [],
+      "invoices": [],
+      "payments": []
+    },
+    {
+      "id": "ASPL/ORD/24-25/1055",
+      "date": "25 Mar 2024",
+      "status": "Delivered",
+      "amount": 2167200,
+      "product": "Grey Lead Oxide",
+      "quantity": "80 MT",
+      "price": "2,30,000 / MT",
+      "gst": "3,31,200",
+      "history": [
+        {
+          "status": "Order Confirmed",
+          "date": "25 Mar 2024"
+        },
+        {
+          "status": "In Production",
+          "date": "28 Mar 2024"
+        },
+        {
+          "status": "Dispatched",
+          "date": "30 Mar 2024"
+        },
+        {
+          "status": "In Transit",
+          "date": "31 Mar 2024"
+        },
+        {
+          "status": "Delivered",
+          "date": "02 Apr 2024"
+        }
+      ],
+      "shipments": [],
+      "documents": [],
+      "invoices": [],
+      "payments": []
+    },
+    {
+      "id": "ASPL/ORD/24-25/0988",
+      "date": "12 Mar 2024",
+      "status": "Cancelled",
+      "amount": 756000,
+      "product": "Pure Lead 99.97%",
+      "quantity": "25 MT",
+      "price": "2,60,000 / MT",
+      "gst": "1,17,000",
+      "history": [
+        {
+          "status": "Order Confirmed",
+          "date": "12 Mar 2024"
+        }
+      ],
+      "shipments": [],
+      "documents": [],
+      "invoices": [],
+      "payments": []
+    }
+  ],
+  "tracking": [
+    {
+      "id": "ASPL/SHIP/24-25/2077",
+      "status": "In Transit",
+      "origin": "Mumbai Port, MH",
+      "destination": "Mundra Port, GJ",
+      "eta": "25 May 2024",
+      "deliveredOn": null
+    },
+    {
+      "id": "ASPL/SHIP/24-25/1988",
+      "status": "Delivered",
+      "origin": "Mundra Port, GJ",
+      "destination": "Roorkee, UK",
+      "eta": "14 May 2024",
+      "deliveredOn": "14 May 2024"
+    }
+  ],
+  "documents": [
+    {
+      "name": "COA - ASPL/SHIP/24-25/2077.pdf",
+      "date": "12 May 2024"
+    },
+    {
+      "name": "Invoice - INV/24-25/5561.pdf",
+      "date": "12 May 2024"
+    },
+    {
+      "name": "E-Way Bill - 7412 5689 1234.pdf",
+      "date": "12 May 2024"
+    }
+  ],
+  "kpis": {
+    "totalOrders": 12,
+    "inTransitShipments": 8,
+    "pendingInvoices": 5,
+    "documentsCount": 3
+  },
+  "invoices": [
+    {
+      "id": "INV/24-25/5561",
+      "orderId": "ASPL/ORD/24-25/1256",
+      "date": "12 May 2024",
+      "amount": 2845600,
+      "status": "Paid"
+    },
+    {
+      "id": "INV/24-25/4992",
+      "orderId": "ASPL/ORD/24-25/1189",
+      "date": "05 May 2024",
+      "amount": 1976800,
+      "status": "Pending"
+    },
+    {
+      "id": "INV/24-25/4111",
+      "orderId": "ASPL/ORD/24-25/1123",
+      "date": "10 Apr 2024",
+      "amount": 1134500,
+      "status": "Overdue"
+    }
+  ],
+  "payments": [
+    {
+      "id": "PAY-9921",
+      "invoiceId": "INV/24-25/5561",
+      "date": "22 May 2024",
+      "amount": 2845600,
+      "method": "Bank Transfer",
+      "status": "Completed"
+    },
+    {
+      "id": "PAY-8832",
+      "invoiceId": "INV/24-25/3321",
+      "date": "01 Apr 2024",
+      "amount": 2167200,
+      "method": "NEFT",
+      "status": "Completed"
+    }
+  ],
+  "quality": [
+    {
+      "id": "QC-2077",
+      "batch": "B-9982",
+      "product": "Pure Lead 99.97%",
+      "date": "10 May 2024",
+      "status": "Passed",
+      "file": "COA-B-9982.pdf"
+    },
+    {
+      "id": "QC-1988",
+      "batch": "B-9971",
+      "product": "Lead Alloys",
+      "date": "02 May 2024",
+      "status": "Passed",
+      "file": "COA-B-9971.pdf"
+    }
+  ],
+  "returns": [
+    {
+      "id": "RET-101",
+      "orderId": "ASPL/ORD/24-25/0988",
+      "date": "15 Mar 2024",
+      "reason": "Damaged in transit",
+      "status": "Processed",
+      "amount": 756000
+    }
+  ],
+  "support": [
+    {
+      "id": "TKT-559",
+      "subject": "Delay in Shipment 1988",
+      "date": "06 May 2024",
+      "status": "Resolved"
+    },
+    {
+      "id": "TKT-602",
+      "subject": "Request for updated COA",
+      "date": "20 May 2024",
+      "status": "Open"
+    }
+  ]
+}

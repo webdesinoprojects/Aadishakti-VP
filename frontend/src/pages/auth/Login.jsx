@@ -4,35 +4,68 @@ import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [vendorCode, setVendorCode] = useState('');
+  const [tab, setTab] = useState('customer'); // 'customer' or 'vendor'
+  const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (!vendorCode || !password) {
-      setError('Please enter Vendor Code and Password.');
+    if (!code || !password) {
+      setError('Please enter your ID and Password.');
       return;
     }
     
-    // Mock authentication check
-    if (vendorCode === 'VEN10234' && password === 'password') {
-      localStorage.setItem('vendor_session', JSON.stringify({ vendorCode: 'VEN10234', name: 'Shree Metal Traders' }));
-      navigate('/vendor/dashboard');
+    if (tab === 'vendor') {
+      if (code === 'VEN10234' && password === 'password') {
+        localStorage.setItem('vendor_session', JSON.stringify({ vendorCode: 'VEN10234', name: 'Shree Metal Traders' }));
+        navigate('/vendor/dashboard');
+      } else {
+        setError('Invalid Vendor Code or Password.');
+      }
     } else {
-      setError('Invalid Vendor Code or Password.');
+      if (code === 'CUST992' && password === 'password') {
+        localStorage.setItem('customer_session', JSON.stringify({ customerId: 'CUST992', name: 'ABC Batteries Pvt. Ltd.' }));
+        navigate('/customer/dashboard');
+      } else {
+        setError('Invalid Customer ID or Password. (Hint: CUST992 / password)');
+      }
     }
   };
 
   return (
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
       <div className="corporate-card" style={{ maxWidth: '400px', width: '100%', padding: '40px', background: '#fff' }}>
-        <h2 style={{ fontFamily: 'var(--font-primary)', fontWeight: '800', fontSize: '24px', color: 'var(--text-primary)', textAlign: 'center', marginBottom: '10px' }}>
-          VENDOR PORTAL
-        </h2>
+        
+        {/* Toggle */}
+        <div style={{ display: 'flex', borderBottom: '2px solid #eee', marginBottom: '24px' }}>
+          <button 
+            onClick={() => { setTab('customer'); setError(''); setCode(''); setPassword(''); }}
+            style={{ 
+              flex: 1, padding: '12px', background: 'none', border: 'none', 
+              borderBottom: tab === 'customer' ? '2px solid var(--red-core)' : '2px solid transparent',
+              color: tab === 'customer' ? 'var(--red-core)' : 'var(--text-muted)',
+              fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-2px'
+            }}
+          >
+            CUSTOMER LOGIN
+          </button>
+          <button 
+            onClick={() => { setTab('vendor'); setError(''); setCode(''); setPassword(''); }}
+            style={{ 
+              flex: 1, padding: '12px', background: 'none', border: 'none', 
+              borderBottom: tab === 'vendor' ? '2px solid var(--red-core)' : '2px solid transparent',
+              color: tab === 'vendor' ? 'var(--red-core)' : 'var(--text-muted)',
+              fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-2px'
+            }}
+          >
+            VENDOR LOGIN
+          </button>
+        </div>
+
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '30px' }}>
-          Secure access for Aadishakti supply partners.
+          {tab === 'customer' ? 'Secure access to your orders, shipments, and documents.' : 'Secure access for Aadishakti supply partners.'}
         </p>
 
         {error && (
@@ -48,10 +81,10 @@ export default function Login() {
               required
               placeholder=" "
               className="float-form-control"
-              value={vendorCode}
-              onChange={(e) => setVendorCode(e.target.value)}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
             />
-            <label className="float-form-label">Vendor Code / Email</label>
+            <label className="float-form-label">{tab === 'customer' ? 'Customer ID / Email' : 'Vendor Code / Email'}</label>
           </div>
 
           <div className="float-form-group">
@@ -69,18 +102,9 @@ export default function Login() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)',
+                  padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -95,7 +119,7 @@ export default function Login() {
         </form>
 
         <div style={{ marginTop: '30px', textAlign: 'center', fontSize: '13px', color: 'var(--text-muted)' }}>
-          <p style={{ marginBottom: '10px' }}>New Vendor? <Link to="/register" style={{ color: 'var(--red-core)', fontWeight: '600', textDecoration: 'none' }}>Register Here</Link></p>
+          {tab === 'vendor' && <p style={{ marginBottom: '10px' }}>New Vendor? <Link to="/register" style={{ color: 'var(--red-core)', fontWeight: '600', textDecoration: 'none' }}>Register Here</Link></p>}
           <p>Protected by EisenVault 256-bit encryption.</p>
         </div>
       </div>

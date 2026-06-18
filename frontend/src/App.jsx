@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import AdminApp from "./admin/AdminApp";
 import VendorApp from "./vendor/VendorApp";
+import CustomerApp from "./customer/CustomerApp";
 
 import Login from "./pages/auth/Login";
 import VendorRegister from "./pages/auth/VendorRegister";
@@ -50,6 +51,7 @@ export default function App() {
   // Check if we're on an admin route
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isVendorRoute = location.pathname.startsWith('/vendor');
+  const isCustomerRoute = location.pathname.startsWith('/customer');
   const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
 
   useEffect(() => {
@@ -83,6 +85,11 @@ export default function App() {
   // Render vendor portal without main site layout
   if (isVendorRoute) {
     return <VendorApp />;
+  }
+
+  // Render customer portal without main site layout
+  if (isCustomerRoute) {
+    return <CustomerApp />;
   }
 
   // Render auth routes without main site layout

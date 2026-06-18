@@ -1,3 +1,14 @@
 Shareable
 shareable
 developer/
+
+# Environment Variables
+.env
+.env.*
+
+# Node
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+.DS_Store
