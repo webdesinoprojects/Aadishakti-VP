@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState } from 'react';
 import { X, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
 
@@ -15,6 +16,7 @@ export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
   const addToast = (message, type = 'info') => {
+    // eslint-disable-next-line react-hooks/purity
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
     

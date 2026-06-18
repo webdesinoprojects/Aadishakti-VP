@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import SectionLabel from "../components/SectionLabel";
@@ -126,11 +126,14 @@ export default function Home() {
   const liveHeroSlides = cms?.home?.heroSlides?.length ? cms.home.heroSlides : heroSlides;
   const [activeSlide, setActiveSlide] = useState(0);
 
-  useEffect(() => {
+  const [prevSlidesLength, setPrevSlidesLength] = useState(liveHeroSlides.length);
+
+  if (liveHeroSlides.length !== prevSlidesLength) {
+    setPrevSlidesLength(liveHeroSlides.length);
     if (activeSlide >= liveHeroSlides.length) {
       setActiveSlide(0);
     }
-  }, [activeSlide, liveHeroSlides.length]);
+  }
 
   useEffect(() => {
     const timer = setInterval(() => setActiveSlide((p) => (p + 1) % liveHeroSlides.length), 5500);
@@ -520,7 +523,7 @@ export default function Home() {
         <div className="container">
           <ScrollReveal>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0" }}>
-              {statsStrip.map((s, i) => (
+              {statsStrip.map((s) => (
                 <div key={s.label} className="stats-strip-item">
                   <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(36px, 4vw, 56px)", color: "#FFFFFF", lineHeight: 1 }}>
                     <AnimatedNumber value={s.num} suffix={s.suffix} />

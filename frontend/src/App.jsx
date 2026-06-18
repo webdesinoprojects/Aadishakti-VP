@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -6,6 +6,10 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import AdminApp from "./admin/AdminApp";
+import VendorApp from "./vendor/VendorApp";
+
+import Login from "./pages/auth/Login";
+import VendorRegister from "./pages/auth/VendorRegister";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -16,6 +20,9 @@ import Investors from "./pages/Investors";
 import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
 import Sourcing from "./pages/Sourcing";
+import Import from "./pages/Import";
+import Media from "./pages/Media";
+import Gallery from "./pages/Gallery";
 
 function ScrollToTop() {
   const { pathname, search } = useLocation();
@@ -42,6 +49,8 @@ export default function App() {
 
   // Check if we're on an admin route
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isVendorRoute = location.pathname.startsWith('/vendor');
+  const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
 
   useEffect(() => {
     // Skip intersection observer for admin routes
@@ -71,6 +80,21 @@ export default function App() {
     return <AdminApp />;
   }
 
+  // Render vendor portal without main site layout
+  if (isVendorRoute) {
+    return <VendorApp />;
+  }
+
+  // Render auth routes without main site layout
+  if (isAuthRoute) {
+    return (
+      <Routes location={location} key={location.pathname}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<VendorRegister />} />
+      </Routes>
+    );
+  }
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-primary)", color: "var(--text-secondary)" }}>
       <ScrollToTop />
@@ -88,6 +112,9 @@ export default function App() {
             <Route path="/investors" element={<PageTransition><Investors /></PageTransition>} />
             <Route path="/careers" element={<PageTransition><Careers /></PageTransition>} />
             <Route path="/sourcing" element={<PageTransition><Sourcing /></PageTransition>} />
+            <Route path="/import" element={<PageTransition><Import /></PageTransition>} />
+            <Route path="/media" element={<PageTransition><Media /></PageTransition>} />
+            <Route path="/gallery" element={<PageTransition><Gallery /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
           </Routes>
         </AnimatePresence>

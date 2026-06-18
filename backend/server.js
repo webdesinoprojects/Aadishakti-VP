@@ -785,6 +785,69 @@ app.post("/api/careers", upload.single("resume"), async (req, res) => {
   }
 });
 
+
+// --- AI Chat Assistant Endpoint ---
+app.post("/api/vendor/chat", async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: "Message is required" });
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey === "your_api_key_here") {
+      return res.status(500).json({ error: "Gemini API key is not configured on the server." });
+    }
+
+    const dataPath = path.join(__dirname, "data", "vendor.json");
+    let vendorData = {};
+    try {
+      const dataContent = await fs.readFile(dataPath, "utf-8");
+      vendorData = JSON.parse(dataContent);
+    } catch (e) {
+      console.warn("Could not read vendor.json for AI context");
+    }
+
+    const systemPrompt = `You are Aadishakti's vendor assistant.
+Only answer questions related to this vendor's portal: RFQs, purchase orders, invoices, payments, GRN, documents, registration and general vendor processes.
+Do not answer anything unrelated to vendor operations.
+
+Here is the current vendor's data for context:
+${JSON.stringify(vendorData, null, 2)}
+`;
+
+    const requestBody = {
+      system_instruction: {
+        parts: { text: systemPrompt }
+      },
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: message }]
+        }
+      ]
+    };
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Gemini API Error:", errText);
+      throw new Error(`Gemini API Error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const replyText = result?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I could not generate a response.";
+
+    res.json({ reply: replyText });
+  } catch (error) {
+    console.error("Error in /api/vendor/chat:", error);
+    res.status(500).json({ error: "Failed to communicate with AI assistant." });
+  }
+});
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date() });

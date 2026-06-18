@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
-import ScrollReveal from "../components/ScrollReveal";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from "recharts";
-import { Loader2, ArrowUpRight, ShieldCheck } from "lucide-react";
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from "recharts";
+import { Loader2, ShieldCheck } from "lucide-react";
 
 export default function Investors() {
   const [data, setData] = useState(null);

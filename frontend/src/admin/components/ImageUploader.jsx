@@ -1,12 +1,12 @@
 import { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { X, Image as ImageIcon } from 'lucide-react';
 import { uploadAPI } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 
 const ImageUploader = ({ 
   currentImage, 
+  onRemove,
   onUpload, 
-  onRemove, 
   accept = 'image/*',
   maxSizeMB = 5,
   circular = false 

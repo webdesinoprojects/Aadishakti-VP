@@ -18,6 +18,9 @@ export default function NewsManager() {
     } catch { error('Failed to load news'); }
   };
 
+  
+
+  // eslint-disable-next-line
   useEffect(() => { load(); }, []);
 
   const add = async () => {

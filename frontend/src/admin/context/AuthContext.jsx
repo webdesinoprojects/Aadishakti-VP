@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../utils/api';
 
@@ -15,10 +16,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
     const token = localStorage.getItem('admin_token');
     if (!token) {
@@ -29,13 +26,18 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.verify();
       setUser(response.data.admin);
-    } catch (error) {
+    } catch {
       localStorage.removeItem('admin_token');
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    checkAuth();
+  }, []);
 
   const login = async (credentials) => {
     const response = await authAPI.login(credentials);
@@ -48,8 +50,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authAPI.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch {
+      console.error('Logout error');
     } finally {
       localStorage.removeItem('admin_token');
       setUser(null);

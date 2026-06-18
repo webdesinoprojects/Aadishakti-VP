@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-export default function Header({ activeSection, setActiveSection, darkMode, setDarkMode }) {
+export default function Header({ activeSection, setActiveSection }) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 

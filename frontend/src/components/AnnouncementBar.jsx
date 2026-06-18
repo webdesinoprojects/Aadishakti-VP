@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const BAR_TEXT =
   "ISO 9001:2015 Certified  ·  BIS Approved Pure Lead  ·  50,000 MT Annual Capacity  ·  " +
@@ -79,7 +79,7 @@ export default function AnnouncementBar() {
       <button
         type="button"
         onClick={() => {
-          try { localStorage.setItem("announceDismissed", "true"); } catch {}
+          try { localStorage.setItem("announceDismissed", "true"); } catch { /* ignore */ }
           setVisible(false);
         }}
         aria-label="Dismiss announcement bar"

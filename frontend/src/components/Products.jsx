@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Download } from "lucide-react";
+import { useState } from "react";
 
 export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState("pure");

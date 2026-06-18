@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, Download, Eye, Archive, Trash2, X } from 'lucide-react';
 import { format } from 'date-fns';
 import TopBar from '../../components/TopBar';
@@ -18,15 +18,8 @@ const EnquiriesManager = () => {
   });
   const { success, error } = useToast();
 
-  useEffect(() => {
-    loadEnquiries();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [enquiries, filters]);
-
-  const loadEnquiries = async () => {
+  
+  const loadEnquiries = useCallback(async () => {
     try {
       const response = await crmAPI.getEnquiries({});
       setEnquiries(response.data);
@@ -36,9 +29,14 @@ const EnquiriesManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
 
-  const applyFilters = () => {
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadEnquiries();
+  }, [loadEnquiries]);
+
+  const applyFilters = useCallback(() => {
     let filtered = [...enquiries];
 
     if (filters.status !== 'All') {
@@ -56,9 +54,14 @@ const EnquiriesManager = () => {
     }
 
     setFilteredEnquiries(filtered);
-  };
+  }, [enquiries, filters]);
 
-  const updateStatus = async (id, newStatus) => {
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    applyFilters();
+  }, [applyFilters]);
+
+  async function updateStatus(id, newStatus) {
     try {
       await crmAPI.updateEnquiry(id, { status: newStatus });
       setEnquiries((prev) =>

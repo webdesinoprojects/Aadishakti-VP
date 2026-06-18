@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import TopBar from '../../components/TopBar';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -21,11 +21,9 @@ const ProductsManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { success, error } = useToast();
 
-  useEffect(() => {
-    loadProducts();
-  }, []);
 
-  const loadProducts = async () => {
+
+  const loadProducts = useCallback(async () => {
     try {
       const response = await cmsAPI.getProducts();
       setProducts(response.data || []);
@@ -35,7 +33,12 @@ const ProductsManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadProducts();
+  }, [loadProducts]);
 
   const handleSave = async () => {
     if (!formData.name.trim()) {

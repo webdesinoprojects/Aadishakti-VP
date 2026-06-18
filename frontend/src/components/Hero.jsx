@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 
 export default function Hero({ setActiveSection }) {
   const [capacity, setCapacity] = useState(0);
   const [years, setYears] = useState(0);
-  const [revenue, setRevenue] = useState(0);
-
+  
   // easeOutExpo counting animation
   useEffect(() => {
     let startTimestamp = null;
@@ -20,7 +19,7 @@ export default function Hero({ setActiveSection }) {
 
       setCapacity(Math.floor(easeMultiplier * 70));
       setYears(Math.floor(easeMultiplier * 29));
-      setRevenue(Math.floor(easeMultiplier * 1200));
+      
 
       if (progress < 1) {
         window.requestAnimationFrame(step);
@@ -48,13 +47,13 @@ export default function Hero({ setActiveSection }) {
   };
 
   // Generate 20 lead pellets drifting upward
-  const particles = Array.from({ length: 20 }, (_, i) => ({
+  const [particles] = useState(() => Array.from({ length: 20 }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     delay: `${Math.random() * 5}s`,
     duration: `${6 + Math.random() * 8}s`,
     size: `${3 + Math.random() * 4}px`,
-  }));
+  })));
 
   return (
     <section

@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
-import ScrollReveal from "../components/ScrollReveal";
 import { Loader2 } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useCms } from "../context/CmsContext";
 
 export default function Careers() {
-  const [activeTab, setActiveTab] = useState("factory");
+  const { cms } = useCms();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Parse URL query parameters
+  const searchParams = new URLSearchParams(location.search);
+  const activeJobId = searchParams.get("job");
+  const activeCategory = searchParams.get("category") || "factory";
+
   const [showModal, setShowModal] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
   const [formData, setFormData] = useState({
@@ -20,39 +29,43 @@ export default function Careers() {
   const [submitting, setSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
-  const factoryJobs = [
-    {
-      title: "Lead Smelting Plant Operator",
-      location: "MUNDRA PLANT, GUJARAT",
-      dept: "Operations",
-      exp: "3–5 Years in Smelting",
-      desc: "Supervise furnace operations, manage molten metal pouring, monitor draft systems, and maintain strict industrial safety standards.",
-    },
-    {
-      title: "Metallurgical Laboratory Chemist",
-      location: "ROORKEE PLANT, UTTARAKHAND",
-      dept: "Quality Control",
-      exp: "2–4 Years in Non-Ferrous Lab",
-      desc: "Conduct high-precision sample analysis on raw lead feed and refined ingots using Optical Emission Spectrometers (OES) to verify purity.",
-    },
-  ];
+  // Fallback Mock Data
+  const defaultCareersData = {
+    categories: [
+      { id: "factory", name: "Factory" },
+      { id: "office", name: "Office" }
+    ],
+    jobs: [
+      {
+        id: "lead-smelting-operator",
+        category: "factory",
+        title: "Lead Smelting Plant Operator",
+        location: "MUNDRA PLANT, GUJARAT",
+        dept: "Operations",
+        exp: "3–5 Years in Smelting",
+        desc: "Supervise furnace operations, manage molten metal pouring, monitor draft systems, and maintain strict industrial safety standards.",
+        whyWorkHere: "Working at our Mundra plant gives you hands-on experience with world-class rotary furnaces. We prioritize safety and continuous skill development.",
+        img: "/gallery/plants/Mundra/Rotary_1.jpeg"
+      },
+      {
+        id: "senior-industrial-accountant",
+        category: "office",
+        title: "Senior Industrial Accountant",
+        location: "NEW DELHI CORPORATE OFFICE",
+        dept: "Finance",
+        exp: "4–6 Years in Manufacturing Accounts",
+        desc: "Manage GST documentation, customs clearance reports for scrap vessels, vendor reconciliations, and routine ledger audits.",
+        whyWorkHere: "Join a dynamic finance team at our New Delhi headquarters with exposure to international trade and bulk commodity accounting.",
+        img: "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg"
+      }
+    ]
+  };
 
-  const officeJobs = [
-    {
-      title: "Senior Industrial Accountant",
-      location: "NEW DELHI CORPORATE OFFICE",
-      dept: "Finance",
-      exp: "4–6 Years in Manufacturing Accounts",
-      desc: "Manage GST documentation, customs clearance reports for scrap vessels, vendor reconciliations, and routine ledger audits.",
-    },
-    {
-      title: "Logistics & Customs Coordinator",
-      location: "NEW DELHI CORPORATE OFFICE",
-      dept: "Exim Operations",
-      exp: "2–4 Years in Import/Export Operations",
-      desc: "Coordinate with shipping lines, manage transboundary container tracking, prepare customs files, and ensure prompt Mundra Port clearance.",
-    },
-  ];
+  const careersData = cms?.careersData || defaultCareersData;
+  const currentJobs = careersData.jobs.filter(j => j.category === activeCategory);
+  
+  // Detail View Active Job
+  const activeJob = activeJobId ? careersData.jobs.find(j => j.id === activeJobId) : null;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,7 +92,7 @@ export default function Careers() {
       data.append("fullName", formData.fullName);
       data.append("email", formData.email);
       data.append("phone", formData.phone);
-      data.append("roleCategory", activeTab === "factory" ? "Factory" : "Office");
+      data.append("roleCategory", activeJob ? activeJob.category : activeCategory);
       data.append("experience", formData.experience);
       data.append("description", `Applying for ${selectedRole}. ${formData.description}`);
       data.append("resume", resume);
@@ -114,91 +127,164 @@ export default function Careers() {
     }
   };
 
-  const currentJobs = activeTab === "factory" ? factoryJobs : officeJobs;
+  const renderJobDetails = () => {
+    if (!activeJob) return null;
+    return (
+      <div className="reveal-item reveal-visible" style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <button 
+          onClick={() => navigate(`/careers?category=${activeJob.category}`)}
+          className="btn-ghost-steel"
+          style={{ marginBottom: "2rem", border: "none", color: "var(--red-core)", padding: "0" }}
+        >
+          ← BACK TO JOBS
+        </button>
+
+        <div style={{ width: "100%", height: "400px", marginBottom: "2rem", overflow: "hidden" }}>
+          <img 
+            src={activeJob.img} 
+            alt={activeJob.title} 
+            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+          />
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
+          <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "800", fontSize: "32px", color: "var(--text-primary)", textTransform: "uppercase", margin: 0 }}>
+            {activeJob.title}
+          </h2>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "12px",
+              background: "rgba(231,76,60,0.1)",
+              border: "1px solid rgba(231,76,60,0.2)",
+              padding: "4px 12px",
+              color: "var(--red-core)",
+              borderRadius: "2px",
+            }}
+          >
+            {activeJob.location}
+          </span>
+        </div>
+
+        <div style={{ fontFamily: "var(--font-primary)", fontSize: "14px", color: "var(--text-secondary)", marginBottom: "2rem", paddingBottom: "1rem", borderBottom: "1px solid var(--border-light)" }}>
+          <strong>Department:</strong> {activeJob.dept} | <strong>Experience:</strong> {activeJob.exp}
+        </div>
+
+        <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "18px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "1rem", textTransform: "uppercase" }}>
+          Job Description
+        </h3>
+        <p style={{ color: "var(--text-secondary)", fontSize: "15px", lineHeight: "1.7", marginBottom: "2rem" }}>
+          {activeJob.desc}
+        </p>
+
+        <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "18px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "1rem", textTransform: "uppercase" }}>
+          Why Work Here?
+        </h3>
+        <p style={{ color: "var(--text-secondary)", fontSize: "15px", lineHeight: "1.7", marginBottom: "3rem" }}>
+          {activeJob.whyWorkHere}
+        </p>
+
+        <button
+          onClick={() => {
+            setSelectedRole(activeJob.title);
+            setShowModal(true);
+          }}
+          className="btn-solid-red"
+          style={{ width: "100%", height: "52px", fontSize: "14px" }}
+        >
+          APPLY NOW →
+        </button>
+      </div>
+    );
+  };
+
+  const renderJobList = () => (
+    <>
+      <SectionLabel text="// HUMAN RESOURCES" />
+      <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>CAREER PIPELINES</h2>
+
+      {/* Two Tab Layout Switches */}
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "3rem", flexWrap: "wrap" }}>
+        {careersData.categories.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => navigate(`/careers?category=${cat.id}`)}
+            style={{
+              padding: "12px 32px",
+              backgroundColor: activeCategory === cat.id ? "var(--red-core)" : "transparent",
+              color: activeCategory === cat.id ? "#fff" : "var(--text-primary)",
+              border: "1px solid",
+              borderColor: activeCategory === cat.id ? "var(--red-core)" : "var(--border-light)",
+              fontFamily: "var(--font-primary)",
+              fontWeight: "600",
+              letterSpacing: "0.1em",
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+          >
+            {cat.name.toUpperCase()} ROLES
+          </button>
+        ))}
+      </div>
+
+      {/* Jobs Listing grid */}
+      <div className="grid-2" style={{ gap: "32px" }}>
+        {currentJobs.map((job) => (
+          <div key={job.id} className="corporate-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "260px" }}>
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "800", fontSize: "20px", color: "var(--text-primary)", textTransform: "uppercase", margin: 0 }}>
+                  {job.title}
+                </h3>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "11px",
+                    background: "rgba(231,76,60,0.1)",
+                    border: "1px solid rgba(231,76,60,0.2)",
+                    padding: "2px 8px",
+                    color: "var(--red-core)",
+                    borderRadius: "2px",
+                  }}
+                >
+                  {job.location}
+                </span>
+              </div>
+
+              <div style={{ fontFamily: "var(--font-primary)", fontSize: "13px", color: "var(--text-secondary)", marginBottom: "1rem" }}>
+                <strong>Department:</strong> {job.dept} | <strong>Experience:</strong> {job.exp}
+              </div>
+              
+              <p style={{ color: "var(--text-secondary)", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                {job.desc.length > 120 ? job.desc.substring(0, 120) + "..." : job.desc}
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate(`/careers?job=${job.id}`)}
+              className="btn-ghost-steel"
+              style={{ alignSelf: "start", marginTop: "1.5rem", height: "38px", color: "var(--red-core)", borderColor: "var(--red-core)" }}
+            >
+              VIEW DETAILS →
+            </button>
+          </div>
+        ))}
+        {currentJobs.length === 0 && (
+          <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--text-muted)", padding: "4rem" }}>
+            No roles available in this category currently.
+          </div>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
       <PageHero title="JOIN OUR TEAM" activePage="CAREERS" />
 
-      <section className="section-padding" style={{ background: "var(--obsidian)" }}>
+      <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
-          
-          <SectionLabel text="// HUMAN RESOURCES" />
-          <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>CAREER PIPELINES</h2>
-
-          {/* Two Tab Layout Switches */}
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "3rem" }}>
-            <button
-              onClick={() => setActiveTab("factory")}
-              className="btn-spark"
-              style={{
-                backgroundColor: activeTab === "factory" ? "var(--red-core)" : "var(--iron)",
-                border: "1px solid var(--steel)",
-                transform: "none",
-              }}
-            >
-              FACTORY ROLES
-            </button>
-            <button
-              onClick={() => setActiveTab("office")}
-              className="btn-spark"
-              style={{
-                backgroundColor: activeTab === "office" ? "var(--red-core)" : "var(--iron)",
-                border: "1px solid var(--steel)",
-                transform: "none",
-              }}
-            >
-              OFFICE / CORPORATE
-            </button>
-          </div>
-
-          {/* Jobs Listing grid */}
-          <div className="grid-2" style={{ gap: "32px" }}>
-            {currentJobs.map((job, idx) => (
-              <div key={idx} className="corporate-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "260px" }}>
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                    <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "800", fontSize: "20px", color: "var(--white)", textTransform: "uppercase" }}>
-                      {job.title}
-                    </h3>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: "11px",
-                        background: "rgba(231,76,60,0.1)",
-                        border: "1px solid rgba(231,76,60,0.2)",
-                        padding: "2px 8px",
-                        color: "var(--red-core)",
-                        borderRadius: "2px",
-                      }}
-                    >
-                      {job.location}
-                    </span>
-                  </div>
-
-                  <div style={{ fontFamily: "var(--font-primary)", fontSize: "13px", color: "var(--silver)", marginBottom: "1rem" }}>
-                    <strong>Department:</strong> {job.dept} | <strong>Experience:</strong> {job.exp}
-                  </div>
-                  
-                  <p style={{ color: "var(--light)", fontSize: "14px", lineHeight: "1.5" }}>
-                    {job.desc}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => {
-                    setSelectedRole(job.title);
-                    setShowModal(true);
-                  }}
-                  className="btn-ghost-steel"
-                  style={{ alignSelf: "start", marginTop: "1.5rem", height: "38px", color: "var(--red-core)", borderColor: "var(--red-core)" }}
-                >
-                  APPLY NOW →
-                </button>
-              </div>
-            ))}
-          </div>
-
+          {activeJob ? renderJobDetails() : renderJobList()}
         </div>
       </section>
 
@@ -224,17 +310,17 @@ export default function Careers() {
             className="reveal-item reveal-visible"
             style={{
               width: "100%",
-              maxWidth: "640px",
+              maxWidth: "600px",
               maxHeight: "90vh",
               overflowY: "auto",
-              background: "var(--iron)",
-              border: "1px solid var(--steel)",
+              background: "var(--bg-primary)",
+              border: "1px solid var(--border-light)",
               borderTop: "3px solid var(--red-core)",
               padding: "40px",
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "20px", fontWeight: "700", color: "var(--white)", textTransform: "uppercase" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
+              <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "20px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", margin: 0 }}>
                 APPLICATION: {selectedRole}
               </h3>
               <button
@@ -245,9 +331,10 @@ export default function Careers() {
                 style={{
                   background: "none",
                   border: "none",
-                  color: "var(--white)",
+                  color: "var(--text-primary)",
                   cursor: "pointer",
                   fontSize: "1.5rem",
+                  padding: 0
                 }}
               >
                 ✕
@@ -262,7 +349,7 @@ export default function Careers() {
                   padding: "1rem",
                   marginBottom: "1.5rem",
                   fontSize: "14px",
-                  color: submitStatus.type === "success" ? "var(--white)" : "#ef4444",
+                  color: submitStatus.type === "success" ? "var(--text-primary)" : "#ef4444",
                 }}
               >
                 {submitStatus.msg}
@@ -270,65 +357,66 @@ export default function Careers() {
             )}
 
             <form onSubmit={handleFormSubmit}>
-              <div className="float-form-group">
-                <input
-                  type="text"
-                  name="fullName"
-                  required
-                  placeholder=" "
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="float-form-control"
-                />
-                <label className="float-form-label">Full Name*</label>
+              <div className="grid-2" style={{ gap: "1rem", marginBottom: "1rem" }}>
+                <div className="float-form-group" style={{ marginBottom: 0 }}>
+                  <input
+                    type="text"
+                    name="fullName"
+                    required
+                    placeholder=" "
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    className="float-form-control"
+                  />
+                  <label className="float-form-label">Full Name*</label>
+                </div>
+                <div className="float-form-group" style={{ marginBottom: 0 }}>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder=" "
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="float-form-control"
+                  />
+                  <label className="float-form-label">Email Address*</label>
+                </div>
               </div>
 
-              <div className="float-form-group">
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  placeholder=" "
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="float-form-control"
-                />
-                <label className="float-form-label">Email Address*</label>
+              <div className="grid-2" style={{ gap: "1rem", marginBottom: "1rem" }}>
+                <div className="float-form-group" style={{ marginBottom: 0 }}>
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    placeholder=" "
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="float-form-control"
+                  />
+                  <label className="float-form-label">Phone / WhatsApp Number*</label>
+                </div>
+                <div className="float-form-group" style={{ marginBottom: 0 }}>
+                  <input
+                    type="number"
+                    name="experience"
+                    required
+                    placeholder=" "
+                    value={formData.experience}
+                    onChange={handleInputChange}
+                    className="float-form-control"
+                  />
+                  <label className="float-form-label">Relevant Experience (Years)*</label>
+                </div>
               </div>
 
-              <div className="float-form-group">
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  placeholder=" "
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="float-form-control"
-                />
-                <label className="float-form-label">Phone / WhatsApp Number*</label>
-              </div>
-
-              <div className="float-form-group">
-                <input
-                  type="number"
-                  name="experience"
-                  required
-                  placeholder=" "
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className="float-form-control"
-                />
-                <label className="float-form-label">Relevant Experience (Years)*</label>
-              </div>
-
-              {/* Drag Area styled with dashed red border */}
               <div
                 style={{
                   border: "2px dashed var(--red-core)",
                   padding: "24px",
                   textAlign: "center",
-                  background: "var(--obsidian)",
+                  background: "var(--bg-secondary)",
                   marginBottom: "2rem",
                   position: "relative",
                 }}
@@ -348,7 +436,7 @@ export default function Careers() {
                     cursor: "pointer",
                   }}
                 />
-                <div style={{ fontFamily: "var(--font-primary)", fontSize: "14px", color: "var(--light)" }}>
+                <div style={{ fontFamily: "var(--font-primary)", fontSize: "14px", color: "var(--text-secondary)" }}>
                   {resume ? `Attached: ${resume.name}` : "DRAG & DROP RESUME OR CLICK TO ATTACH (.PDF, .DOC)*"}
                 </div>
               </div>
@@ -361,7 +449,7 @@ export default function Careers() {
                     setSubmitStatus(null);
                   }}
                   className="btn-ghost-steel"
-                  style={{ flex: 1, height: "52px" }}
+                  style={{ flex: 1, height: "52px", color: "var(--text-primary)", borderColor: "var(--border-light)" }}
                 >
                   CANCEL
                 </button>
@@ -382,5 +470,3 @@ export default function Careers() {
     </div>
   );
 }
-
-

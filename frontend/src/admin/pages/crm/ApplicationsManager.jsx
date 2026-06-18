@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Download, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import TopBar from '../../components/TopBar';
@@ -11,14 +11,17 @@ export default function ApplicationsManager() {
   const [deleteItem, setDeleteItem] = useState(null);
   const { success, error } = useToast();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try { const res = await crmAPI.getApplications({}); setItems(res.data || []); }
     catch { error('Failed to load applications'); }
-  };
+  }, [error]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load();
+  }, [load]);
 
-  const remove = async () => {
+  async function remove() {
     if (!deleteItem) return;
     try {
       await crmAPI.deleteApplication(deleteItem.id);

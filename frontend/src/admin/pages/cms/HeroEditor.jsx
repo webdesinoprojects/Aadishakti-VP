@@ -15,9 +15,6 @@ const HeroEditor = () => {
   const [deleteModal, setDeleteModal] = useState(null);
   const { success, error } = useToast();
 
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const loadData = async () => {
     try {
@@ -38,6 +35,11 @@ const HeroEditor = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadData();
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);

@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 
 export default function ScrollReveal({ children, delay = 0, duration = 0.6 }) {

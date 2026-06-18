@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    AadiShakti Group - White Corporate Theme Design System
    ========================================================================== */
 
@@ -473,6 +473,25 @@ body.bar-visible .page-hero { padding-top: 196px; }
   .product-photo-band { grid-template-columns: 1fr; }
 }
 
+.btn-portal-login {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--red-core);
+  color: var(--red-core);
+  padding: 0 16px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+}
+.btn-portal-login:hover {
+  background: var(--red-core);
+  color: var(--text-white);
+}
+
 /* ==========================================================================
    SOURCING TABLE
    ========================================================================== */
@@ -488,3 +507,19 @@ body.bar-visible .page-hero { padding-top: 196px; }
   font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary);
 }
 .sourcing-table tr:hover td { background: var(--red-subtle); }
+
+/* ==========================================================================
+   PAGE SPECIFIC LAYOUTS
+   ========================================================================== */
+.gallery-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 4rem;
+  align-items: flex-start;
+}
+@media (max-width: 960px) {
+  .gallery-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}

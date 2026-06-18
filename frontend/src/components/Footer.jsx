@@ -1,5 +1,5 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { Fragment } from "react";
 import { ASSETS } from "../assets/assetMap";
 
 function scrollTop() {
@@ -244,14 +244,14 @@ export default function Footer() {
           </p>
           <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center" }}>
             {["ISO 9001:2015", "ISO 14001:2015", "BIS IS 27:1992", "Made in India"].map((item, i, arr) => (
-              <React.Fragment key={item}>
+              <Fragment key={item}>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "#2C2C2C", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {item}
                 </span>
                 {i < arr.length - 1 && (
                   <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#2A2A2A", display: "inline-block" }} />
                 )}
-              </React.Fragment>
+              </Fragment>
             ))}
           </div>
         </div>

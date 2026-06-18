@@ -10,7 +10,7 @@ const Dashboard = () => {
   const [recentEnquiries, setRecentEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { loadDashboardData(); }, []);
+  
 
   const loadDashboardData = async () => {
     try {
@@ -35,6 +35,11 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadDashboardData();
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();

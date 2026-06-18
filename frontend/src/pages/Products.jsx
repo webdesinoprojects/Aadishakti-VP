@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { motion } from "framer-motion";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
@@ -84,8 +83,6 @@ const productList = [
 ];
 
 export default function Products() {
-  const [activeKey, setActiveKey] = useState("pure");
-  const current = productList.find((p) => p.key === activeKey);
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>

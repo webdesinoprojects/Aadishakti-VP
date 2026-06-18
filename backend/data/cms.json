@@ -45,5 +45,104 @@
   },
   "nav": {
     "ctaText": "GET IN TOUCH"
+  },
+  "importPage": {
+    "title": "TRANSBOUNDARY MATERIAL SOURCING",
+    "overview": {
+      "paragraphs": [
+        "Aadishakti Metal Recycling Pvt. Ltd. actively sources raw materials and industrial products from global markets to support its manufacturing operations and customer requirements.",
+        "The company imports drained lead-acid battery scrap and used battery materials in bulk quantities from suppliers worldwide. These materials are responsibly processed through Aadishakti's recycling infrastructure to recover valuable metals and contribute to the circular economy.",
+        "With a strong focus on sustainable recycling, transparent transactions, and long-term supplier partnerships, Aadishakti ensures competitive pricing and reliable procurement of recyclable battery materials. The company also provides bulk collection and logistics support for large consignments of scrap batteries, including car batteries, inverter batteries, solar batteries, and other lead-based batteries."
+      ],
+      "image": "/plant/BBSU.jpeg"
+    },
+    "tabs": [
+      {
+        "id": "battery",
+        "label": "Scrap Battery Imports",
+        "title": "Scrap Battery Imports",
+        "intro": "Aadishakti purchases and imports various types of lead-based battery scrap for recycling, including:",
+        "items": [
+          "Drained Lead-Acid Battery Scrap",
+          "Used Car Battery Scrap",
+          "Inverter Batteries",
+          "Solar Batteries",
+          "Industrial Lead-Based Batteries"
+        ],
+        "summary": "The company procures large bulk quantities from global suppliers, ensuring responsible recycling and efficient metal recovery.",
+        "highlightsTitle": "Key highlights:",
+        "highlights": [
+          "Global sourcing of battery scrap",
+          "Competitive pricing for suppliers",
+          "Reliable long-term procurement partnerships",
+          "Sustainable recycling and disposal practices"
+        ]
+      }
+    ],
+    "contact": {
+      "title": "Import Contact",
+      "subtitle": "For international suppliers or scrap battery procurement inquiries:",
+      "name": "Mr. Rajesh Mehta",
+      "mobile": "+91-9045585676",
+      "email": "rajesh.mehta@aadishakti.com"
+    }
+  },
+  "media": [
+    { "id": "1", "type": "blogs", "title": "The Future of Secondary Lead", "date": "Oct 12, 2026", "img": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg", "desc": "Exploring how sustainable battery recycling is changing the global supply chain." },
+    { "id": "2", "type": "news", "title": "Aadishakti Expands Mundra Plant", "date": "Sep 28, 2026", "img": "/gallery/plants/Mundra/Plant_Pic_02.jpeg", "desc": "New rotary furnaces installed to boost pure lead output by 20%." },
+    { "id": "3", "type": "events", "title": "Annual Sustainability Summit", "date": "Nov 05, 2026", "img": "/gallery/events/PMUD5812.JPG", "desc": "Join us for our yearly gathering of eco-conscious partners and suppliers." },
+    { "id": "4", "type": "blogs", "title": "Why BIS Certification Matters", "date": "Aug 15, 2026", "img": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg", "desc": "Understanding the rigorous standards behind IS 27:1992." }
+  ],
+  "gallery": {
+    "office": [
+      "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg",
+      "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg"
+    ],
+    "plants": [
+      "/gallery/plants/Mundra/Plant_Pic_02.jpeg",
+      "/gallery/plants/Mundra/Rotary_1.jpeg",
+      "/gallery/plants/Mundra/IMG_20251228_113451171_HDR_AE.jpg",
+      "/gallery/plants/Mundra/14_18.jpg"
+    ],
+    "events": [
+      "/gallery/events/HPOW7738.JPG",
+      "/gallery/events/LDJY9705.JPG",
+      "/gallery/events/PMUD5812.JPG",
+      "/gallery/events/XKFO7284.JPG"
+    ],
+    "celebration": [
+      "/gallery/celebration/HPOW7738.JPG",
+      "/gallery/celebration/PMUD5812.JPG"
+    ]
+  },
+  "careersData": {
+    "categories": [
+      { "id": "factory", "name": "Factory" },
+      { "id": "office", "name": "Office" }
+    ],
+    "jobs": [
+      {
+        "id": "lead-smelting-operator",
+        "category": "factory",
+        "title": "Lead Smelting Plant Operator",
+        "location": "MUNDRA PLANT, GUJARAT",
+        "dept": "Operations",
+        "exp": "3–5 Years in Smelting",
+        "desc": "Supervise furnace operations, manage molten metal pouring, monitor draft systems, and maintain strict industrial safety standards.",
+        "whyWorkHere": "Working at our Mundra plant gives you hands-on experience with world-class rotary furnaces. We prioritize safety and continuous skill development.",
+        "img": "/gallery/plants/Mundra/Rotary_1.jpeg"
+      },
+      {
+        "id": "senior-industrial-accountant",
+        "category": "office",
+        "title": "Senior Industrial Accountant",
+        "location": "NEW DELHI CORPORATE OFFICE",
+        "dept": "Finance",
+        "exp": "4–6 Years in Manufacturing Accounts",
+        "desc": "Manage GST documentation, customs clearance reports for scrap vessels, vendor reconciliations, and routine ledger audits.",
+        "whyWorkHere": "Join a dynamic finance team at our New Delhi headquarters with exposure to international trade and bulk commodity accounting.",
+        "img": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg"
+      }
+    ]
   }
 }

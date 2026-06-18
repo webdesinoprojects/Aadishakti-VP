@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { buildApiUrl } from "../config/api";
-import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export default function Contact() {
   const [formData, setFormData] = useState({

@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { buildApiUrl } from "../config/api";
-import { Loader2 } from "lucide-react";
 
 export default function Careers() {
   const [showModal, setShowModal] = useState(false);
