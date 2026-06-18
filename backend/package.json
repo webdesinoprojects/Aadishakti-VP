@@ -5,7 +5,6 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "build": "echo Backend build successful - No compilation needed",
     "start": "node server.js",
     "dev": "node --watch server.js",
     "init-data": "node init-data.js",
