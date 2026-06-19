@@ -456,8 +456,23 @@ body.bar-visible .page-hero { padding-top: 196px; }
 .stats-strip-item:last-child { border-right: none; }
 
 @media (max-width: 768px) {
-  .stats-strip-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.18); padding: 20px 0; }
-  .stats-strip-item:last-child { border-bottom: none; }
+  .stats-bento {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .stats-strip-item { 
+    border-right: none; 
+    border-bottom: 1px solid rgba(255,255,255,0.18); 
+    padding: 32px 16px; 
+  }
+  .stats-strip-item:nth-child(odd) {
+    border-right: 1px solid rgba(255,255,255,0.18);
+  }
+  .stats-strip-item:nth-child(even) {
+    border-right: none;
+  }
+  .stats-strip-item:nth-last-child(-n+2) { 
+    border-bottom: none; 
+  }
 }
 
 /* ==========================================================================
@@ -521,5 +536,128 @@ body.bar-visible .page-hero { padding-top: 196px; }
   .gallery-layout {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+}
+
+/* ==========================================================================
+   HERO RESPONSIVE STYLES
+   ========================================================================== */
+.hero-nav-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hero-stats-wrapper {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+  padding: 28px 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 5;
+}
+
+.hero-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.hero-stat-num {
+  font-size: clamp(28px, 3.5vw, 48px);
+}
+
+.hero-stat-label {
+  font-size: 11px;
+}
+
+@media (max-width: 768px) {
+  .hero-nav-arrows {
+    flex-direction: row;
+    top: auto !important;
+    bottom: 20px; /* Sit inside the image, at the bottom right corner */
+    right: 20px !important;
+    transform: none !important;
+  }
+  
+  .hero-stats-wrapper {
+    position: relative; /* Remove absolute positioning so it flows naturally */
+    bottom: auto;
+    padding: 16px 0;
+    margin: 24px 0;
+  }
+  
+  .hero-stats-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .hero-stat-item {
+    border-left: 1px solid var(--border-light) !important;
+    border-bottom: none !important;
+    padding: 0 4px !important;
+  }
+  
+  .hero-stat-item:first-child {
+    border-left: none !important;
+  }
+  
+  .hero-stat-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0 !important;
+  }
+  
+  .hero-stat-num {
+    font-size: 18px !important;
+  }
+  
+  .hero-stat-label {
+    font-size: 8px !important;
+    margin-top: 4px !important;
+  }
+}
+
+/* ==========================================================================
+   HOME PAGE RESPONSIVE GRIDS
+   ========================================================================== */
+.split-grid-55-45 {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  gap: 56px;
+  align-items: center;
+}
+
+.home-stats-row {
+  display: flex;
+  gap: 48px;
+}
+
+.mosaic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 220px 180px;
+  gap: 4px;
+}
+
+.no-gap {
+  gap: 0 !important;
+}
+
+@media (max-width: 960px) {
+  .split-grid-55-45 {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-stats-row {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  
+  .mosaic-grid {
+    grid-template-rows: 150px 150px;
   }
 }

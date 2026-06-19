@@ -239,17 +239,17 @@ export default function Footer() {
       ══════════════════════════════════ */}
       <div style={{ background: "#080808" }}>
         <div className="container" style={{ padding: "20px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-          <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "#333333" }}>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>
             &copy; {year} Aadishakti Group. All Rights Reserved.
           </p>
           <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center" }}>
             {["ISO 9001:2015", "ISO 14001:2015", "BIS IS 27:1992", "Made in India"].map((item, i, arr) => (
               <Fragment key={item}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "#2C2C2C", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {item}
                 </span>
                 {i < arr.length - 1 && (
-                  <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#2A2A2A", display: "inline-block" }} />
+                  <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "rgba(255,255,255,0.15)", display: "inline-block" }} />
                 )}
               </Fragment>
             ))}

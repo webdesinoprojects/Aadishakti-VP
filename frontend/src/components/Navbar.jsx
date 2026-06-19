@@ -24,6 +24,25 @@ const galleryLinks = [
   { to: "/gallery?category=celebration", label: "Celebration" },
 ];
 
+
+const megaContent = {
+  media: {
+    "Blogs": { img: ASSETS.gallery[0] || ASSETS.megaMenuPhoto, eyebrow: "LATEST INSIGHTS", title: "Read our latest technical blogs on lead recycling." },
+    "News": { img: ASSETS.gallery[1] || ASSETS.megaMenuPhoto, eyebrow: "COMPANY NEWS", title: "Stay updated with Aadishakti's latest announcements." },
+    "Events": { img: ASSETS.gallery[2] || ASSETS.megaMenuPhoto, eyebrow: "INDUSTRY EVENTS", title: "Join us at upcoming global battery conferences." }
+  },
+  gallery: {
+    "Office": { img: ASSETS.roorkeeOffice[0] || ASSETS.megaMenuPhoto, eyebrow: "CORPORATE HUB", title: "A glimpse inside our modern corporate headquarters." },
+    "Plants": { img: ASSETS.mundraPlant[0] || ASSETS.megaMenuPhoto, eyebrow: "REFINING INFRASTRUCTURE", title: "State-of-the-art lead smelting and refining facilities." },
+    "Events": { img: ASSETS.gallery[3] || ASSETS.megaMenuPhoto, eyebrow: "TEAM ENGAGEMENT", title: "Highlights from our recent team building and conferences." },
+    "Celebration": { img: ASSETS.gallery[0] || ASSETS.megaMenuPhoto, eyebrow: "FESTIVITIES", title: "Celebrating success and culture at Aadishakti." }
+  },
+  careers: {
+    "Factory": { img: ASSETS.mundraPlant[4] || ASSETS.megaMenuPhoto, eyebrow: "PLANT OPERATIONS", title: "Drive industrial excellence at our Mundra and Roorkee plants." },
+    "Office": { img: ASSETS.roorkeeOffice[1] || ASSETS.megaMenuPhoto, eyebrow: "CORPORATE ROLES", title: "Shape the future of sustainable recycling from our HQ." }
+  }
+};
+
 export default function Navbar() {
   const { cms } = useCms();
   const navCtaText = cms?.nav?.ctaText || "GET IN TOUCH";
@@ -37,6 +56,10 @@ export default function Navbar() {
   const [mobileMedia, setMobileMedia] = useState(false);
   const [mobileGallery, setMobileGallery] = useState(false);
   const [mobileCareers, setMobileCareers] = useState(false);
+  
+  const [hoveredMedia, setHoveredMedia] = useState("Blogs");
+  const [hoveredGallery, setHoveredGallery] = useState("Office");
+  const [hoveredCareers, setHoveredCareers] = useState("Factory");
   const location = useLocation();
 
   useEffect(() => {
@@ -119,11 +142,22 @@ export default function Navbar() {
                 <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.4" />
               </svg>
             </button>
-            <div className={`mega-dropdown ${mediaOpen ? "open" : ""}`} style={{ width: '300px', minWidth: '300px' }}>
-              <div className="mega-left" style={{ width: '100%', paddingRight: '24px' }}>
+            <div className={`mega-dropdown ${mediaOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px' }}>
+              <div className="mega-left">
                 {mediaLinks.map((item) => (
-                  <Link key={item.to} to={item.to} className="drop-item">{item.label}</Link>
+                  <Link key={item.to} to={item.to} className="drop-item" onMouseEnter={() => setHoveredMedia(item.label)}>{item.label}</Link>
                 ))}
+              </div>
+              <div className="mega-right">
+                <img src={megaContent.media[hoveredMedia].img} alt={hoveredMedia} loading="lazy" />
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
+                    {megaContent.media[hoveredMedia].eyebrow}
+                  </div>
+                  <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                    {megaContent.media[hoveredMedia].title}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -136,11 +170,22 @@ export default function Navbar() {
                 <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.4" />
               </svg>
             </button>
-            <div className={`mega-dropdown ${galleryOpen ? "open" : ""}`} style={{ width: '300px', minWidth: '300px' }}>
-              <div className="mega-left" style={{ width: '100%', paddingRight: '24px' }}>
+            <div className={`mega-dropdown ${galleryOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px' }}>
+              <div className="mega-left">
                 {galleryLinks.map((item) => (
-                  <Link key={item.to} to={item.to} className="drop-item">{item.label}</Link>
+                  <Link key={item.to} to={item.to} className="drop-item" onMouseEnter={() => setHoveredGallery(item.label)}>{item.label}</Link>
                 ))}
+              </div>
+              <div className="mega-right">
+                <img src={megaContent.gallery[hoveredGallery].img} alt={hoveredGallery} loading="lazy" />
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
+                    {megaContent.gallery[hoveredGallery].eyebrow}
+                  </div>
+                  <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                    {megaContent.gallery[hoveredGallery].title}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -153,16 +198,27 @@ export default function Navbar() {
                 <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.4" />
               </svg>
             </button>
-            <div className={`mega-dropdown ${careersOpen ? "open" : ""}`} style={{ width: '250px', minWidth: '250px', left: 'auto', right: 0 }}>
-              <div className="mega-left" style={{ width: '100%', paddingRight: '24px' }}>
-                <Link to="/careers?category=factory" className="drop-item">Factory</Link>
-                <Link to="/careers?category=office" className="drop-item">Office</Link>
+            <div className={`mega-dropdown ${careersOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px', left: 'auto', right: 0 }}>
+              <div className="mega-left">
+                <Link to="/careers?category=factory" className="drop-item" onMouseEnter={() => setHoveredCareers("Factory")}>Factory</Link>
+                <Link to="/careers?category=office" className="drop-item" onMouseEnter={() => setHoveredCareers("Office")}>Office</Link>
+              </div>
+              <div className="mega-right">
+                <img src={megaContent.careers[hoveredCareers].img} alt={hoveredCareers} loading="lazy" />
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
+                    {megaContent.careers[hoveredCareers].eyebrow}
+                  </div>
+                  <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                    {megaContent.careers[hoveredCareers].title}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </nav>
 
-        <div style={{ display: 'flex', gap: '12px', marginLeft: '12px', alignItems: 'center' }} className="desktop-cta">
+        <div className="desktop-cta" style={{ gap: '12px', marginLeft: '12px', alignItems: 'center' }}>
           <Link to="/login" className="btn-portal-login">PORTAL LOGIN</Link>
           <Link to="/contact" className="cta">{navCtaText}</Link>
         </div>
@@ -174,6 +230,15 @@ export default function Navbar() {
 
       {/* ── Mobile Drawer ── */}
       <aside className={`mobile-drawer ${mobileOpen ? "open" : ""}`}>
+        <button 
+          type="button" 
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close menu"
+          style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', fontSize: '32px', color: 'var(--text-primary)', cursor: 'pointer', zIndex: 10 }}
+        >
+          &times;
+        </button>
+
         <Link to="/" className="mobile-link">HOME</Link>
 
         <button type="button" className="mobile-link mobile-company" onClick={() => setMobileCo(v => !v)}>
@@ -237,6 +302,7 @@ export default function Navbar() {
         .nav-logo { height: 40px; transition: height 0.3s ease; }
         .top-nav.scrolled .nav-logo { height: 34px; }
         .desktop-nav { display: flex; align-items: center; flex-wrap: nowrap; }
+        .desktop-cta { display: flex; }
         .nav-link { position: relative; font: 600 12px var(--font-primary); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-primary); transition: color 0.2s ease; white-space: nowrap; }
         .nav-link:hover { color: var(--red-core); }
         .nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -26px; height: 2px; background: var(--red-core); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
@@ -272,7 +338,7 @@ export default function Navbar() {
           .desktop-nav { gap: 12px !important; }
         }
         @media (max-width: 1150px) {
-          .desktop-nav, .desktop-cta { display: none; }
+          .desktop-nav, .desktop-cta { display: none !important; }
           .hamburger { display: block; }
           .top-nav { height: 60px; }
           .nav-logo { height: 34px; }

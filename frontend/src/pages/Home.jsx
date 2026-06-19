@@ -148,8 +148,9 @@ export default function Home() {
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 1 â€” HERO (100vh, white overlay)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section
-        className="hero-section"
+      <div style={{ position: "relative" }}>
+        <section
+          className="hero-section"
         style={{ minHeight: "100vh", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}
       >
         {/* Carousel backgrounds */}
@@ -253,7 +254,7 @@ export default function Home() {
         </motion.div>
 
         {/* Prev / Next arrows */}
-        <div style={{ position: "absolute", right: "clamp(16px, 3vw, 44px)", top: "50%", transform: "translateY(-50%)", zIndex: 6, display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="hero-nav-arrows" style={{ position: "absolute", right: "clamp(16px, 3vw, 44px)", top: "50%", transform: "translateY(-50%)", zIndex: 6 }}>
           {["‹", "›"].map((ch, i) => (
             <button
               key={ch}
@@ -269,26 +270,28 @@ export default function Home() {
           ))}
         </div>
 
+        </section>
+
         {/* Bottom stats bar */}
-        <div style={{ background: "var(--bg-primary)", borderTop: "1px solid var(--border-light)", padding: "28px 0", position: "absolute", bottom: 0, width: "100%", zIndex: 5 }}>
-          <div className="container" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+        <div className="hero-stats-wrapper">
+          <div className="container hero-stats-grid">
             {[
               { num: "50000", suffix: "+", label: "Metric Tonnes PA" },
               { num: "20",    suffix: "+", label: "Years of Excellence" },
               { num: "2",     suffix: "",  label: "World-Class Plants" },
             ].map((stat, i) => (
-              <div key={stat.label} style={{ padding: "0 24px", borderLeft: i > 0 ? "1px solid var(--border-light)" : "none" }}>
-                <div style={{ fontFamily: "var(--font-primary)", fontWeight: 800, fontSize: "clamp(28px, 3.5vw, 48px)", color: "var(--text-primary)", lineHeight: 1 }}>
+              <div key={stat.label} className="hero-stat-item" style={{ padding: "0 24px", borderLeft: i > 0 ? "1px solid var(--border-light)" : "none" }}>
+                <div className="hero-stat-num" style={{ fontFamily: "var(--font-primary)", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1 }}>
                   <AnimatedNumber value={stat.num} suffix={stat.suffix} />
                 </div>
-                <div style={{ marginTop: "6px", fontFamily: "var(--font-primary)", fontWeight: 500, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-muted)" }}>
+                <div className="hero-stat-label" style={{ marginTop: "6px", fontFamily: "var(--font-primary)", fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-muted)" }}>
                   {stat.label}
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 2 â€” CLIENT NAME TICKER
@@ -328,7 +331,7 @@ export default function Home() {
       <section className="section-padding" style={{ background: "var(--bg-primary)", minHeight: "600px" }}>
         <div className="container">
           <ScrollReveal>
-            <div style={{ display: "grid", gridTemplateColumns: "55% 45%", gap: "56px", alignItems: "center" }}>
+            <div className="split-grid-55-45">
               {/* Left â€” text */}
               <div>
                 <SectionLabel text="// WHO WE ARE" />
@@ -350,7 +353,7 @@ export default function Home() {
                   we deliver certified quality with environmental responsibility built in.
                 </p>
 
-                <div style={{ display: "flex", gap: "48px" }}>
+                <div className="home-stats-row">
                   {[
                     { num: "50,000+", label: "MT Annual Capacity" },
                     { num: "₹1000+",  label: "Crore Group Turnover" },
@@ -369,7 +372,7 @@ export default function Home() {
               </div>
 
               {/* Right â€” image mosaic */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "220px 180px", gap: "4px" }}>
+              <div className="mosaic-grid">
                 {[
                   { src: ASSETS.mundraPlant[0], alt: "Mundra plant exterior", style: { gridColumn: "1/2", gridRow: "1/2" } },
                   { src: ASSETS.mundraPlant[11], alt: "Production floor", style: { gridColumn: "2/3", gridRow: "1/2" } },
@@ -397,7 +400,7 @@ export default function Home() {
           SECTION 4 â€” TWO ENTITIES (full-bleed photo + glass overlay)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+        <div className="grid-2 no-gap">
           {/* AGRPL â€” Mundra */}
           <div className="entity-card">
             <img className="entity-card-bg" src={ASSETS.mundraPlant[0]} alt="AGRPL Mundra Plant" loading="lazy" />
@@ -519,10 +522,10 @@ export default function Home() {
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 7 â€” STATS STRIP (solid red)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section style={{ background: "var(--red-core)", padding: "64px 0" }}>
+      <section style={{ background: "var(--red-core)", padding: "64px 0", marginBottom: "16px" }}>
         <div className="container">
           <ScrollReveal>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0" }}>
+            <div className="grid-4 no-gap stats-bento">
               {statsStrip.map((s) => (
                 <div key={s.label} className="stats-strip-item">
                   <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(36px, 4vw, 56px)", color: "#FFFFFF", lineHeight: 1 }}>
@@ -631,7 +634,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+            <div className="grid-3" style={{ gap: "16px" }}>
               {[
                 { label: "Revenue Growth", value: "↑ Consistent YoY", desc: "Multi-year track record of volume and revenue expansion." },
                 { label: "Capacity Pipeline", value: "120,000 MT", desc: "Expansion to 120,000 MTPA by April 2026 at Mundra facility." },
