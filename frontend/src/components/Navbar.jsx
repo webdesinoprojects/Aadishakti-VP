@@ -90,12 +90,12 @@ export default function Navbar() {
   return (
     <header className={`top-nav ${scrolled ? "scrolled" : ""}`}>
       <div className="nav-inner">
-        <Link to="/" className="logo-wrap" aria-label="Aadishakti Home" style={{ marginRight: 'auto', marginLeft: '-20px' }}>
+        <Link to="/" className="logo-wrap" aria-label="Aadishakti Home" style={{ marginRight: '40px' }}>
           <img src={ASSETS.logo} alt="AadiShakti Logo" className="nav-logo" />
         </Link>
 
         {/* ── Desktop Nav ── */}
-        <nav className="desktop-nav" aria-label="Primary" style={{ gap: '14px' }}>
+        <nav className="desktop-nav" aria-label="Primary" style={{ gap: '24px', marginRight: 'auto' }}>
           <Link to="/" className={`nav-link ${location.pathname === "/" ? "active" : ""}`}>HOME</Link>
 
           {/* COMPANY — MEGA DROPDOWN */}
@@ -298,7 +298,7 @@ export default function Navbar() {
       <style>{`
         .top-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 72px; background: rgba(255,255,255,0.97); border-bottom: 1px solid var(--border-light); backdrop-filter: blur(10px); transition: top 0.25s ease, box-shadow 0.25s ease; }
         .top-nav.scrolled { box-shadow: var(--shadow-sm); }
-        .nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 5vw; max-width: 100%; }
+        .nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 3vw; max-width: 100%; }
         .logo-wrap { display: inline-flex; margin-right: 20px; }
         .nav-logo { height: 40px; transition: height 0.3s ease; }
         .top-nav.scrolled .nav-logo { height: 34px; }
