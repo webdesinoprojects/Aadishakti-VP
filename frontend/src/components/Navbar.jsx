@@ -89,13 +89,13 @@ export default function Navbar() {
 
   return (
     <header className={`top-nav ${scrolled ? "scrolled" : ""}`}>
-      <div className="nav-inner">
-        <Link to="/" className="logo-wrap" aria-label="Aadishakti Home" style={{ marginRight: '40px' }}>
+      <div className="nav-inner" style={{ padding: '0 3vw' }}>
+        <Link to="/" className="logo-wrap" aria-label="Aadishakti Home" style={{ marginRight: '2vw' }}>
           <img src={ASSETS.logo} alt="AadiShakti Logo" className="nav-logo" />
         </Link>
 
         {/* ── Desktop Nav ── */}
-        <nav className="desktop-nav" aria-label="Primary" style={{ gap: '24px', marginRight: 'auto' }}>
+        <nav className="desktop-nav" aria-label="Primary" style={{ gap: '1.2vw', marginRight: 'auto' }}>
           <Link to="/" className={`nav-link ${location.pathname === "/" ? "active" : ""}`}>HOME</Link>
 
           {/* COMPANY — MEGA DROPDOWN */}
