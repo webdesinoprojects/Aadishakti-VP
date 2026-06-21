@@ -26,7 +26,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer style={{ background: "#0F0F0F", fontFamily: "var(--font-primary)", position: "relative" }}>
+    <footer style={{ background: "#FFFFFF", borderTop: "1px solid var(--border-light)", fontFamily: "var(--font-primary)", position: "relative" }}>
 
       {/* ── TOP RED ACCENT ── */}
       <div style={{ height: "3px", background: "var(--red-core)", position: "relative" }}>
@@ -36,13 +36,13 @@ export default function Footer() {
       {/* ══════════════════════════════════
           PRE-FOOTER — CTA BAND
       ══════════════════════════════════ */}
-      <div style={{ background: "#0B0B0B", borderBottom: "1px solid #1C1C1C" }}>
+      <div style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-light)" }}>
         <div className="container" style={{ padding: "52px 0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "28px" }}>
           <div>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: "10px" }}>
               // PARTNER WITH US
             </div>
-            <h2 style={{ fontWeight: 900, fontSize: "clamp(20px, 2.5vw, 32px)", color: "#FFFFFF", lineHeight: 1.2, marginBottom: "0" }}>
+            <h2 style={{ fontWeight: 900, fontSize: "clamp(20px, 2.5vw, 32px)", color: "var(--text-primary)", lineHeight: 1.2, marginBottom: "0" }}>
               Ready to source from India&apos;s leading secondary lead group?
             </h2>
           </div>
@@ -50,7 +50,7 @@ export default function Footer() {
             <Link to="/contact" className="btn-solid-red" style={{ height: "46px", paddingInline: "28px", fontSize: "12px" }}>
               Get In Touch &rarr;
             </Link>
-            <Link to="/sourcing" className="btn-ghost-steel" style={{ height: "46px", paddingInline: "24px", fontSize: "12px", color: "#AAAAAA", borderColor: "#333" }}>
+            <Link to="/sourcing" className="btn-ghost" style={{ height: "46px", paddingInline: "24px", fontSize: "12px", color: "var(--text-secondary)", borderColor: "var(--border-light)" }}>
               Sell Scrap &rarr;
             </Link>
           </div>
@@ -75,7 +75,7 @@ export default function Footer() {
 
             <p style={{
               fontFamily: "var(--font-editorial)", fontStyle: "italic",
-              fontSize: "15px", color: "#666666", lineHeight: 1.65,
+              fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.65,
               borderLeft: "2px solid var(--red-core)", paddingLeft: "14px",
               margin: "0 0 28px 0",
             }}>
@@ -86,8 +86,8 @@ export default function Footer() {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", marginBottom: "28px" }}>
               {["ISO 9001:2015", "ISO 14001:2015", "BIS Certified", "Basel Compliant"].map((c) => (
                 <span key={c} style={{
-                  fontFamily: "var(--font-mono)", fontSize: "9px", color: "#888888",
-                  border: "1px solid #222222", padding: "4px 10px", letterSpacing: "0.08em",
+                  fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--text-secondary)",
+                  border: "1px solid var(--border-light)", padding: "4px 10px", letterSpacing: "0.08em",
                   textTransform: "uppercase",
                 }}>
                   {c}
@@ -101,7 +101,7 @@ export default function Footer() {
                 href="https://www.linkedin.com/company/aadishakti-group-aadishakti-metal-recycling-pvt-ltd"
                 target="_blank" rel="noreferrer" aria-label="LinkedIn"
                 className="footer-social-btn"
-                style={{ width: "38px", height: "38px", border: "1px solid #222222", display: "flex", alignItems: "center", justifyContent: "center", color: "#666666", background: "transparent", transition: "all 0.22s ease" }}
+                style={{ width: "38px", height: "38px", border: "1px solid var(--border-light)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", background: "transparent", transition: "all 0.22s ease" }}
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                   <path d="M19 0h-14C2.24 0 0 2.24 0 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5V5c0-2.76-2.24-5-5-5zm-11 19H5V9h3v10zm-1.5-11.27c-.97 0-1.75-.79-1.75-1.76S5.53 4.21 6.5 4.21s1.75.79 1.75 1.76-.78 1.76-1.75 1.76zM20 19h-3v-5.6c0-3.37-4-3.11-4 0V19h-3V9h3v1.77c1.4-2.59 7-2.78 7 2.47V19z"/>
@@ -110,7 +110,7 @@ export default function Footer() {
               <a
                 href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="X / Twitter"
                 className="footer-social-btn"
-                style={{ width: "38px", height: "38px", border: "1px solid #222222", display: "flex", alignItems: "center", justifyContent: "center", color: "#666666", background: "transparent", transition: "all 0.22s ease" }}
+                style={{ width: "38px", height: "38px", border: "1px solid var(--border-light)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", background: "transparent", transition: "all 0.22s ease" }}
               >
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -127,12 +127,12 @@ export default function Footer() {
             </h4>
             <ul style={{ listStyle: "none" }}>
               {quickLinks.map((link) => (
-                <li key={link.to} style={{ borderBottom: "1px solid #161616" }}>
+                <li key={link.to} style={{ borderBottom: "1px solid var(--border-light)" }}>
                   <Link
                     to={link.to}
                     onClick={scrollTop}
                     className="footer-nav-link"
-                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 0", fontSize: "13px", fontWeight: 500, color: "#777777", transition: "all 0.2s ease" }}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 0", fontSize: "13px", fontWeight: 500, color: "var(--text-secondary)", transition: "all 0.2s ease" }}
                   >
                     <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: "var(--red-core)", flexShrink: 0, opacity: 0.6 }} />
                     {link.label}
@@ -155,7 +155,7 @@ export default function Footer() {
                   to={e.to}
                   onClick={scrollTop}
                   className="footer-entity-link"
-                  style={{ display: "block", padding: "14px 0", borderBottom: "1px solid #161616", transition: "all 0.2s ease" }}
+                  style={{ display: "block", padding: "14px 0", borderBottom: "1px solid var(--border-light)", transition: "all 0.2s ease" }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "3px" }}>
                     <span style={{
@@ -189,7 +189,7 @@ export default function Footer() {
                   <path d="M12 2a8 8 0 00-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 00-8-8z"/>
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
-                <p style={{ fontSize: "13px", color: "#666666", lineHeight: 1.6 }}>
+                <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
                   30, Third Floor, Shivaji Marg,<br />
                   Moti Nagar, New Delhi&nbsp;110&nbsp;015
                 </p>
@@ -217,11 +217,11 @@ export default function Footer() {
               </div>
 
               {/* GSTIN / CIN strip */}
-              <div style={{ marginTop: "8px", padding: "14px 16px", background: "#0A0A0A", border: "1px solid #1A1A1A", display: "flex", flexDirection: "column", gap: "6px" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "#333333", letterSpacing: "0.08em" }}>
+              <div style={{ marginTop: "8px", padding: "14px 16px", background: "var(--bg-secondary)", border: "1px solid var(--border-light)", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--text-secondary)", letterSpacing: "0.08em" }}>
                   CIN: L27109DL1994PTC058925
                 </div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "#333333", letterSpacing: "0.08em" }}>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--text-secondary)", letterSpacing: "0.08em" }}>
                   Established 2004 &middot; New Delhi, India
                 </div>
               </div>
@@ -232,24 +232,24 @@ export default function Footer() {
       </div>
 
       {/* ── DIVIDER ── */}
-      <div style={{ height: "1px", background: "#181818", margin: "0 clamp(20px,5vw,80px)" }} />
+      <div style={{ height: "1px", background: "var(--border-light)", margin: "0 clamp(20px,5vw,80px)" }} />
 
       {/* ══════════════════════════════════
           BOTTOM BAR
       ══════════════════════════════════ */}
-      <div style={{ background: "#080808" }}>
+      <div style={{ background: "var(--bg-secondary)", borderTop: "1px solid var(--border-light)" }}>
         <div className="container" style={{ padding: "20px 0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-          <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-secondary)" }}>
             &copy; {year} Aadishakti Group. All Rights Reserved.
           </p>
           <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center" }}>
             {["ISO 9001:2015", "ISO 14001:2015", "BIS IS 27:1992", "Made in India"].map((item, i, arr) => (
               <Fragment key={item}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {item}
                 </span>
                 {i < arr.length - 1 && (
-                  <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "rgba(255,255,255,0.15)", display: "inline-block" }} />
+                  <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "var(--border-light)", display: "inline-block" }} />
                 )}
               </Fragment>
             ))}
@@ -260,17 +260,17 @@ export default function Footer() {
       {/* ── Interactive CSS ── */}
       <style>{`
         .footer-social-btn:hover {
-          color: #FFFFFF !important;
+          color: var(--red-core) !important;
           border-color: var(--red-core) !important;
           background: rgba(204,34,0,0.10) !important;
           transform: translateY(-2px);
         }
         .footer-nav-link:hover {
-          color: #FFFFFF !important;
+          color: var(--red-core) !important;
           padding-left: 6px !important;
         }
         .footer-entity-link:hover span[style*="color: #AAAAAA"] {
-          color: #FFFFFF !important;
+          color: var(--red-core) !important;
         }
         .footer-contact-link:hover {
           color: var(--red-bright) !important;

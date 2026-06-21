@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Sidebar from './components/Sidebar';
@@ -11,9 +12,12 @@ import NewsManager from './pages/cms/NewsManager';
 import CareersManager from './pages/cms/CareersManager';
 import TeamManager from './pages/cms/TeamManager';
 import InvestorsManager from './pages/cms/InvestorsManager';
-import EnquiriesManager from './pages/crm/EnquiriesManager';
+import MessagesManager from './pages/crm/MessagesManager';
 import ApplicationsManager from './pages/crm/ApplicationsManager';
+import LogisticsManager from './pages/cms/LogisticsManager';
+import LogisticsOrderDetail from './pages/cms/LogisticsOrderDetail';
 import SettingsPage from './pages/SettingsPage';
+import VendorApprovalsManager from './pages/operations/VendorApprovalsManager';
 import './admin.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -34,12 +38,15 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-const AdminLayout = ({ children }) => (
-  <div className="admin-layout">
-    <Sidebar />
-    <div className="admin-main">{children}</div>
-  </div>
-);
+const AdminLayout = ({ children }) => {
+  const [collapsed, setCollapsed] = useState(false);
+  return (
+    <div className="admin-layout">
+      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <div className={`admin-main ${collapsed ? 'collapsed' : ''}`}>{children}</div>
+    </div>
+  );
+};
 
 const MobileWarning = () => (
   <div className="mobile-warning">
@@ -75,7 +82,10 @@ function AdminApp() {
                       <Route path="cms/careers" element={<CareersManager />} />
                       <Route path="cms/team" element={<TeamManager />} />
                       <Route path="cms/investors" element={<InvestorsManager />} />
-                      <Route path="crm/enquiries" element={<EnquiriesManager />} />
+                      <Route path="logistics" element={<LogisticsManager />} />
+                      <Route path="operations/approvals" element={<VendorApprovalsManager />} />
+                      <Route path="logistics/:id" element={<LogisticsOrderDetail />} />
+                      <Route path="messages" element={<MessagesManager />} />
                       <Route path="crm/applications" element={<ApplicationsManager />} />
                       <Route path="settings" element={<SettingsPage />} />
                       <Route path="" element={<Navigate to="dashboard" replace />} />

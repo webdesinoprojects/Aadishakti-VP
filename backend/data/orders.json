@@ -1,0 +1,200 @@
+[
+  {
+    "id": "ORD-99187",
+    "enquiryId": "1780290159455",
+    "vendorId": "v1",
+    "vendorName": "Shree Metal Traders",
+    "customerName": "Test User",
+    "product": "Product Inquiry",
+    "createdAt": "2026-06-21T07:26:19.641Z",
+    "status": "Packed",
+    "tracking": [
+      {
+        "stage": "Order Confirmed",
+        "timestamp": "2026-06-21T07:26:19.641Z",
+        "proofImages": [],
+        "completed": true
+      },
+      {
+        "stage": "Packed",
+        "timestamp": "2026-06-21T07:27:00.686Z",
+        "proofImages": [
+          "/uploads/mock-proof1.jpg",
+          "/uploads/mock-proof2.jpg"
+        ],
+        "completed": true
+      },
+      {
+        "stage": "Shipment Started",
+        "timestamp": null,
+        "proofImages": [],
+        "completed": false
+      },
+      {
+        "stage": "Reached Customer",
+        "timestamp": null,
+        "proofImages": [],
+        "completed": false
+      }
+    ],
+    "chatHistory": [
+      {
+        "sender": "Admin",
+        "message": "ok",
+        "timestamp": "2026-06-21T07:28:02.121Z"
+      },
+      {
+        "sender": "Vendor",
+        "message": "ok",
+        "timestamp": "2026-06-21T07:28:09.635Z"
+      }
+    ],
+    "podStatus": "Awaited",
+    "podImage": null,
+    "paymentProof": null,
+    "amount": "Pending"
+  },
+  {
+    "id": "ORD-10025",
+    "enquiryId": "17802",
+    "vendorId": "v1",
+    "vendorName": "Shree Metal Traders",
+    "customerName": "Acme Corp",
+    "product": "Custom Alloy Request (Al-Cu)",
+    "createdAt": "2026-06-20T10:00:00Z",
+    "status": "Order Confirmed",
+    "tracking": [
+      {
+        "stage": "Order Confirmed",
+        "timestamp": "2026-06-20T10:05:00Z",
+        "completed": true,
+        "proofImages": []
+      },
+      {
+        "stage": "Packed",
+        "timestamp": null,
+        "completed": false,
+        "proofImages": []
+      },
+      {
+        "stage": "Shipment Started",
+        "timestamp": null,
+        "completed": false,
+        "proofImages": []
+      },
+      {
+        "stage": "Reached Customer",
+        "timestamp": null,
+        "completed": false,
+        "proofImages": []
+      }
+    ],
+    "podStatus": "Awaited",
+    "podImage": null,
+    "paymentProof": null,
+    "amount": "5,00,000",
+    "chatHistory": []
+  },
+  {
+    "id": "ORD-10026",
+    "enquiryId": "17803",
+    "vendorId": "v1",
+    "vendorName": "Shree Metal Traders",
+    "customerName": "Tech Innovators Ltd",
+    "product": "Lead Ingots 99.9%",
+    "createdAt": "2026-06-18T14:30:00Z",
+    "status": "Packed",
+    "tracking": [
+      {
+        "stage": "Order Confirmed",
+        "timestamp": "2026-06-18T15:00:00Z",
+        "completed": true,
+        "proofImages": []
+      },
+      {
+        "stage": "Packed",
+        "timestamp": "2026-06-19T09:00:00Z",
+        "completed": true,
+        "proofImages": [
+          "/uploads/mock-packed.jpg",
+          "/uploads/mock-proof2.jpg"
+        ]
+      },
+      {
+        "stage": "Shipment Started",
+        "timestamp": null,
+        "completed": false,
+        "proofImages": []
+      },
+      {
+        "stage": "Reached Customer",
+        "timestamp": null,
+        "completed": false,
+        "proofImages": []
+      }
+    ],
+    "podStatus": "Awaited",
+    "podImage": null,
+    "paymentProof": null,
+    "amount": "2,50,000",
+    "chatHistory": [
+      {
+        "sender": "Admin",
+        "message": "Please ensure the Lead Ingots are wrapped securely.",
+        "timestamp": "2026-06-18T16:00:00Z"
+      },
+      {
+        "sender": "Vendor",
+        "message": "Will do! I will upload images of the packaging soon.",
+        "timestamp": "2026-06-18T16:15:00Z"
+      }
+    ]
+  },
+  {
+    "id": "ORD-10027",
+    "enquiryId": "17804",
+    "vendorId": "v2",
+    "vendorName": "Global Recyclers",
+    "customerName": "BuildRight Construction",
+    "product": "Zinc Sheets",
+    "createdAt": "2026-06-15T11:00:00Z",
+    "status": "Delivered",
+    "tracking": [
+      {
+        "stage": "Order Confirmed",
+        "timestamp": "2026-06-15T12:00:00Z",
+        "completed": true,
+        "proofImages": []
+      },
+      {
+        "stage": "Packed",
+        "timestamp": "2026-06-16T10:00:00Z",
+        "completed": true,
+        "proofImages": [
+          "/uploads/mock-packed.jpg",
+          "/uploads/mock-proof2.jpg"
+        ]
+      },
+      {
+        "stage": "Shipment Started",
+        "timestamp": "2026-06-17T14:00:00Z",
+        "completed": true,
+        "proofImages": [
+          "/uploads/mock-shipped.jpg",
+          "/uploads/mock-proof2.jpg"
+        ]
+      },
+      {
+        "stage": "Reached Customer",
+        "timestamp": "2026-06-20T16:00:00Z",
+        "completed": true,
+        "proofImages": []
+      }
+    ],
+    "podStatus": "Accepted",
+    "podImage": "/uploads/mock-pod.jpg",
+    "paymentProof": "/uploads/mock-receipt.jpg",
+    "amount": "12,00,000",
+    "chatHistory": []
+  }
+]

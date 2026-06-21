@@ -111,6 +111,10 @@ export const cmsAPI = {
 // ============================================
 
 export const crmAPI = {
+  // Vendor Assignment & Chat
+  getVendors: () => api.get('/api/vendors'),
+  assignVendor: (id, data) => api.post(`/api/enquiries/${id}/assign`, data),
+  addChatMessage: (id, data) => api.post(`/api/enquiries/${id}/chat`, data),
   // Enquiries
   getEnquiries: (params) => api.get('/api/admin/crm/enquiries', { params }),
   updateEnquiry: (id, data) => api.put(`/api/admin/crm/enquiries/${id}`, data),

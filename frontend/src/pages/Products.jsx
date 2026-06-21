@@ -174,7 +174,7 @@ export default function Products() {
                   </button>
 
                   <div style={{ textAlign: "center", fontSize: "11px", color: "var(--text-muted)", fontFamily: "var(--font-primary)" }}>
-                    Need a custom spec? <a href="/contact" style={{ color: "var(--red-core)", fontWeight: 600 }}>Request formal analysis →</a>
+                    Need a custom spec? <a href="/custom-alloy" style={{ color: "var(--red-core)", fontWeight: 600 }}>Request formal analysis →</a>
                   </div>
                 </div>
               </div>

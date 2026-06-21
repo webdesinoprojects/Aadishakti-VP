@@ -1,16 +1,25 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
+import { format } from 'date-fns';
+
 // Prepare data for Purchase Volume (Area Chart)
 const processVolumeData = (orders) => {
   const monthlyData = {};
   orders.forEach(order => {
-    // "15 May 2024" -> "May 2024"
-    const parts = order.date.split(' ');
-    if (parts.length === 3) {
-      const month = `${parts[1]} ${parts[2]}`;
+    try {
+      const dateStr = order.createdAt || order.date;
+      if (!dateStr) return;
+      
+      const month = format(new Date(dateStr), 'MMM yyyy');
+      
+      let amt = order.amount || 0;
+      if (typeof amt === 'string') {
+        amt = parseInt(amt.replace(/,/g, ''), 10) || 0;
+      }
+      
       if (!monthlyData[month]) monthlyData[month] = 0;
-      monthlyData[month] += order.amount;
-    }
+      monthlyData[month] += amt;
+    } catch(e) {}
   });
   
   // Convert to array

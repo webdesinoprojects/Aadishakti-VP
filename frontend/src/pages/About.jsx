@@ -126,7 +126,7 @@ export default function About() {
         <div className="container">
           <ScrollReveal>
             <SectionLabel text="// BOARD OF DIRECTORS" />
-            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>The Co-Founders</h2>
+            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>Leadership Team</h2>
 
             <div className="grid-2" style={{ gap: "40px" }}>
               {founders.map((fd) => (

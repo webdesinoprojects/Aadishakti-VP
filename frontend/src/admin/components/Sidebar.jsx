@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { 
+import { MapPin, 
   Home, Package, Image, Newspaper, Users, Briefcase, 
-  TrendingUp, Mail, FileText, Settings, LogOut 
-} from 'lucide-react';
+  TrendingUp, Mail, FileText, Settings, LogOut,
+  ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Sidebar = () => {
+const Sidebar = ({ collapsed, setCollapsed }) => {
   const { user, logout } = useAuth();
 
   const navGroups = [
@@ -24,13 +24,15 @@ const Sidebar = () => {
       label: 'Operations',
       items: [
         { to: '/admin/cms/careers', icon: Briefcase, label: 'Careers & Jobs' },
+        { to: '/admin/logistics', icon: MapPin, label: 'Logistics Tracker' },
+        { to: '/admin/operations/approvals', icon: Briefcase, label: 'Vendor Approvals' },
         { to: '/admin/cms/investors', icon: TrendingUp, label: 'Investors Data' },
       ],
     },
     {
       label: 'CRM',
       items: [
-        { to: '/admin/crm/enquiries', icon: Mail, label: 'Enquiries' },
+        { to: '/admin/messages', icon: Mail, label: 'Contact Inbox' },
         { to: '/admin/crm/applications', icon: FileText, label: 'Job Applications' },
       ],
     },
@@ -43,7 +45,15 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="admin-sidebar">
+    <div className={`admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
+      <button 
+        onClick={() => setCollapsed(!collapsed)}
+        className="admin-sidebar-toggle"
+        title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+      >
+        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+      </button>
+
       <div className="sidebar-header">
         <img src="/logo.png" alt="Aadishakti" className="sidebar-logo" />
         <div className="sidebar-title">CMS Admin</div>
@@ -69,7 +79,7 @@ const Sidebar = () => {
 
       <div className="sidebar-footer">
         <div className="user-info">
-          <div className="user-avatar">AA</div>
+          <div className="user-avatar">{user?.username ? user.username.charAt(0).toUpperCase() : 'A'}</div>
           <div className="user-name">{user?.username || 'Admin'}</div>
         </div>
         <button className="logout-btn" onClick={logout} title="Logout">

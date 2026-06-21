@@ -114,10 +114,15 @@ const sustainabilityStats = [
   { value: "ISO",  label: "ISO 14001:2015 Environmental Management System" },
 ];
 
-const clientNames = [
-  "Exide Industries", "Amara Raja Batteries", "Luminous Power Technologies",
-  "Su-Kam Power Systems", "HBL Power Systems", "Okaya Power Group",
-  "Rocket Electric", "Genus Power Infrastructure", "Livguard Energy",
+const clientLogos = [
+  { name: "Exide Industries", src: "/trusted-logo/exide.png" },
+  { name: "Luminous Power Technologies", src: "/trusted-logo/luminous.jpg" },
+  { name: "Su-Kam Power Systems", src: "/trusted-logo/sukam.jpg" },
+  { name: "HBL Power Systems", src: "/trusted-logo/hbl.png" },
+  { name: "Okaya Power Group", src: "/trusted-logo/okaya.png" },
+  { name: "Rocket Electric", src: "/trusted-logo/rocket.jpeg" },
+  { name: "Genus Power Infrastructure", src: "/trusted-logo/genus.jpg" },
+  { name: "Livguard Energy", src: "/trusted-logo/livguard.png" },
 ];
 
 /* â”€â”€ Component â”€â”€ */
@@ -305,19 +310,23 @@ export default function Home() {
           </div>
           <div className="clients-marquee-wrap" style={{ flex: 1, overflow: "hidden" }}>
             <div className="clients-marquee-inner">
-              {[...clientNames, ...clientNames].map((name, i) => (
+              {[...clientLogos, ...clientLogos].map((logo, i) => (
                 <div
                   key={i}
                   style={{
                     padding: "0 44px",
-                    fontFamily: "var(--font-primary)", fontWeight: 700,
-                    fontSize: "13px", color: "var(--text-secondary)",
-                    letterSpacing: "0.06em", textTransform: "uppercase",
-                    whiteSpace: "nowrap",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     borderRight: "1px solid var(--border-light)",
+                    height: "100%",
                   }}
                 >
-                  {name}
+                  <img 
+                    src={logo.src} 
+                    alt={logo.name} 
+                    style={{ height: "40px", width: "120px", objectFit: "contain" }}
+                  />
                 </div>
               ))}
             </div>
@@ -578,76 +587,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-          SECTION 9 â€” CLIENTS MARQUEE
-          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section style={{ background: "var(--bg-secondary)", padding: "48px 0", borderTop: "1px solid var(--border-light)" }}>
-        <div className="container" style={{ marginBottom: "28px" }}>
-          <SectionLabel text="// OUR VALUED CLIENTS" />
-          <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "18px", color: "var(--text-muted)" }}>
-            Supplying India's leading battery manufacturers
-          </h3>
-        </div>
-
-        <div className="clients-marquee-wrap" style={{ overflow: "hidden" }}>
-          <div className="clients-marquee-inner">
-            {[...clientNames, ...clientNames].map((name, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "0 48px",
-                  borderRight: "1px solid var(--border-light)",
-                  fontFamily: "var(--font-primary)",
-                  fontWeight: 700,
-                  fontSize: "14px",
-                  color: "var(--text-secondary)",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  whiteSpace: "nowrap",
-                  height: "48px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                {name}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 10 â€” INVESTORS PREVIEW
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section style={{ background: "#111111", padding: "80px 0", minHeight: "400px" }}>
+      <section style={{ background: "var(--bg-primary)", padding: "80px 0", minHeight: "400px" }}>
         <div className="container">
           <ScrollReveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "20px", marginBottom: "40px" }}>
               <div>
                 <SectionLabel text="// INVESTORS" />
-                <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "var(--text-white)", lineHeight: 1.15 }}>
+                <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "var(--text-primary)", lineHeight: 1.15 }}>
                   Performance & Growth Visibility
                 </h2>
               </div>
-              <Link to="/investors" className="btn-ghost-steel" style={{ color: "#B0B0B0", borderColor: "#3A3A3A" }}>
+              <Link to="/investors" className="btn-ghost" style={{ color: "var(--text-secondary)", borderColor: "var(--border-light)" }}>
                 Open Investor Desk →
               </Link>
             </div>
 
-            <div className="grid-3" style={{ gap: "16px" }}>
+            <div className="grid-3" style={{ gap: "32px" }}>
               {[
                 { label: "Revenue Growth", value: "↑ Consistent YoY", desc: "Multi-year track record of volume and revenue expansion." },
                 { label: "Capacity Pipeline", value: "120,000 MT", desc: "Expansion to 120,000 MTPA by April 2026 at Mundra facility." },
                 { label: "Export Share", value: "48% Volume", desc: "Nearly half of output serves international battery manufacturers." },
               ].map((item) => (
-                <div key={item.label} className="glass-card-dark" style={{ padding: "28px 24px" }}>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "10px" }}>
+                <div key={item.label} className="corporate-card" style={{ padding: "32px 28px" }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--red-core)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "12px" }}>
                     {item.label}
                   </div>
-                  <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "22px", color: "#FFFFFF", marginBottom: "10px" }}>
+                  <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "24px", color: "var(--text-primary)", marginBottom: "12px" }}>
                     {item.value}
                   </div>
-                  <p style={{ fontSize: "13px", color: "#888888", lineHeight: 1.6 }}>{item.desc}</p>
+                  <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
                 </div>
               ))}
             </div>

@@ -16,6 +16,25 @@
     "submittedAt": "2026-06-01T05:02:39.456Z",
     "notes": "Will Solve Later",
     "updatedAt": "2026-06-01T10:17:12.377Z",
-    "status": "Replied"
+    "status": "Replied",
+    "assignedVendorId": "v1",
+    "assignedVendorName": "Shree Metal Traders",
+    "chatHistory": [
+      {
+        "sender": "Admin",
+        "message": "hi",
+        "timestamp": "2026-06-21T06:31:52.157Z"
+      },
+      {
+        "sender": "Vendor",
+        "message": "ok",
+        "timestamp": "2026-06-21T06:34:55.764Z"
+      },
+      {
+        "sender": "Vendor",
+        "message": "ok",
+        "timestamp": "2026-06-21T06:35:01.129Z"
+      }
+    ]
   }
 ]

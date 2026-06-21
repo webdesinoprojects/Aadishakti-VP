@@ -931,6 +931,254 @@ app.get("/health", (req, res) => {
 });
 
 // Start the server
+
+// ==========================================
+// VENDOR ASSIGNMENT & CHAT ENDPOINTS
+// ==========================================
+
+// GET /api/vendors - Get list of vendors for assignment
+app.get("/api/vendors", async (req, res) => {
+  try {
+    // Mocking a list of available vendors
+    const mockVendors = [
+      { id: "v1", name: "Shree Metal Traders", category: "Scrap Dealer", vendorCode: "VEN10234" },
+      { id: "v2", name: "Global Recyclers", category: "Recycler", vendorCode: "VEN10235" },
+      { id: "v3", name: "Apex Lead Corp", category: "Corporate", vendorCode: "VEN10236" },
+    ];
+    res.json(mockVendors);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch vendors" });
+  }
+});
+
+// POST /api/enquiries/:id/assign - Assign an enquiry to a vendor
+app.post("/api/enquiries/:id/assign", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { vendorId, vendorName } = req.body;
+    
+    const dataPath = path.join(__dirname, "data", "enquiries.json");
+    const dataContent = await fs.readFile(dataPath, "utf-8");
+    const enquiries = JSON.parse(dataContent);
+    
+    const enquiry = enquiries.find(e => e.id === id);
+    if (!enquiry) return res.status(404).json({ error: "Enquiry not found" });
+    
+    enquiry.assignedVendorId = vendorId;
+    enquiry.assignedVendorName = vendorName;
+    if (!enquiry.chatHistory) enquiry.chatHistory = [];
+    
+    await fs.writeFile(dataPath, JSON.stringify(enquiries, null, 2));
+    res.json({ success: true, enquiry });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to assign vendor" });
+  }
+});
+
+// POST /api/enquiries/:id/chat - Add a chat message
+app.post("/api/enquiries/:id/chat", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { sender, message } = req.body; // sender: "Admin" | "Vendor"
+    
+    const dataPath = path.join(__dirname, "data", "enquiries.json");
+    const dataContent = await fs.readFile(dataPath, "utf-8");
+    const enquiries = JSON.parse(dataContent);
+    
+    const enquiry = enquiries.find(e => e.id === id);
+    if (!enquiry) return res.status(404).json({ error: "Enquiry not found" });
+    
+    if (!enquiry.chatHistory) enquiry.chatHistory = [];
+    enquiry.chatHistory.push({
+      sender,
+      message,
+      timestamp: new Date().toISOString()
+    });
+    
+    await fs.writeFile(dataPath, JSON.stringify(enquiries, null, 2));
+    res.json({ success: true, chatHistory: enquiry.chatHistory });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add chat message" });
+  }
+});
+
+// GET /api/vendor/rfqs - Get RFQs assigned to the logged-in vendor
+app.get("/api/vendor/rfqs", async (req, res) => {
+  try {
+    // In a real app, vendorId comes from JWT. For now, assume "v1" (Shree Metal Traders)
+    const vendorId = "v1"; 
+    
+    const dataPath = path.join(__dirname, "data", "enquiries.json");
+    const dataContent = await fs.readFile(dataPath, "utf-8");
+    const enquiries = JSON.parse(dataContent);
+    
+    const assigned = enquiries.filter(e => e.assignedVendorId === vendorId);
+    res.json(assigned);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch RFQs" });
+  }
+});
+
+
+// ==========================================
+// LOGISTICS & ORDERS API
+// ==========================================
+
+const getOrders = async () => {
+  try {
+    const data = await fs.readFile(path.join(__dirname, 'data', 'orders.json'), 'utf-8');
+    return JSON.parse(data);
+  } catch (e) {
+    return [];
+  }
+};
+
+const saveOrders = async (orders) => {
+  await fs.writeFile(path.join(__dirname, 'data', 'orders.json'), JSON.stringify(orders, null, 2));
+};
+
+// GET /api/orders (Admin sees all)
+app.get("/api/orders", async (req, res) => {
+  const orders = await getOrders();
+  res.json(orders);
+});
+
+// GET /api/vendor/orders (Vendor sees their own)
+app.get("/api/vendor/orders", async (req, res) => {
+  const orders = await getOrders();
+  const vendorId = "v1"; // Hardcoded for demo
+  res.json(orders.filter(o => o.vendorId === vendorId));
+});
+
+// GET /api/track/:id (Public tracking)
+app.get("/api/track/:id", async (req, res) => {
+  const orders = await getOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+  res.json(order);
+});
+
+// POST /api/orders/create
+app.post("/api/orders/create", async (req, res) => {
+  const { enquiryId, vendorId, vendorName, customerName, product, amount } = req.body;
+  const orders = await getOrders();
+  
+  const newOrder = {
+    id: `ORD-${Math.floor(10000 + Math.random() * 90000)}`,
+    enquiryId,
+    vendorId,
+    vendorName,
+    customerName,
+    product,
+    createdAt: new Date().toISOString(),
+    status: "Order Confirmed",
+    tracking: [
+      { stage: "Order Confirmed", timestamp: new Date().toISOString(), proofImages: [], completed: true },
+      { stage: "Packed", timestamp: null, proofImages: [], completed: false },
+      { stage: "Shipment Started", timestamp: null, proofImages: [], completed: false },
+      { stage: "Reached Customer", timestamp: null, proofImages: [], completed: false }
+    ],
+    chatHistory: [],
+    podStatus: "Awaited",
+    podImage: null,
+    paymentProof: null,
+    amount: amount || "0"
+  };
+  
+  orders.unshift(newOrder);
+  await saveOrders(orders);
+  res.json({ success: true, order: newOrder });
+});
+
+// POST /api/orders/:id/update-stage
+app.post("/api/orders/:id/update-stage", async (req, res) => {
+  const { stage, proofImages } = req.body;
+  const orders = await getOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  const stageObj = order.tracking.find(t => t.stage === stage);
+  if (stageObj) {
+    stageObj.completed = true;
+    stageObj.timestamp = new Date().toISOString();
+    stageObj.proofImages = proofImages || [];
+    order.status = stage;
+  }
+  await saveOrders(orders);
+  res.json({ success: true, order });
+});
+
+// POST /api/orders/:id/chat
+app.post("/api/orders/:id/chat", async (req, res) => {
+  const { sender, message } = req.body;
+  const orders = await getOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  if (!order.chatHistory) order.chatHistory = [];
+  order.chatHistory.push({
+    sender,
+    message,
+    timestamp: new Date().toISOString()
+  });
+
+  await saveOrders(orders);
+  res.json({ success: true, order });
+});
+
+// POST /api/orders/:id/pod
+app.post("/api/orders/:id/pod", async (req, res) => {
+  const { podImage } = req.body;
+  const orders = await getOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  order.podImage = podImage;
+  order.podStatus = "Under Review";
+  
+  // also mark Reached Customer stage if not done
+  const reached = order.tracking.find(t => t.stage === "Reached Customer");
+  if (reached && !reached.completed) {
+    reached.completed = true;
+    reached.timestamp = new Date().toISOString();
+    order.status = "Reached Customer";
+  }
+
+  await saveOrders(orders);
+  res.json({ success: true, order });
+});
+
+// POST /api/orders/:id/review-pod
+app.post("/api/orders/:id/review-pod", async (req, res) => {
+  const { action } = req.body; // 'accept' or 'reject'
+  const orders = await getOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  if (action === 'accept') {
+    order.podStatus = "Accepted";
+    order.status = "Delivered";
+  } else {
+    order.podStatus = "Rejected";
+    order.podImage = null; // force re-upload
+  }
+
+  await saveOrders(orders);
+  res.json({ success: true, order });
+});
+
+// POST /api/orders/:id/payment
+app.post("/api/orders/:id/payment", async (req, res) => {
+  const { paymentProof } = req.body;
+  const orders = await getOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  order.paymentProof = paymentProof;
+  await saveOrders(orders);
+  res.json({ success: true, order });
+});
+
 app.listen(PORT, () => {
   console.log(`===============================================`);
   console.log(`Aadishakti Backend Running on http://localhost:${PORT}`);

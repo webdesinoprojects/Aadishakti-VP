@@ -11,8 +11,9 @@
 
 .vendor-sidebar {
   width: 250px;
-  background-color: var(--bg-dark-card);
-  color: var(--text-white);
+  background-color: #FFFFFF;
+  border-right: 1px solid var(--border-light);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -24,7 +25,7 @@
 
 .vendor-sidebar-header {
   padding: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .vendor-sidebar-logo {
@@ -54,12 +55,12 @@
 }
 
 .vendor-nav-item:hover {
-  color: var(--text-white);
+  color: var(--text-primary);
   background: rgba(255, 255, 255, 0.03);
 }
 
 .vendor-nav-item.active {
-  color: var(--text-white);
+  color: var(--text-primary);
   background: var(--red-core);
   border-left: 4px solid var(--red-bright);
 }
@@ -313,7 +314,7 @@
 
 .vendor-filter-btn.active {
   background: var(--red-core);
-  color: var(--text-white);
+  color: var(--text-primary);
   border-color: var(--red-core);
 }
 

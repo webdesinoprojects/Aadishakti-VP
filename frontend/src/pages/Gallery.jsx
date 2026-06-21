@@ -36,7 +36,7 @@ export default function Gallery() {
     ]
   };
 
-  const galleryData = cms?.gallery || defaultGallery;
+  const galleryData = Array.isArray(cms?.gallery) ? cms.gallery : defaultGallery;
   
   const allCategories = [
     { id: "office", title: "Corporate Office" },
@@ -45,105 +45,70 @@ export default function Gallery() {
     { id: "celebration", title: "Celebrations & Festivals" }
   ];
 
-  const currentImages = galleryData[activeCategory] || [];
+  const currentImages = Array.isArray(galleryData) ? galleryData.filter(item => item.category === activeCategory) : (galleryData[activeCategory] || []);
   const currentTitle = allCategories.find(c => c.id === activeCategory)?.title || "Gallery";
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
       <PageHero title="OUR GALLERY" activePage="GALLERY" />
 
-      <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
+            <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
           
-          <div className="gallery-layout">
-            
-            {/* Main Gallery Grid */}
-            <div>
-              <div style={{ marginBottom: "2rem" }}>
-                <h2 style={{ fontFamily: "var(--font-primary)", fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", textTransform: "uppercase" }}>
-                  {currentTitle}
-                </h2>
-                <div style={{ height: "3px", width: "40px", background: "var(--red-core)", marginTop: "1rem" }} />
-              </div>
-
-              <motion.div 
-                key={activeCategory}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+          {/* Tab Controls */}
+          <div style={{ display: "flex", gap: "1rem", marginBottom: "4rem", flexWrap: "wrap", justifyContent: "center" }}>
+            {allCategories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => navigate(`/gallery?category=${cat.id}`)}
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                  gap: "1.5rem"
+                  backgroundColor: activeCategory === cat.id ? "var(--red-core)" : "transparent",
+                  color: activeCategory === cat.id ? "#fff" : "var(--text-primary)",
+                  border: "1px solid",
+                  borderColor: activeCategory === cat.id ? "var(--red-core)" : "var(--border-light)",
+                  padding: "12px 32px",
+                  fontFamily: "var(--font-primary)",
+                  fontWeight: "600",
+                  letterSpacing: "0.1em",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
                 }}
               >
-                {currentImages.map((src, idx) => (
-                  <div key={idx} className="dominance-card" style={{ padding: 0, overflow: "hidden", height: "200px" }}>
-                    <img 
-                      src={src} 
-                      alt={`${currentTitle} ${idx + 1}`} 
-                      style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s ease" }}
-                      onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                      onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                    />
-                  </div>
-                ))}
-                {currentImages.length === 0 && (
-                  <p style={{ color: "var(--text-secondary)" }}>No images found for this category.</p>
-                )}
-              </motion.div>
-            </div>
-
-            {/* SIDEBAR: OTHER CATEGORIES */}
-            <aside style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", marginBottom: "1rem" }}>
-                BROWSE CATEGORIES
-              </h3>
-              
-              {allCategories.map(cat => {
-                const isActive = cat.id === activeCategory;
-                // Get the first image as a thumbnail if available
-                const thumb = galleryData[cat.id]?.[0] || '/hero-gallery.jpg';
-                
-                return (
-                  <div 
-                    key={cat.id}
-                    onClick={() => navigate(`/gallery?category=${cat.id}`)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1rem",
-                      padding: "0.75rem",
-                      background: isActive ? "var(--bg-secondary)" : "transparent",
-                      border: "1px solid",
-                      borderColor: isActive ? "var(--red-core)" : "var(--border-light)",
-                      cursor: "pointer",
-                      transition: "all 0.2s ease"
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) e.currentTarget.style.borderColor = "var(--text-muted)";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) e.currentTarget.style.borderColor = "var(--border-light)";
-                    }}
-                  >
-                    <div style={{ width: "60px", height: "60px", flexShrink: 0, overflow: "hidden", border: "1px solid var(--border-light)" }}>
-                      <img src={thumb} alt={cat.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    </div>
-                    <div>
-                      <h4 style={{ fontFamily: "var(--font-primary)", fontSize: "14px", fontWeight: "600", color: isActive ? "var(--red-core)" : "var(--text-primary)", margin: 0 }}>
-                        {cat.title}
-                      </h4>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
-                        {galleryData[cat.id]?.length || 0} ITEMS
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
-            </aside>
-
+                {cat.title}
+              </button>
+            ))}
           </div>
+
+          {/* Main Gallery Grid */}
+          <motion.div 
+            key={activeCategory}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+              gap: "1.5rem"
+            }}
+          >
+            {currentImages.map((item, idx) => {
+              const imgSrc = typeof item === 'string' ? item : (item.image || item.img);
+              return (
+              <div key={idx} className="dominance-card" style={{ padding: 0, overflow: "hidden", height: "200px" }}>
+                <img 
+                  src={imgSrc} 
+                  alt={`${currentTitle} ${idx + 1}`} 
+                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s ease" }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                />
+              </div>
+            )})}
+            {currentImages.length === 0 && (
+              <p style={{ color: "var(--text-secondary)" }}>No images found for this category.</p>
+            )}
+          </motion.div>
+
         </div>
       </section>
     </div>

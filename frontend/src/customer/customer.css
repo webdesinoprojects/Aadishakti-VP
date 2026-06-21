@@ -2,7 +2,7 @@
 .customer-portal {
   --bg-primary: #f5f6f8;
   --bg-surface: #ffffff;
-  --sidebar-bg: #1c222c;
+  --sidebar-bg: #FFFFFF;
   --text-primary: #1e293b;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
@@ -30,7 +30,7 @@
 .customer-sidebar {
   width: 250px;
   background-color: var(--sidebar-bg);
-  color: white;
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
@@ -64,7 +64,7 @@
 }
 .customer-nav-item:hover {
   background: rgba(255,255,255,0.05);
-  color: white;
+  color: var(--text-primary);
 }
 .customer-nav-item.active {
   background: rgba(219, 31, 38, 0.1);
@@ -96,7 +96,7 @@
   position: fixed;
   inset: 0;
   background: var(--sidebar-bg);
-  color: white;
+  color: var(--text-primary);
   z-index: 9999;
   align-items: center;
   justify-content: center;
@@ -212,7 +212,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;
-  color: white;
+  color: var(--text-primary);
   font-size: 14px;
 }
 .stepper-step.completed .step-circle {
@@ -245,7 +245,7 @@
 .customer-chat-message p { margin: 0 0 8px 0; }
 .customer-chat-message p:last-child { margin: 0; }
 .customer-chat-message strong { font-weight: 700; }
-.customer-chat-message.user { align-self: flex-end; background: var(--red-core); color: white; border-bottom-right-radius: 2px; }
+.customer-chat-message.user { align-self: flex-end; background: var(--red-core); color: var(--text-primary); border-bottom-right-radius: 2px; }
 .customer-chat-message.ai { align-self: flex-start; background: white; color: var(--text-primary); border: 1px solid var(--border-color); border-bottom-left-radius: 2px; }
 .customer-chat-input { flex: 1; border: none; outline: none; padding: 12px; font-size: 14px; font-family: inherit; }
 
@@ -294,7 +294,7 @@
   transform: translateY(0);
 }
 .customer-chat-header {
-  background: var(--sidebar-bg);
+  background: var(--red-core);
   padding: 16px;
   display: flex;
   justify-content: space-between;
@@ -325,7 +325,7 @@
 }
 .customer-chat-suggest-btn:hover {
   background: var(--red-core);
-  color: white;
+  color: var(--text-primary);
   border-color: var(--red-core);
 }
 .customer-chat-input-area {

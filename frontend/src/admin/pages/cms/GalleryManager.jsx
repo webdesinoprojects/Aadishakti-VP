@@ -8,7 +8,7 @@ import { useToast } from '../../context/ToastContext';
 
 export default function GalleryManager() {
   const [items, setItems] = useState([]);
-  const [form, setForm] = useState({ image: '', category: 'plant', title: '' });
+  const [form, setForm] = useState({ image: '', category: 'plants', title: '' });
   const [loading, setLoading] = useState(true);
   const [deleteItem, setDeleteItem] = useState(null);
   const { success, error } = useToast();
@@ -32,7 +32,7 @@ export default function GalleryManager() {
     try {
       const res = await cmsAPI.addImage(form);
       setItems((prev) => [res.data, ...prev]);
-      setForm({ image: '', category: 'plant', title: '' });
+      setForm({ image: '', category: 'plants', title: '' });
       success('Image added');
     } catch {
       error('Failed to add image');
@@ -59,7 +59,7 @@ export default function GalleryManager() {
           <div className="card-header"><h1 className="card-title">Gallery Manager</h1></div>
           <div className="form-group"><label className="form-label">Image</label><ImageUploader currentImage={form.image} onUpload={(url) => setForm({ ...form, image: url })} onRemove={() => setForm({ ...form, image: '' })} /></div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="form-group"><label className="form-label">Category</label><select className="form-select" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}><option value="plant">Plant</option><option value="office">Office</option><option value="products">Products</option></select></div>
+            <div className="form-group"><label className="form-label">Category</label><select className="form-select" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}><option value="plants">Manufacturing Plants</option><option value="office">Corporate HQ</option><option value="events">Events & Exhibitions</option><option value="celebration">Celebrations</option></select></div>
             <div className="form-group"><label className="form-label">Title</label><input className="form-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
           </div>
           <button className="btn btn-primary" onClick={add}><Plus size={16} /> Add Image</button>

@@ -17,9 +17,11 @@ import About from "./pages/About";
 import Businesses from "./pages/Businesses";
 import Products from "./pages/Products";
 import Sustainability from "./pages/Sustainability";
+import TrackOrder from "./pages/TrackOrder";
 import Investors from "./pages/Investors";
 import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
+import CustomAlloy from "./pages/CustomAlloy";
 import Sourcing from "./pages/Sourcing";
 import Import from "./pages/Import";
 import Media from "./pages/Media";
@@ -116,6 +118,7 @@ export default function App() {
             <Route path="/businesses" element={<PageTransition><Businesses /></PageTransition>} />
             <Route path="/products" element={<PageTransition><Products /></PageTransition>} />
             <Route path="/sustainability" element={<PageTransition><Sustainability /></PageTransition>} />
+            <Route path="/track" element={<PageTransition><TrackOrder /></PageTransition>} />
             <Route path="/investors" element={<PageTransition><Investors /></PageTransition>} />
             <Route path="/careers" element={<PageTransition><Careers /></PageTransition>} />
             <Route path="/sourcing" element={<PageTransition><Sourcing /></PageTransition>} />
@@ -123,6 +126,7 @@ export default function App() {
             <Route path="/media" element={<PageTransition><Media /></PageTransition>} />
             <Route path="/gallery" element={<PageTransition><Gallery /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+            <Route path="/custom-alloy" element={<PageTransition><CustomAlloy /></PageTransition>} />
           </Routes>
         </AnimatePresence>
       </main>

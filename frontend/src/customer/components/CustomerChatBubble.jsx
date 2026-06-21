@@ -10,11 +10,33 @@ export default function CustomerChatBubble() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const dragRef = useRef({ isDragging: false, hasDragged: false, startX: 0, startY: 0, initialX: 0, initialY: 0 });
+
+  const handlePointerDown = (e) => {
+    if (e.target.closest('.customer-chat-messages') || e.target.closest('.customer-chat-input-area')) return;
+    dragRef.current = { isDragging: true, hasDragged: false, startX: e.clientX, startY: e.clientY, initialX: position.x, initialY: position.y };
+    e.target.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!dragRef.current.isDragging) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragRef.current.hasDragged = true;
+    setPosition({ x: dragRef.current.initialX + dx, y: dragRef.current.initialY + dy });
+  };
+
+  const handlePointerUp = (e) => {
+    dragRef.current.isDragging = false;
+    try { e.target.releasePointerCapture(e.pointerId); } catch(e){}
+  };
+
   const suggestedQuestions = [
     "Track my recent shipments",
     "Show my pending invoices",
-    "Download my Quality Certificates",
-    "How do I request a return?"
+    "View my Sustainability Reports",
+    "How do I request a custom alloy?"
   ];
 
   const scrollToBottom = () => {
@@ -56,16 +78,29 @@ export default function CustomerChatBubble() {
   };
 
   return (
-    <>
+    <div 
+      style={{ 
+        position: 'fixed', 
+        bottom: '30px', 
+        right: '30px', 
+        zIndex: 9999,
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        touchAction: 'none'
+      }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+    >
       <button 
         className="customer-chat-bubble"
-        onClick={() => setIsOpen(true)}
-        style={{ display: isOpen ? 'none' : 'flex' }}
+        onClick={() => { if (!dragRef.current.hasDragged) setIsOpen(true); }}
+        style={{ display: isOpen ? 'none' : 'flex', position: 'relative', right: 0, bottom: 0, cursor: 'grab' }}
       >
         <MessageSquare size={24} color="#fff" />
       </button>
 
-      <div className={`customer-chat-panel ${isOpen ? 'open' : ''}`}>
+      <div className={`customer-chat-panel ${isOpen ? 'open' : ''}`} style={{ position: 'relative', right: 0, bottom: 0 }}>
         <div className="customer-chat-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Bot size={20} color="#fff" />
@@ -119,6 +154,6 @@ export default function CustomerChatBubble() {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

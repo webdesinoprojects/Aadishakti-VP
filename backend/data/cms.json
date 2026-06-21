@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-01T11:07:19.508Z",
+  "updatedAt": "2026-06-19T04:59:01.832Z",
   "home": {
     "heroSlides": [
       {
@@ -88,37 +88,130 @@
     }
   },
   "media": [
-    { "id": "1", "type": "blogs", "title": "The Future of Secondary Lead", "date": "Oct 12, 2026", "img": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg", "desc": "Exploring how sustainable battery recycling is changing the global supply chain." },
-    { "id": "2", "type": "news", "title": "Aadishakti Expands Mundra Plant", "date": "Sep 28, 2026", "img": "/gallery/plants/Mundra/Plant_Pic_02.jpeg", "desc": "New rotary furnaces installed to boost pure lead output by 20%." },
-    { "id": "3", "type": "events", "title": "Annual Sustainability Summit", "date": "Nov 05, 2026", "img": "/gallery/events/PMUD5812.JPG", "desc": "Join us for our yearly gathering of eco-conscious partners and suppliers." },
-    { "id": "4", "type": "blogs", "title": "Why BIS Certification Matters", "date": "Aug 15, 2026", "img": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg", "desc": "Understanding the rigorous standards behind IS 27:1992." }
+    {
+      "id": "1",
+      "type": "blogs",
+      "title": "The Future of Secondary Lead",
+      "date": "Oct 12, 2026",
+      "img": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg",
+      "desc": "Exploring how sustainable battery recycling is changing the global supply chain."
+    },
+    {
+      "id": "2",
+      "type": "news",
+      "title": "Aadishakti Expands Mundra Plant",
+      "date": "Sep 28, 2026",
+      "img": "/gallery/plants/Mundra/Plant_Pic_02.jpeg",
+      "desc": "New rotary furnaces installed to boost pure lead output by 20%."
+    },
+    {
+      "id": "3",
+      "type": "events",
+      "title": "Annual Sustainability Summit",
+      "date": "Nov 05, 2026",
+      "img": "/gallery/events/PMUD5812.JPG",
+      "desc": "Join us for our yearly gathering of eco-conscious partners and suppliers."
+    },
+    {
+      "id": "4",
+      "type": "blogs",
+      "title": "Why BIS Certification Matters",
+      "date": "Aug 15, 2026",
+      "img": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg",
+      "desc": "Understanding the rigorous standards behind IS 27:1992."
+    }
   ],
-  "gallery": {
-    "office": [
-      "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg",
-      "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg"
-    ],
-    "plants": [
-      "/gallery/plants/Mundra/Plant_Pic_02.jpeg",
-      "/gallery/plants/Mundra/Rotary_1.jpeg",
-      "/gallery/plants/Mundra/IMG_20251228_113451171_HDR_AE.jpg",
-      "/gallery/plants/Mundra/14_18.jpg"
-    ],
-    "events": [
-      "/gallery/events/HPOW7738.JPG",
-      "/gallery/events/LDJY9705.JPG",
-      "/gallery/events/PMUD5812.JPG",
-      "/gallery/events/XKFO7284.JPG"
-    ],
-    "celebration": [
-      "/gallery/celebration/HPOW7738.JPG",
-      "/gallery/celebration/PMUD5812.JPG"
-    ]
-  },
+  "gallery": [
+    {
+      "id": "g1",
+      "category": "office",
+      "image": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg",
+      "title": "Office Image 1"
+    },
+    {
+      "id": "g2",
+      "category": "office",
+      "image": "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg",
+      "title": "Office Image 2"
+    },
+    {
+      "id": "g3",
+      "category": "plants",
+      "image": "/gallery/plants/Mundra/Plant_Pic_02.jpeg",
+      "title": "Plants Image 3"
+    },
+    {
+      "id": "g4",
+      "category": "plants",
+      "image": "/gallery/plants/Mundra/Rotary_1.jpeg",
+      "title": "Plants Image 4"
+    },
+    {
+      "id": "g5",
+      "category": "plants",
+      "image": "/gallery/plants/Mundra/IMG_20251228_113451171_HDR_AE.jpg",
+      "title": "Plants Image 5"
+    },
+    {
+      "id": "g6",
+      "category": "plants",
+      "image": "/gallery/plants/Mundra/14_18.jpg",
+      "title": "Plants Image 6"
+    },
+    {
+      "id": "g7",
+      "category": "events",
+      "image": "/gallery/events/HPOW7738.JPG",
+      "title": "Events Image 7"
+    },
+    {
+      "id": "g8",
+      "category": "events",
+      "image": "/gallery/events/LDJY9705.JPG",
+      "title": "Events Image 8"
+    },
+    {
+      "id": "g9",
+      "category": "events",
+      "image": "/gallery/events/PMUD5812.JPG",
+      "title": "Events Image 9"
+    },
+    {
+      "id": "g10",
+      "category": "events",
+      "image": "/gallery/events/XKFO7284.JPG",
+      "title": "Events Image 10"
+    },
+    {
+      "id": "g11",
+      "category": "celebration",
+      "image": "/gallery/celebration/HPOW7738.JPG",
+      "title": "Celebration Image 11"
+    },
+    {
+      "id": "g12",
+      "category": "celebration",
+      "image": "/gallery/celebration/PMUD5812.JPG",
+      "title": "Celebration Image 12"
+    },
+    {
+      "id": "1781845141832",
+      "image": "http://localhost:5000/uploads/img-1781845139363-745736.png",
+      "category": "plants",
+      "title": "",
+      "createdAt": "2026-06-19T04:59:01.832Z"
+    }
+  ],
   "careersData": {
     "categories": [
-      { "id": "factory", "name": "Factory" },
-      { "id": "office", "name": "Office" }
+      {
+        "id": "factory",
+        "name": "Factory"
+      },
+      {
+        "id": "office",
+        "name": "Office"
+      }
     ],
     "jobs": [
       {

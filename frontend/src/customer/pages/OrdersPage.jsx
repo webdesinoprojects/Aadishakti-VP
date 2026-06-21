@@ -1,26 +1,42 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 import CustomerPageHeader from '../components/CustomerPageHeader';
-import CustomerPagination from '../components/CustomerPagination';
-import { useCustomerData } from '../hooks/useCustomerData';
 import { getStatusClass } from '../utils/statusHelpers';
 
 export default function OrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const { data, loading } = useCustomerData();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/orders');
+        const data = await res.json();
+        // Since we don't have auth, just show all live orders for the demo
+        setOrders(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  if (loading || !data) return <div style={{ padding: '40px' }}>Loading orders...</div>;
+  if (loading) return <div style={{ padding: '40px' }}>Loading orders...</div>;
 
   return (
     <div style={{ padding: '40px' }}>
       <CustomerPageHeader 
         title="All Orders" 
-        subtitle="View and manage your purchase orders."
+        subtitle="View and track your live purchase orders."
       />
 
       <div className="customer-card" style={{ padding: 0 }}>
@@ -30,21 +46,19 @@ export default function OrdersPage() {
               <th>Order No.</th>
               <th>Product</th>
               <th>Date</th>
-              <th>Quantity</th>
-              <th>Status</th>
               <th>Amount</th>
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {data.orders.slice(indexOfFirstItem, indexOfLastItem).map(order => (
+            {orders.slice(indexOfFirstItem, indexOfLastItem).map(order => (
               <tr key={order.id}>
                 <td style={{ fontWeight: '600' }}>{order.id}</td>
-                <td>{order.product}</td>
-                <td>{order.date}</td>
-                <td>{order.quantity}</td>
+                <td>{order.product || 'Scrap Material'}</td>
+                <td>{order.createdAt ? format(new Date(order.createdAt), 'MMM dd, yyyy') : '-'}</td>
+                <td style={{ fontWeight: '500' }}>₹ {order.amount ? order.amount.toLocaleString('en-IN') : '0'}</td>
                 <td><span className={`status-badge ${getStatusClass(order.status)}`}>{order.status}</span></td>
-                <td style={{ fontWeight: '500' }}>₹ {order.amount.toLocaleString('en-IN')}</td>
                 <td>
                   <button 
                     className="customer-btn-outline" 
@@ -55,15 +69,11 @@ export default function OrdersPage() {
                 </td>
               </tr>
             ))}
+            {orders.length === 0 && (
+              <tr><td colSpan="6" style={{ textAlign: 'center', padding: '30px', color: '#888' }}>No active orders found.</td></tr>
+            )}
           </tbody>
         </table>
-        <CustomerPagination 
-          currentPage={currentPage}
-          totalPages={Math.ceil(data.orders.length / itemsPerPage)}
-          onPageChange={setCurrentPage}
-          totalItems={data.orders.length}
-          itemsPerPage={itemsPerPage}
-        />
       </div>
     </div>
   );

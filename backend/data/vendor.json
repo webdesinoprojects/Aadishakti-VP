@@ -5,7 +5,9 @@
     "status": "Active",
     "gst": "27AADCS1234F1Z9",
     "pan": "AADCS1234F",
-    "category": "Scrap Dealer"
+    "category": "Scrap Dealer",
+    "bankAccountNo": "32110450098",
+    "ifsc": "SBIN0004512"
   },
   "kpis": {
     "activeRFQs": 7,
@@ -67,86 +69,266 @@
     "responseTime": 91
   },
   "rfqs": [
-    { 
-      "id": "RFQ-101", 
-      "title": "Bulk Lead Scrap Procurement", 
-      "category": "Lead Scrap", 
-      "deadline": "15 Jun 2026", 
+    {
+      "id": "RFQ-101",
+      "title": "Bulk Lead Scrap Procurement",
+      "category": "Lead Scrap",
+      "deadline": "15 Jun 2026",
       "status": "Open",
       "description": "We are looking to procure 50 MT of high-purity lead scrap for our Mundra plant operations. The scrap should be free from excessive moisture and plastic attachments.",
-      "requirements": ["Minimum 98% Purity", "Delivery to Mundra Plant", "Payment strictly within 30 days of GRN"]
+      "requirements": [
+        "Minimum 98% Purity",
+        "Delivery to Mundra Plant",
+        "Payment strictly within 30 days of GRN"
+      ]
     },
-    { 
-      "id": "RFQ-098", 
-      "title": "Drained Battery Casings", 
-      "category": "Plastic Scrap", 
-      "deadline": "01 Jun 2026", 
+    {
+      "id": "RFQ-098",
+      "title": "Drained Battery Casings",
+      "category": "Plastic Scrap",
+      "deadline": "01 Jun 2026",
       "status": "Closed",
       "description": "Requirement for clean, drained battery casings (PP material) from industrial batteries. Wash certificate required.",
-      "requirements": ["Zero acid residue", "Sorted by color", "Delivery in jumbo bags"]
+      "requirements": [
+        "Zero acid residue",
+        "Sorted by color",
+        "Delivery in jumbo bags"
+      ]
     },
-    { 
-      "id": "RFQ-084", 
-      "title": "Industrial Battery Scrap", 
-      "category": "Battery Scrap", 
-      "deadline": "20 May 2026", 
+    {
+      "id": "RFQ-084",
+      "title": "Industrial Battery Scrap",
+      "category": "Battery Scrap",
+      "deadline": "20 May 2026",
       "status": "Awarded",
       "description": "Procurement of used industrial and automotive batteries for lead extraction. Weight should be verifiable at our weighbridge.",
-      "requirements": ["ISRI Code compliant", "No damaged casings", "Minimum lot size 20 MT"]
+      "requirements": [
+        "ISRI Code compliant",
+        "No damaged casings",
+        "Minimum lot size 20 MT"
+      ]
     }
   ],
   "invoices": [
-    { "id": "INV-2026-001", "invoiceNo": "SMT/26/054", "poNumber": "ASPL/PO/24-25/3321", "amount": "7,56,000", "dueDate": "05 Jun 2026", "status": "Pending" },
-    { "id": "INV-2026-002", "invoiceNo": "SMT/26/042", "poNumber": "ASPL/PO/24-25/3198", "amount": "5,20,000", "dueDate": "15 May 2026", "status": "Paid" },
-    { "id": "INV-2026-003", "invoiceNo": "SMT/26/033", "poNumber": "ASPL/PO/24-25/3056", "amount": "3,80,000", "dueDate": "01 May 2026", "status": "Overdue" }
+    {
+      "id": "INV-2026-001",
+      "invoiceNo": "SMT/26/054",
+      "poNumber": "ASPL/PO/24-25/3321",
+      "amount": "7,56,000",
+      "dueDate": "05 Jun 2026",
+      "status": "Pending"
+    },
+    {
+      "id": "INV-2026-002",
+      "invoiceNo": "SMT/26/042",
+      "poNumber": "ASPL/PO/24-25/3198",
+      "amount": "5,20,000",
+      "dueDate": "15 May 2026",
+      "status": "Paid"
+    },
+    {
+      "id": "INV-2026-003",
+      "invoiceNo": "SMT/26/033",
+      "poNumber": "ASPL/PO/24-25/3056",
+      "amount": "3,80,000",
+      "dueDate": "01 May 2026",
+      "status": "Overdue"
+    }
   ],
   "quotations": [
-    { "id": "QT-001", "rfqId": "RFQ-101", "rfqTitle": "Bulk Lead Scrap Procurement", "submittedDate": "10 Jun 2026", "amount": "4,20,000", "status": "Under Review" },
-    { "id": "QT-002", "rfqId": "RFQ-084", "rfqTitle": "Industrial Battery Scrap", "submittedDate": "18 May 2026", "amount": "3,10,000", "status": "Accepted" },
-    { "id": "QT-003", "rfqId": "RFQ-098", "rfqTitle": "Drained Battery Casings", "submittedDate": "25 Apr 2026", "amount": "1,80,000", "status": "Rejected" }
+    {
+      "id": "QT-001",
+      "rfqId": "RFQ-101",
+      "rfqTitle": "Bulk Lead Scrap Procurement",
+      "submittedDate": "10 Jun 2026",
+      "amount": "4,20,000",
+      "status": "Under Review"
+    },
+    {
+      "id": "QT-002",
+      "rfqId": "RFQ-084",
+      "rfqTitle": "Industrial Battery Scrap",
+      "submittedDate": "18 May 2026",
+      "amount": "3,10,000",
+      "status": "Accepted"
+    },
+    {
+      "id": "QT-003",
+      "rfqId": "RFQ-098",
+      "rfqTitle": "Drained Battery Casings",
+      "submittedDate": "25 Apr 2026",
+      "amount": "1,80,000",
+      "status": "Rejected"
+    }
   ],
   "grn": [
-    { "id": "GRN-001", "grnNo": "ASPL/GRN/26/441", "poNumber": "ASPL/PO/24-25/3056", "receivedDate": "06 May 2026", "material": "Lead Scrap", "quantity": "12 MT", "status": "Quality Cleared" },
-    { "id": "GRN-002", "grnNo": "ASPL/GRN/26/398", "poNumber": "ASPL/PO/24-25/3198", "receivedDate": "19 May 2026", "material": "Battery Scrap", "quantity": "8 MT", "status": "Under Inspection" }
+    {
+      "id": "GRN-001",
+      "grnNo": "ASPL/GRN/26/441",
+      "poNumber": "ASPL/PO/24-25/3056",
+      "receivedDate": "06 May 2026",
+      "material": "Lead Scrap",
+      "quantity": "12 MT",
+      "status": "Quality Cleared"
+    },
+    {
+      "id": "GRN-002",
+      "grnNo": "ASPL/GRN/26/398",
+      "poNumber": "ASPL/PO/24-25/3198",
+      "receivedDate": "19 May 2026",
+      "material": "Battery Scrap",
+      "quantity": "8 MT",
+      "status": "Under Inspection"
+    }
   ],
   "payments": [
-    { "id": "PAY-001", "invoiceNo": "SMT/26/042", "amount": "5,20,000", "paidDate": "20 May 2026", "mode": "RTGS", "utr": "UTIB26140012345" },
-    { "id": "PAY-002", "invoiceNo": "SMT/26/033", "amount": "3,80,000", "paidDate": "05 May 2026", "mode": "NEFT", "utr": "UTIB26120098765" }
+    {
+      "id": "PAY-001",
+      "invoiceNo": "SMT/26/042",
+      "amount": "5,20,000",
+      "paidDate": "20 May 2026",
+      "mode": "RTGS",
+      "utr": "UTIB26140012345"
+    },
+    {
+      "id": "PAY-002",
+      "invoiceNo": "SMT/26/033",
+      "amount": "3,80,000",
+      "paidDate": "05 May 2026",
+      "mode": "NEFT",
+      "utr": "UTIB26120098765"
+    }
   ],
   "documents": [
-    { "id": "DOC-001", "name": "MSME Certificate", "type": "Registration", "uploadedDate": "01 Jan 2026", "expiryDate": "31 Dec 2026", "status": "Valid" },
-    { "id": "DOC-002", "name": "GST Registration", "type": "Compliance", "uploadedDate": "15 Mar 2025", "expiryDate": "14 Mar 2027", "status": "Valid" },
-    { "id": "DOC-003", "name": "Quality Certificate ISO 9001", "type": "Certificate", "uploadedDate": "10 Feb 2026", "expiryDate": "09 Feb 2027", "status": "Expiring Soon" }
+    {
+      "id": "DOC-001",
+      "name": "MSME Certificate",
+      "type": "Registration",
+      "uploadedDate": "01 Jan 2026",
+      "expiryDate": "31 Dec 2026",
+      "status": "Valid"
+    },
+    {
+      "id": "DOC-002",
+      "name": "GST Registration",
+      "type": "Compliance",
+      "uploadedDate": "15 Mar 2025",
+      "expiryDate": "14 Mar 2027",
+      "status": "Valid"
+    },
+    {
+      "id": "DOC-003",
+      "name": "Quality Certificate ISO 9001",
+      "type": "Certificate",
+      "uploadedDate": "10 Feb 2026",
+      "expiryDate": "09 Feb 2027",
+      "status": "Expiring Soon"
+    }
   ],
   "revenueHistory": {
     "week": [
-      { "name": "Mon", "revenue": 120000 },
-      { "name": "Tue", "revenue": 95000 },
-      { "name": "Wed", "revenue": 210000 },
-      { "name": "Thu", "revenue": 180000 },
-      { "name": "Fri", "revenue": 340000 },
-      { "name": "Sat", "revenue": 75000 },
-      { "name": "Sun", "revenue": 60000 }
+      {
+        "name": "Mon",
+        "revenue": 120000
+      },
+      {
+        "name": "Tue",
+        "revenue": 95000
+      },
+      {
+        "name": "Wed",
+        "revenue": 210000
+      },
+      {
+        "name": "Thu",
+        "revenue": 180000
+      },
+      {
+        "name": "Fri",
+        "revenue": 340000
+      },
+      {
+        "name": "Sat",
+        "revenue": 75000
+      },
+      {
+        "name": "Sun",
+        "revenue": 60000
+      }
     ],
     "month": [
-      { "name": "Week 1", "revenue": 520000 },
-      { "name": "Week 2", "revenue": 780000 },
-      { "name": "Week 3", "revenue": 620000 },
-      { "name": "Week 4", "revenue": 956000 }
+      {
+        "name": "Week 1",
+        "revenue": 520000
+      },
+      {
+        "name": "Week 2",
+        "revenue": 780000
+      },
+      {
+        "name": "Week 3",
+        "revenue": 620000
+      },
+      {
+        "name": "Week 4",
+        "revenue": 956000
+      }
     ],
     "year": [
-      { "name": "Jan", "revenue": 2200000 },
-      { "name": "Feb", "revenue": 1800000 },
-      { "name": "Mar", "revenue": 3100000 },
-      { "name": "Apr", "revenue": 2780000 },
-      { "name": "May", "revenue": 3800000 },
-      { "name": "Jun", "revenue": 2950000 }
+      {
+        "name": "Jan",
+        "revenue": 2200000
+      },
+      {
+        "name": "Feb",
+        "revenue": 1800000
+      },
+      {
+        "name": "Mar",
+        "revenue": 3100000
+      },
+      {
+        "name": "Apr",
+        "revenue": 2780000
+      },
+      {
+        "name": "May",
+        "revenue": 3800000
+      },
+      {
+        "name": "Jun",
+        "revenue": 2950000
+      }
     ]
   },
   "performanceHistory": [
-    { "month": "Feb 2026", "quality": 91, "onTimeDelivery": 88, "responseTime": 93, "overall": 90 },
-    { "month": "Mar 2026", "quality": 93, "onTimeDelivery": 90, "responseTime": 89, "overall": 91 },
-    { "month": "Apr 2026", "quality": 94, "onTimeDelivery": 87, "responseTime": 92, "overall": 91 },
-    { "month": "May 2026", "quality": 95, "onTimeDelivery": 90, "responseTime": 91, "overall": 92 }
+    {
+      "month": "Feb 2026",
+      "quality": 91,
+      "onTimeDelivery": 88,
+      "responseTime": 93,
+      "overall": 90
+    },
+    {
+      "month": "Mar 2026",
+      "quality": 93,
+      "onTimeDelivery": 90,
+      "responseTime": 89,
+      "overall": 91
+    },
+    {
+      "month": "Apr 2026",
+      "quality": 94,
+      "onTimeDelivery": 87,
+      "responseTime": 92,
+      "overall": 91
+    },
+    {
+      "month": "May 2026",
+      "quality": 95,
+      "onTimeDelivery": 90,
+      "responseTime": 91,
+      "overall": 92
+    }
   ]
 }

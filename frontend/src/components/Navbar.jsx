@@ -90,12 +90,12 @@ export default function Navbar() {
   return (
     <header className={`top-nav ${scrolled ? "scrolled" : ""}`}>
       <div className="nav-inner">
-        <Link to="/" className="logo-wrap" aria-label="Aadishakti Home" style={{ marginRight: 'auto' }}>
+        <Link to="/" className="logo-wrap" aria-label="Aadishakti Home" style={{ marginRight: 'auto', marginLeft: '-20px' }}>
           <img src={ASSETS.logo} alt="AadiShakti Logo" className="nav-logo" />
         </Link>
 
         {/* ── Desktop Nav ── */}
-        <nav className="desktop-nav" aria-label="Primary" style={{ gap: '20px' }}>
+        <nav className="desktop-nav" aria-label="Primary" style={{ gap: '14px' }}>
           <Link to="/" className={`nav-link ${location.pathname === "/" ? "active" : ""}`}>HOME</Link>
 
           {/* COMPANY — MEGA DROPDOWN */}
@@ -130,6 +130,7 @@ export default function Navbar() {
           </div>
 
           <Link to="/products" className={`nav-link ${location.pathname === "/products" ? "active" : ""}`}>PRODUCTS</Link>
+          <Link to="/custom-alloy" className={`nav-link ${location.pathname === "/custom-alloy" ? "active" : ""}`}>ALLOY QUOTE</Link>
           <Link to="/investors" className={`nav-link ${location.pathname === "/investors" ? "active" : ""}`}>INVESTORS</Link>
           <Link to="/sourcing" className={`nav-link ${location.pathname === "/sourcing" ? "active" : ""}`}>SOURCING</Link>
           <Link to="/import" className={`nav-link ${location.pathname === "/import" ? "active" : ""}`}>IMPORT</Link>

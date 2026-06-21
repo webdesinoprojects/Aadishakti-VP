@@ -46,7 +46,7 @@
   /* Typography */
   --font-primary: 'Montserrat', sans-serif;
   --font-editorial: 'Cormorant Garamond', serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Poppins', sans-serif;
 
   --fs-display: clamp(36px, 4.5vw, 64px);
   --fs-hero: clamp(32px, 4vw, 56px);

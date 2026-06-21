@@ -6,7 +6,7 @@ import {
   FileText, 
   Receipt, 
   CreditCard, 
-  ShieldCheck, 
+  Leaf, 
   RotateCcw, 
   LifeBuoy, 
   User, 
@@ -30,8 +30,7 @@ export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {
     { name: 'Documents', icon: FileText, path: '/customer/documents' },
     { name: 'Invoices', icon: Receipt, path: '/customer/invoices' },
     { name: 'Payments', icon: CreditCard, path: '/customer/payments' },
-    { name: 'Quality Certificates', icon: ShieldCheck, path: '/customer/quality' },
-    { name: 'Returns', icon: RotateCcw, path: '/customer/returns' },
+    { name: 'Sustainability Reports', icon: Leaf, path: '/customer/sustainability' },
     { name: 'Support', icon: LifeBuoy, path: '/customer/support' },
     { name: 'My Profile', icon: User, path: '/customer/profile' },
   ];
@@ -51,7 +50,7 @@ export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {
           onClick={() => setIsCollapsed(!isCollapsed)}
           style={{
             position: 'absolute', right: '-12px', top: '28px',
-            background: 'var(--sidebar-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white',
+            background: 'var(--sidebar-bg)', border: '1px solid var(--border-light)', color: 'var(--text-primary)',
             width: '24px', height: '24px', borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', zIndex: 10

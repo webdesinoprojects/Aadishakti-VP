@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 import { Package, Truck, Receipt, FileText, ArrowRight, Download } from 'lucide-react';
 import CustomerPageHeader from '../components/CustomerPageHeader';
 import { useCustomerData } from '../hooks/useCustomerData';
@@ -18,11 +20,19 @@ const StatCard = ({ title, value, subtitle, icon: Icon }) => (
 
 export default function CustomerDashboard() {
   const { data, loading } = useCustomerData();
+  const [liveOrders, setLiveOrders] = useState([]);
+  
+  useEffect(() => { 
+    fetch('http://localhost:5000/api/orders')
+      .then(r => r.json())
+      .then(setLiveOrders)
+      .catch(console.error); 
+  }, []);
 
   if (loading || !data) return <div style={{ padding: '40px' }}>Loading dashboard...</div>;
 
-  const { orders, tracking, documents, kpis } = data;
-  const recentOrders = orders.slice(0, 5);
+  const { tracking, documents, kpis } = data;
+  const recentOrders = liveOrders.slice(0, 5);
 
 
 
@@ -42,8 +52,8 @@ export default function CustomerDashboard() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px', marginBottom: '30px' }}>
-        <PurchaseVolumeChart orders={orders} />
-        <OrderStatusPieChart orders={orders} />
+        <PurchaseVolumeChart orders={liveOrders} />
+        <OrderStatusPieChart orders={liveOrders} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '30px' }}>
@@ -66,9 +76,9 @@ export default function CustomerDashboard() {
               {recentOrders.map(order => (
                 <tr key={order.id}>
                   <td style={{ fontWeight: '600' }}><Link to={`/customer/orders/${encodeURIComponent(order.id)}`} style={{color: 'inherit', textDecoration: 'none'}}>{order.id}</Link></td>
-                  <td>{order.date}</td>
+                  <td>{order.createdAt ? format(new Date(order.createdAt), 'MMM dd, yyyy') : '-'}</td>
                   <td><span className={`status-badge ${getStatusClass(order.status)}`}>{order.status}</span></td>
-                  <td style={{ fontWeight: '500' }}>₹ {order.amount.toLocaleString('en-IN')}</td>
+                  <td style={{ fontWeight: '500' }}>₹ {order.amount ? order.amount.toLocaleString('en-IN') : '0'}</td>
                 </tr>
               ))}
             </tbody>

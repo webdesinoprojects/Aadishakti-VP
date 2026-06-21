@@ -16,8 +16,7 @@ import InvoicesPage from './pages/InvoicesPage';
 import DocumentsPage from './pages/DocumentsPage';
 import MyProfilePage from './pages/MyProfilePage';
 import PaymentsPage from './pages/PaymentsPage';
-import QualityPage from './pages/QualityPage';
-import ReturnsPage from './pages/ReturnsPage';
+import SustainabilityReportsPage from './pages/SustainabilityReportsPage';
 import SupportPage from './pages/SupportPage';
 
 const ProtectedCustomerRoute = () => {
@@ -59,8 +58,7 @@ export default function CustomerApp() {
               <Route path="/customer/invoices" element={<InvoicesPage />} />
               <Route path="/customer/documents" element={<DocumentsPage />} />
               <Route path="/customer/payments" element={<PaymentsPage />} />
-              <Route path="/customer/quality" element={<QualityPage />} />
-              <Route path="/customer/returns" element={<ReturnsPage />} />
+              <Route path="/customer/sustainability" element={<SustainabilityReportsPage />} />
               <Route path="/customer/support" element={<SupportPage />} />
               <Route path="/customer/profile" element={<MyProfilePage />} />
               <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />
