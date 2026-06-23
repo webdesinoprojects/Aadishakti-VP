@@ -12,7 +12,8 @@ import {
   User, 
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileSpreadsheet
 } from 'lucide-react';
 
 export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {

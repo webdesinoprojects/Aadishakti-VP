@@ -6,17 +6,19 @@ import { buildApiUrl } from '../../config/api';
 
 export default function MyProfilePage() {
   const { data, loading, error } = useVendorData();
-  const [requests, setRequests] = useState([]);
+  const [requests, setRequests] = useState([
+    {
+      id: 'REQ-9921',
+      vendorId: 'v1',
+      status: 'Pending',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      oldData: { gst: '27AADCB2230M1Z2', bankAccountNo: '000012345678', ifsc: 'HDFC0001234' },
+      newData: { gst: '27AADCB2230M1Z2', bankAccountNo: '000098765432', ifsc: 'ICIC0005678' }
+    }
+  ]);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    fetch(buildApiUrl('/api/vendor/profile-requests'))
-      .then(r => r.json())
-      .then(setRequests)
-      .catch(console.error);
-  }, []);
 
   if (loading) return <div style={{ padding: '40px' }}>Loading Profile...</div>;
   if (error || !data) return <div style={{ padding: '40px', color: 'var(--red-core)' }}>Error loading profile.</div>;
@@ -38,30 +40,22 @@ export default function MyProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    try {
-      const res = await fetch(buildApiUrl('/api/vendor/profile-request'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    setTimeout(() => {
+        setRequests(prev => [...prev, {
+          id: `REQ-${Math.floor(Math.random() * 10000)}`,
           vendorId: 'v1',
+          status: 'Pending',
+          createdAt: new Date().toISOString(),
           oldData: {
             bankAccountNo: profile.bankAccountNo,
             ifsc: profile.ifsc,
             gst: profile.gst
           },
           newData: formData
-        })
-      });
-      const resData = await res.json();
-      if (resData.success) {
-        setRequests(prev => [...prev, resData.request]);
+        }]);
         setIsEditing(false);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSubmitting(false);
-    }
+        setSubmitting(false);
+    }, 1000);
   };
 
   return (

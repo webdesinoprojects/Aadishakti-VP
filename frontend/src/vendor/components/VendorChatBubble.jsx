@@ -10,33 +10,11 @@ export default function VendorChatBubble() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const dragRef = useRef({ isDragging: false, hasDragged: false, startX: 0, startY: 0, initialX: 0, initialY: 0 });
-
-  const handlePointerDown = (e) => {
-    if (e.target.closest('.vendor-chat-messages') || e.target.closest('.vendor-chat-input-area')) return;
-    dragRef.current = { isDragging: true, hasDragged: false, startX: e.clientX, startY: e.clientY, initialX: position.x, initialY: position.y };
-    e.target.setPointerCapture(e.pointerId);
-  };
-
-  const handlePointerMove = (e) => {
-    if (!dragRef.current.isDragging) return;
-    const dx = e.clientX - dragRef.current.startX;
-    const dy = e.clientY - dragRef.current.startY;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragRef.current.hasDragged = true;
-    setPosition({ x: dragRef.current.initialX + dx, y: dragRef.current.initialY + dy });
-  };
-
-  const handlePointerUp = (e) => {
-    dragRef.current.isDragging = false;
-    try { e.target.releasePointerCapture(e.pointerId); } catch(e){}
-  };
-
   const suggestedQuestions = [
-    "What are my active RFQs?",
-    "Show my pending invoices",
-    "When is my next delivery?",
-    "How do I submit a quotation?"
+    "How to respond to RFQs?",
+    "Check pending invoices status",
+    "Where is the GRN & Receipts page?",
+    "How can I view my performance score?"
   ];
 
   const scrollToBottom = () => {
@@ -83,39 +61,33 @@ export default function VendorChatBubble() {
         position: 'fixed', 
         bottom: '30px', 
         right: '30px', 
-        zIndex: 9999,
-        transform: `translate(${position.x}px, ${position.y}px)`,
-        touchAction: 'none'
+        zIndex: 999999
       }}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
     >
       <button 
         className="vendor-chat-bubble"
-        onClick={() => { if (!dragRef.current.hasDragged) setIsOpen(true); }}
-        style={{ display: isOpen ? 'none' : 'flex', position: 'relative', right: 0, bottom: 0, cursor: 'grab' }}
+        onClick={() => setIsOpen(true)}
+        style={{ display: isOpen ? 'none' : 'flex' }}
       >
         <MessageSquare size={24} color="#fff" />
       </button>
-
-      <div className={`vendor-chat-panel ${isOpen ? 'open' : ''}`} style={{ position: 'relative', right: 0, bottom: 0 }}>
+      
+      <div className={`vendor-chat-panel ${isOpen ? 'open' : ''}`}>
         <div className="vendor-chat-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Bot size={20} color="#fff" />
-            <span style={{ fontWeight: '600', color: '#fff', fontSize: '15px' }}>Ask Aadishakti</span>
+            <span style={{ fontWeight: '600', color: '#fff', fontSize: '15px' }}>Vendor Assist</span>
           </div>
           <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fff', padding: '4px' }}>
             <X size={20} />
           </button>
         </div>
-
+        
         <div className="vendor-chat-messages">
           {messages.length === 0 && (
             <div className="vendor-chat-welcome">
               <p style={{ margin: '0 0 16px 0', fontSize: '14px', color: '#555', textAlign: 'center', lineHeight: '1.5' }}>
-                Hi! I'm your AI assistant. How can I help with your vendor operations today?
+                Welcome to Aadishakti Vendor Partner AI! How can I assist you with your portal today?
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {suggestedQuestions.map((q) => (
@@ -126,13 +98,11 @@ export default function VendorChatBubble() {
               </div>
             </div>
           )}
-
           {messages.map((m, i) => (
             <div key={i} className={`vendor-chat-message ${m.sender}`}>
               <ReactMarkdown>{m.text}</ReactMarkdown>
             </div>
           ))}
-
           {isTyping && (
             <div className="vendor-chat-message ai typing">
               <span></span><span></span><span></span>
@@ -140,7 +110,7 @@ export default function VendorChatBubble() {
           )}
           <div ref={messagesEndRef} />
         </div>
-
+        
         <div className="vendor-chat-input-area">
           <input 
             type="text" 

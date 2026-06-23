@@ -9,6 +9,7 @@ import CustomerChatBubble from './components/CustomerChatBubble';
 // Pages to be implemented
 import CustomerDashboard from './pages/CustomerDashboard';
 import OrdersPage from './pages/OrdersPage';
+import ReconciliationPage from './pages/ReconciliationPage';
 import OrderDetailPage, { OrderDetailIndex, OrderDetailShipments, OrderDetailDocuments, OrderDetailInvoices, OrderDetailPayments } from './pages/OrderDetailPage';
 
 import ShipmentsPage from './pages/ShipmentsPage';
@@ -46,6 +47,7 @@ export default function CustomerApp() {
             <Route element={<ProtectedCustomerRoute />}>
               <Route path="/customer" element={<Navigate to="/customer/dashboard" replace />} />
               <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+              <Route path="/customer/reconciliation" element={<ReconciliationPage />} />
               <Route path="/customer/orders" element={<OrdersPage />} />
               <Route path="/customer/orders/:id" element={<OrderDetailPage />}>
               <Route index element={<OrderDetailIndex />} />

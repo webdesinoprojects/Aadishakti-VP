@@ -4,6 +4,16 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 export default function ImageLightbox({ images, initialIndex = 0, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
+  const handleNext = React.useCallback(() => {
+    if (!images || images.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  }, [images]);
+
+  const handlePrev = React.useCallback(() => {
+    if (!images || images.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  }, [images]);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
@@ -12,17 +22,9 @@ export default function ImageLightbox({ images, initialIndex = 0, onClose }) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, images]);
+  }, [handleNext, handlePrev, onClose]);
 
   if (!images || images.length === 0) return null;
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
 
   return (
     <div style={{

@@ -115,14 +115,14 @@ const sustainabilityStats = [
 ];
 
 const clientLogos = [
-  { name: "Exide Industries", src: "/trusted-logo/exide.png" },
-  { name: "Luminous Power Technologies", src: "/trusted-logo/luminous.jpg" },
-  { name: "Su-Kam Power Systems", src: "/trusted-logo/sukam.jpg" },
-  { name: "HBL Power Systems", src: "/trusted-logo/hbl.png" },
-  { name: "Okaya Power Group", src: "/trusted-logo/okaya.png" },
-  { name: "Rocket Electric", src: "/trusted-logo/rocket.jpeg" },
-  { name: "Genus Power Infrastructure", src: "/trusted-logo/genus.jpg" },
-  { name: "Livguard Energy", src: "/trusted-logo/livguard.png" },
+  { name: "Exide Industries", src: "/trusted-logo/exide.png", style: { height: "45px" } },
+  { name: "Luminous Power Technologies", src: "/trusted-logo/luminous.jpg", style: { height: "55px" } },
+  { name: "Su-Kam Power Systems", src: "/trusted-logo/sukam.jpg", style: { height: "55px" } },
+  { name: "HBL Power Systems", src: "/trusted-logo/hbl.png", style: { height: "40px" } },
+  { name: "Okaya Power Group", src: "/trusted-logo/okaya.png", style: { height: "55px", transform: "scale(1.2)" } },
+  { name: "Rocket Electric", src: "/trusted-logo/rocket.jpeg", style: { height: "50px" } },
+  { name: "Genus Power Infrastructure", src: "/trusted-logo/genus.jpg", style: { height: "45px", transform: "scale(1.2)" } },
+  { name: "Livguard Energy", src: "/trusted-logo/livguard.png", style: { height: "40px" } },
 ];
 
 /* â”€â”€ Component â”€â”€ */
@@ -298,13 +298,13 @@ export default function Home() {
         </div>
       </div>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-          SECTION 2 â€” CLIENT NAME TICKER
-          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ════════════════════════════════════════════════════════════════════
+          SECTION 2 — CLIENT NAME TICKER
+          ════════════════════════════════════════════════════════════════════ */}
       <section style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-light)", padding: "0", overflow: "hidden" }}>
-        <div style={{ display: "flex", alignItems: "center", height: "68px" }}>
-          <div style={{ padding: "0 28px", flexShrink: 0, borderRight: "1px solid var(--border-light)", height: "100%", display: "flex", alignItems: "center" }}>
-            <span style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", alignItems: "center", height: "90px" }}>
+          <div style={{ padding: "0 32px", flexShrink: 0, borderRight: "1px solid var(--border-light)", height: "100%", display: "flex", alignItems: "center" }}>
+            <span style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
               Trusted by
             </span>
           </div>
@@ -314,7 +314,7 @@ export default function Home() {
                 <div
                   key={i}
                   style={{
-                    padding: "0 44px",
+                    padding: "0 50px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -325,7 +325,12 @@ export default function Home() {
                   <img 
                     src={logo.src} 
                     alt={logo.name} 
-                    style={{ height: "40px", width: "120px", objectFit: "contain" }}
+                    style={{ 
+                      objectFit: "contain", 
+                      mixBlendMode: "multiply", 
+                      filter: "contrast(1.1) grayscale(0.2)",
+                      ...logo.style
+                    }}
                   />
                 </div>
               ))}
@@ -334,14 +339,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-          SECTION 3 â€” WHO WE ARE (expanded, image mosaic)
-          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ════════════════════════════════════════════════════════════════════
+          SECTION 3 — WHO WE ARE (expanded, image mosaic)
+          ════════════════════════════════════════════════════════════════════ */}
       <section className="section-padding" style={{ background: "var(--bg-primary)", minHeight: "600px" }}>
         <div className="container">
           <ScrollReveal>
             <div className="split-grid-55-45">
-              {/* Left â€” text */}
+              {/* Left — text */}
               <div>
                 <SectionLabel text="// WHO WE ARE" />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, lineHeight: 1.15, marginBottom: "20px" }}>

@@ -3,10 +3,12 @@ import VendorSidebar from './components/VendorSidebar';
 import VendorChatBubble from './components/VendorChatBubble';
 import VendorDashboard from './pages/VendorDashboard';
 import RFQsPage from './pages/RFQsPage';
+import ReconciliationPage from './pages/ReconciliationPage';
 import PurchaseOrdersPage from './pages/PurchaseOrdersPage';
 import InvoicesPage from './pages/InvoicesPage';
 import MyProfilePage from './pages/MyProfilePage';
 import QuotationsPage from './pages/QuotationsPage';
+import CustomerApprovalsPage from './pages/CustomerApprovalsPage';
 import GRNPage from './pages/GRNPage';
 import PaymentsPage from './pages/PaymentsPage';
 import DocumentsPage from './pages/DocumentsPage';
@@ -51,10 +53,12 @@ export default function VendorApp() {
           <main className="vendor-main">
             <Routes>
               <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+              <Route path="/vendor/reconciliation" element={<ReconciliationPage />} />
               <Route path="/vendor/rfqs" element={<RFQsPage />} />
               <Route path="/vendor/orders" element={<PurchaseOrdersPage />} />
               <Route path="/vendor/invoices" element={<InvoicesPage />} />
               <Route path="/vendor/profile" element={<MyProfilePage />} />
+              <Route path="/vendor/customers" element={<CustomerApprovalsPage />} />
               <Route path="/vendor/quotations" element={<QuotationsPage />} />
               <Route path="/vendor/grn" element={<GRNPage />} />
               <Route path="/vendor/payments" element={<PaymentsPage />} />

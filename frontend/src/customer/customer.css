@@ -245,14 +245,18 @@
 .customer-chat-message p { margin: 0 0 8px 0; }
 .customer-chat-message p:last-child { margin: 0; }
 .customer-chat-message strong { font-weight: 700; }
+.customer-chat-message ul, .customer-chat-message ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+.customer-chat-message li {
+  margin-bottom: 4px;
+}
 .customer-chat-message.user { align-self: flex-end; background: var(--red-core); color: var(--text-primary); border-bottom-right-radius: 2px; }
 .customer-chat-message.ai { align-self: flex-start; background: white; color: var(--text-primary); border: 1px solid var(--border-color); border-bottom-left-radius: 2px; }
 .customer-chat-input { flex: 1; border: none; outline: none; padding: 12px; font-size: 14px; font-family: inherit; }
 
 .customer-chat-bubble {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
   width: 60px;
   height: 60px;
   background: var(--red-core);
@@ -262,7 +266,6 @@
   justify-content: center;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
   cursor: pointer;
-  z-index: 1000;
   transition: transform 0.2s;
   border: none;
 }
@@ -270,9 +273,9 @@
   transform: scale(1.05);
 }
 .customer-chat-panel {
-  position: fixed;
-  bottom: 100px;
-  right: 30px;
+  position: absolute;
+  bottom: 80px;
+  right: 0;
   width: 360px;
   height: 500px;
   background: var(--bg-surface);
@@ -299,6 +302,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.customer-chat-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: #fff;
+}
+.customer-chat-close:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 .customer-chat-messages {
   flex: 1;

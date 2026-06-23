@@ -184,20 +184,20 @@ export default function Products() {
       ))}
 
       {/* ── Lead Purity Calculator ── */}
-      <section className="section-padding" style={{ background: "#111111" }}>
+      <section className="section-padding" style={{ background: "var(--bg-secondary)", borderTop: "1px solid var(--border-light)" }}>
         <div className="container">
           <ScrollReveal>
             <div className="grid-2" style={{ gridTemplateColumns: "1fr 380px", gap: "60px", alignItems: "center" }}>
               <div>
                 <SectionLabel text="// INTERACTIVE TOOL" />
-                <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "#FFFFFF", marginBottom: "20px" }}>
+                <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "var(--text-primary)", marginBottom: "20px" }}>
                   Battery Scrap to Lead Estimator
                 </h2>
-                <p style={{ fontSize: "var(--fs-lead)", color: "#888", lineHeight: 1.7, marginBottom: "24px" }}>
+                <p style={{ fontSize: "var(--fs-lead)", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px" }}>
                   Procurement managers: estimate your pure lead recovery from battery scrap before committing
                   to a formal assessment. Adjust battery type and grade for instant output.
                 </p>
-                <p style={{ fontSize: "13px", color: "#666", lineHeight: 1.65 }}>
+                <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: 1.65 }}>
                   No competitor in the Indian secondary lead market offers this calculator. It's built to give
                   procurement teams a reliable first-pass estimate — saving time before formal lab analysis.
                 </p>

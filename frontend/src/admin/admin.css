@@ -758,7 +758,9 @@
 .admin-sidebar.collapsed .nav-item.active {
   padding-left: 0;
   border-left: none;
-  background: rgba(204, 34, 0, 0.15);
+  background: var(--admin-red, #CC2200);
+  color: #ffffff;
+  border-radius: 8px;
 }
 
 .admin-sidebar.collapsed .sidebar-footer {

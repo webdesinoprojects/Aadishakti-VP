@@ -74,7 +74,7 @@ export default function Footer() {
             </Link>
 
             <p style={{
-              fontFamily: "var(--font-editorial)", fontStyle: "italic",
+              fontFamily: "Poppins, sans-serif", fontWeight: "500",
               fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.65,
               borderLeft: "2px solid var(--red-core)", paddingLeft: "14px",
               margin: "0 0 28px 0",
@@ -200,7 +200,7 @@ export default function Footer() {
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--red-core)" strokeWidth="2" style={{ flexShrink: 0 }}>
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                 </svg>
-                <a href="tel:+918743000299" style={{ fontFamily: "var(--font-mono)", fontSize: "13px", color: "#CCCCCC", transition: "color 0.2s" }} className="footer-contact-link">
+                <a href="tel:+918743000299" style={{ fontFamily: "var(--font-mono)", fontSize: "13px", color: "#000000", transition: "color 0.2s" }} className="footer-contact-link">
                   +91&thinsp;8743&thinsp;000&thinsp;299
                 </a>
               </div>

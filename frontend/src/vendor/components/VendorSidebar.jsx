@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ASSETS } from '../../assets/assetMap';
 import { 
   LayoutDashboard, FileQuestion, FileSignature, ShoppingCart, 
-  Package, Receipt, CreditCard, Activity, FolderOpen, User, LogOut, ChevronLeft, ChevronRight 
+  Package, Receipt, CreditCard, Activity, FolderOpen, User, LogOut, ChevronLeft, ChevronRight, FileSpreadsheet, Users
 } from 'lucide-react';
 
 export default function VendorSidebar() {
@@ -24,9 +24,11 @@ export default function VendorSidebar() {
     { to: '/vendor/grn', icon: Package, label: 'GRN & Receipts' },
     { to: '/vendor/invoices', icon: Receipt, label: 'Invoices' },
     { to: '/vendor/payments', icon: CreditCard, label: 'Payments' },
+    { to: '/vendor/customers', icon: Users, label: 'Customer Approvals' },
     { to: '/vendor/performance', icon: Activity, label: 'Performance' },
     { to: '/vendor/documents', icon: FolderOpen, label: 'Documents' },
-    { to: '/vendor/profile', icon: User, label: 'My Profile' }
+    { to: '/vendor/profile', icon: User, label: 'My Profile' },
+    { to: '/vendor/reconciliation', icon: FileSpreadsheet, label: 'Statements & Reco' }
   ];
 
   return (

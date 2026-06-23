@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { MapPin, 
   Home, Package, Image, Newspaper, Users, Briefcase, 
   TrendingUp, Mail, FileText, Settings, LogOut,
-  ChevronLeft, ChevronRight } from 'lucide-react';
+  ChevronLeft, ChevronRight, FileSpreadsheet, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
@@ -25,7 +25,9 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       items: [
         { to: '/admin/cms/careers', icon: Briefcase, label: 'Careers & Jobs' },
         { to: '/admin/logistics', icon: MapPin, label: 'Logistics Tracker' },
-        { to: '/admin/operations/approvals', icon: Briefcase, label: 'Vendor Approvals' },
+        { to: '/admin/operations/registrations', icon: UserPlus, label: 'New Registrations' },
+        { to: '/admin/operations/approvals', icon: Briefcase, label: 'Profile Updates' },
+        { to: '/admin/operations/reconciliations', icon: FileSpreadsheet, label: 'Quarterly Reconciliations' },
         { to: '/admin/cms/investors', icon: TrendingUp, label: 'Investors Data' },
       ],
     },

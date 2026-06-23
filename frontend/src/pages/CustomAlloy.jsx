@@ -168,10 +168,10 @@ export default function CustomAlloy() {
                   </div>
 
                   <div style={{ marginTop: "32px", display: "flex", justifyContent: "flex-end" }}>
-                    <button type="submit" className="btn-primary" disabled={loading} style={{ width: "200px" }}>
+                    <button type="submit" className="btn-solid-red" disabled={loading} style={{ width: "200px", height: "46px" }}>
                       {loading ? <Loader2 className="spinner" size={18} /> : (
                         <>
-                          <Send size={18} /> Submit Quote
+                          Submit Quote <Send size={18} />
                         </>
                       )}
                     </button>
