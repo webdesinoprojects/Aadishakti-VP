@@ -8,7 +8,13 @@ const companyLinks = [
   { to: "/businesses",               label: "Our Businesses" },
   { to: "/businesses?plant=mundra",  label: "AGRPL — Mundra Plant",  sub: true },
   { to: "/businesses?plant=roorkee", label: "AMRPL — Roorkee Plant", sub: true },
-  { to: "/sustainability",            label: "Sustainability" },
+];
+
+const esgLinks = [
+  { to: "/sustainability?tab=environment", label: "Environment & Climate" },
+  { to: "/sustainability?tab=social",      label: "Corporate Social Responsibility" },
+  { to: "/sustainability?tab=governance",  label: "Governance & Policies" },
+  { to: "/sustainability?tab=reports",     label: "Sustainability Reports" },
 ];
 
 const mediaLinks = [
@@ -24,8 +30,13 @@ const galleryLinks = [
   { to: "/gallery?category=celebration", label: "Celebration" },
 ];
 
-
 const megaContent = {
+  esg: {
+    "Environment & Climate": { img: ASSETS.mundraPlant[4] || ASSETS.megaMenuPhoto, eyebrow: "ZERO LIQUID DISCHARGE", title: "Minimizing our environmental footprint through advanced recycling." },
+    "Corporate Social Responsibility": { img: ASSETS.gallery[3] || ASSETS.megaMenuPhoto, eyebrow: "COMMUNITY FIRST", title: "Empowering local communities around our Mundra and Roorkee facilities." },
+    "Governance & Policies": { img: ASSETS.roorkeeOffice[1] || ASSETS.megaMenuPhoto, eyebrow: "TRANSPARENCY", title: "Upholding the highest standards of ethics and compliance." },
+    "Sustainability Reports": { img: ASSETS.heroBg3 || ASSETS.megaMenuPhoto, eyebrow: "ESG REPORTING", title: "Detailed disclosures of our environmental and social performance." }
+  },
   media: {
     "Blogs": { img: ASSETS.gallery[0] || ASSETS.megaMenuPhoto, eyebrow: "LATEST INSIGHTS", title: "Read our latest technical blogs on lead recycling." },
     "News": { img: ASSETS.gallery[1] || ASSETS.megaMenuPhoto, eyebrow: "COMPANY NEWS", title: "Stay updated with Aadishakti's latest announcements." },
@@ -49,14 +60,17 @@ export default function Navbar() {
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
+  const [esgOpen, setEsgOpen]         = useState(false);
   const [mediaOpen, setMediaOpen]     = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [careersOpen, setCareersOpen] = useState(false);
   const [mobileCo, setMobileCo]       = useState(false);
+  const [mobileEsg, setMobileEsg]     = useState(false);
   const [mobileMedia, setMobileMedia] = useState(false);
   const [mobileGallery, setMobileGallery] = useState(false);
   const [mobileCareers, setMobileCareers] = useState(false);
   
+  const [hoveredEsg, setHoveredEsg] = useState("Environment & Climate");
   const [hoveredMedia, setHoveredMedia] = useState("Blogs");
   const [hoveredGallery, setHoveredGallery] = useState("Office");
   const [hoveredCareers, setHoveredCareers] = useState("Factory");
@@ -73,16 +87,19 @@ export default function Navbar() {
     // eslint-disable-next-line
     setMobileOpen(false);
     setCompanyOpen(false);
+    setEsgOpen(false);
     setMediaOpen(false);
     setGalleryOpen(false);
     setCareersOpen(false);
     setMobileCo(false);
+    setMobileEsg(false);
     setMobileMedia(false);
     setMobileGallery(false);
     setMobileCareers(false);
   }, [location.pathname, location.search]);
 
-  const companyActive = ["/about", "/businesses", "/sustainability"].some(p => location.pathname.startsWith(p));
+  const companyActive = ["/about", "/businesses"].some(p => location.pathname.startsWith(p));
+  const esgActive = location.pathname.startsWith("/sustainability");
   const mediaActive = location.pathname.startsWith("/media");
   const galleryActive = location.pathname.startsWith("/gallery");
   const careersActive = location.pathname.startsWith("/careers");
@@ -131,9 +148,37 @@ export default function Navbar() {
 
           <Link to="/products" className={`nav-link ${location.pathname === "/products" ? "active" : ""}`}>PRODUCTS</Link>
           <Link to="/custom-alloy" className={`nav-link ${location.pathname === "/custom-alloy" ? "active" : ""}`}>ALLOY QUOTE</Link>
+
+          {/* ESG — MEGA DROPDOWN */}
+          <div className="company-wrap" onMouseEnter={() => setEsgOpen(true)} onMouseLeave={() => setEsgOpen(false)}>
+            <button type="button" className={`nav-link company-trigger ${esgActive ? "active" : ""}`}>
+              ESG
+              <svg className={`caret ${esgOpen ? "open" : ""}`} viewBox="0 0 10 6" aria-hidden="true">
+                <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.4" />
+              </svg>
+            </button>
+            <div className={`mega-dropdown ${esgOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px' }}>
+              <div className="mega-left">
+                {esgLinks.map((item) => (
+                  <Link key={item.to} to={item.to} className="drop-item" onMouseEnter={() => setHoveredEsg(item.label)}>{item.label}</Link>
+                ))}
+              </div>
+              <div className="mega-right">
+                <img src={megaContent.esg[hoveredEsg].img} alt={hoveredEsg} loading="lazy" />
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
+                    {megaContent.esg[hoveredEsg].eyebrow}
+                  </div>
+                  <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                    {megaContent.esg[hoveredEsg].title}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <Link to="/investors" className={`nav-link ${location.pathname === "/investors" ? "active" : ""}`}>INVESTORS</Link>
-          <Link to="/sourcing" className={`nav-link ${location.pathname === "/sourcing" ? "active" : ""}`}>SOURCING</Link>
-          <Link to="/import" className={`nav-link ${location.pathname === "/import" ? "active" : ""}`}>IMPORT</Link>
+          <Link to="/sourcing" className={`nav-link ${location.pathname === "/sourcing" ? "active" : ""}`}>SOURCING & IMPORT</Link>
 
           {/* MEDIA DROPDOWN */}
           <div className="company-wrap" onMouseEnter={() => setMediaOpen(true)} onMouseLeave={() => setMediaOpen(false)}>
@@ -254,9 +299,20 @@ export default function Navbar() {
         )}
 
         <Link to="/products" className="mobile-link">PRODUCTS</Link>
+        
+        <button type="button" className="mobile-link mobile-company" onClick={() => setMobileEsg(v => !v)}>
+          ESG {mobileEsg ? "▲" : "▼"}
+        </button>
+        {mobileEsg && (
+          <div className="mobile-submenu">
+            {esgLinks.map((item) => (
+              <Link key={item.to + item.label} to={item.to} className="mobile-sub">{item.label}</Link>
+            ))}
+          </div>
+        )}
+
         <Link to="/investors" className="mobile-link">INVESTORS</Link>
-        <Link to="/sourcing" className="mobile-link">SOURCING</Link>
-        <Link to="/import" className="mobile-link">IMPORT</Link>
+        <Link to="/sourcing" className="mobile-link">SOURCING & IMPORT</Link>
 
         <button type="button" className="mobile-link mobile-company" onClick={() => setMobileMedia(v => !v)}>
           MEDIA {mobileMedia ? "▲" : "▼"}
@@ -304,7 +360,7 @@ export default function Navbar() {
         .top-nav.scrolled .nav-logo { height: 34px; }
         .desktop-nav { display: flex; align-items: center; flex-wrap: nowrap; }
         .desktop-cta { display: flex; }
-        .nav-link { position: relative; font: 600 12px var(--font-primary); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-primary); transition: color 0.2s ease; white-space: nowrap; }
+        .nav-link { position: relative; font: 600 11px var(--font-primary); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-primary); transition: color 0.2s ease; white-space: nowrap; }
         .nav-link:hover { color: var(--red-core); }
         .nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -26px; height: 2px; background: var(--red-core); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
         .nav-link.active { color: var(--red-core); }
@@ -335,10 +391,10 @@ export default function Navbar() {
         .mobile-sub.sub { color: var(--text-muted); padding-left: 20px; }
         .mobile-cta { width: 100%; text-align: center; margin: auto 0 0; font-size: 13px; }
         @media (max-width: 1400px) {
-          .nav-link { font-size: 11px; letter-spacing: 0.05em; }
-          .desktop-nav { gap: 12px !important; }
+          .nav-link { font-size: 10px; letter-spacing: 0.05em; }
+          .desktop-nav { gap: 10px !important; }
         }
-        @media (max-width: 1150px) {
+        @media (max-width: 1250px) {
           .desktop-nav, .desktop-cta { display: none !important; }
           .hamburger { display: block; }
           .top-nav { height: 60px; }

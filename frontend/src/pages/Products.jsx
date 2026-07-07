@@ -2,8 +2,7 @@ import { motion } from "framer-motion";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
-import LeadCalculator from "../components/LeadCalculator";
-import { Download } from "lucide-react";
+import { Download, Building2 } from "lucide-react";
 import { ASSETS } from "../assets/assetMap";
 
 const productList = [
@@ -17,14 +16,12 @@ const productList = [
     overview:
       "Aadishakti manufactures Refined Lead Ingots utilising high-temperature secondary refining kettles. Ideal for battery cell grids, acid-storage structures, radiation shields, and high-pressure extrusion sheaths.",
     specs: [
+      { elem: "Lead (Pb)",      val: "99.970% min" },
       { elem: "Antimony (Sb)",  val: "0.001% max" },
       { elem: "Arsenic (As)",   val: "0.001% max" },
       { elem: "Tin (Sn)",       val: "0.001% max" },
       { elem: "Copper (Cu)",    val: "0.001% max" },
-      { elem: "Bismuth (Bi)",   val: "0.015% max" },
-      { elem: "Silver (Ag)",    val: "0.003% max" },
-      { elem: "Iron (Fe)",      val: "0.001% max" },
-      { elem: "Lead (Pb)",      val: "99.970% min" },
+      { elem: "Dimensions",     val: "Custom / Approx 25kg Ingots" },
     ],
     packaging: "Bound with steel bands into 42 ingots per striped bundle (approx 1,000 Kg).",
   },
@@ -41,8 +38,8 @@ const productList = [
       { elem: "Antimonial Grade 2.5%", val: "2.3% – 2.7% Sb" },
       { elem: "Antimonial Grade 3.0%", val: "2.8% – 3.2% Sb" },
       { elem: "Antimonial Grade 4.5%", val: "4.2% – 4.8% Sb" },
-      { elem: "Total Impurities",       val: "0.05% max" },
       { elem: "Lead (Pb) Balance",      val: "Remaining %" },
+      { elem: "Dimensions",             val: "Custom / Approx 25kg Ingots" },
     ],
     packaging: "Heavy-duty metallurgical bundles strapped with carbon steel bands.",
   },
@@ -59,7 +56,7 @@ const productList = [
       { elem: "Lead Dioxide (PbO₂)", val: "25% – 34%" },
       { elem: "Free Metallic Lead",  val: "0.05% max" },
       { elem: "Moisture Content",    val: "0.1% max" },
-      { elem: "Oil Absorption",      val: "6 – 9 g/100g" },
+      { elem: "Dimensions / Mesh",   val: "300 Mesh / 10-15 µm" },
     ],
     packaging: "25 Kg double-layer Polyethylene bags within woven HDPE outer sacks.",
   },
@@ -76,10 +73,76 @@ const productList = [
       { elem: "Free Metallic Lead (Pb)", val: "28% – 32%" },
       { elem: "Lead Monoxide (PbO)",     val: "68% – 72%" },
       { elem: "Apparent Density",        val: "1.2 – 1.4 g/cc" },
-      { elem: "Acid Absorption",         val: "180 – 210 mg/g" },
+      { elem: "Dimensions / Mesh",       val: "300 Mesh / 10-15 µm" },
     ],
     packaging: "Hermetically sealed 25 Kg net Polyethylene bags within woven HDPE outer sacks.",
   },
+  {
+    key: "sheet",
+    num: "05",
+    name: "Lead Sheet & Lead Plate",
+    grade: "RADIATION SHIELDING & INDUSTRIAL",
+    purity: "99.97% Pb / Alloy Options Available",
+    img: ASSETS.megaMenuPhoto || "", 
+    overview:
+      "Highly malleable lead sheets and thick lead plates designed for acoustic insulation, medical radiation shielding, chemical tank linings, and roofing applications.",
+    specs: [
+      { elem: "Purity",             val: "99.97% min Pb" },
+      { elem: "Sheet Dimensions",   val: "Thickness: 0.5mm - 10mm" },
+      { elem: "Plate Dimensions",   val: "Thickness: 10mm - 50mm" },
+      { elem: "Customization",      val: "Cut-to-size available" },
+    ],
+    packaging: "Rolled on wooden cores or flat-packed on heavy duty pallets depending on thickness.",
+  },
+  {
+    key: "balls-anodes",
+    num: "06",
+    name: "Lead Balls & Lead Anodes",
+    grade: "MILLING & ELECTROWINNING",
+    purity: "Pure / Alloy Variants",
+    img: ASSETS.mundraPlant ? ASSETS.mundraPlant[0] : "",
+    overview:
+      "Precision-cast lead balls used in fine chemical grinding ball mills, alongside high-performance extruded/cast lead anodes for electroplating and electrowinning cells.",
+    specs: [
+      { elem: "Ball Dimensions",    val: "12mm to 50mm Diameter" },
+      { elem: "Anode Dimensions",   val: "Custom Lengths & Profiles" },
+      { elem: "Alloys Available",   val: "Tin, Silver, Antimony" },
+    ],
+    packaging: "Drums for lead balls; strapped wooden crates for anodes.",
+  },
+  {
+    key: "custom",
+    num: "07",
+    name: "Alloy Dust (Customised Product)",
+    grade: "SPECIALTY LEAD DUST",
+    purity: "As per Client Specification",
+    img: ASSETS.roorkeeOffice ? ASSETS.roorkeeOffice[0] : "",
+    overview:
+      "Customised lead alloy dust tailored for specialized chemical reactions, powder metallurgy, and proprietary industrial friction formulations. Engineered to precise particle size distributions.",
+    specs: [
+      { elem: "Particle Size",      val: "Custom (10 µm to 500 µm)" },
+      { elem: "Composition",        val: "Custom Alloy Formula" },
+      { elem: "Dimensions / Mesh",  val: "As per client requirement" },
+    ],
+    packaging: "Sealed nitrogen-purged UN-rated steel drums or bulk bags.",
+  },
+  {
+    key: "plastic",
+    num: "08",
+    name: "Plastic Granules",
+    grade: "PP COPOLYMER GRANULES",
+    purity: "High Impact Battery Grade",
+    img: ASSETS.mundraPlant ? ASSETS.mundraPlant[4] : "",
+    overview:
+      "Recycled and compounded Polypropylene (PP) copolymer granules derived from battery casings. Extruded and pelletized for high-impact strength, suitable for molding new battery containers and automotive components.",
+    specs: [
+      { elem: "Melt Flow Index (MFI)", val: "2.0 - 5.0 g/10min" },
+      { elem: "Impact Strength",       val: "High / Customisable" },
+      { elem: "Dimensions",            val: "Standard Pellet Size (3mm)" },
+      { elem: "Color",                 val: "Black / Grey / Custom" },
+    ],
+    packaging: "25 Kg bags or 1 MT Jumbo Bags.",
+  }
 ];
 
 export default function Products() {
@@ -141,7 +204,7 @@ export default function Products() {
                     <thead>
                       <tr>
                         <th>Element / Property</th>
-                        <th>Analysis Value</th>
+                        <th>Analysis Value / Detail</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -161,7 +224,7 @@ export default function Products() {
                     <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>
                       // PACKAGING & DISPATCH
                     </div>
-                    <h5 style={{ fontWeight: 700, fontSize: "14px", marginBottom: "10px" }}>Export Quantities</h5>
+                    <h5 style={{ fontWeight: 700, fontSize: "14px", marginBottom: "10px" }}>Export Quantities & Formats</h5>
                     <p style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: 1.65 }}>{prod.packaging}</p>
                   </div>
 
@@ -183,30 +246,34 @@ export default function Products() {
         </section>
       ))}
 
-      {/* ── Lead Purity Calculator ── */}
+      {/* ── Industry Categories ── */}
       <section className="section-padding" style={{ background: "var(--bg-secondary)", borderTop: "1px solid var(--border-light)" }}>
         <div className="container">
           <ScrollReveal>
-            <div className="grid-2" style={{ gridTemplateColumns: "1fr 380px", gap: "60px", alignItems: "center" }}>
-              <div>
-                <SectionLabel text="// INTERACTIVE TOOL" />
-                <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "var(--text-primary)", marginBottom: "20px" }}>
-                  Battery Scrap to Lead Estimator
-                </h2>
-                <p style={{ fontSize: "var(--fs-lead)", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "24px" }}>
-                  Procurement managers: estimate your pure lead recovery from battery scrap before committing
-                  to a formal assessment. Adjust battery type and grade for instant output.
-                </p>
-                <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: 1.65 }}>
-                  No competitor in the Indian secondary lead market offers this calculator. It's built to give
-                  procurement teams a reliable first-pass estimate — saving time before formal lab analysis.
-                </p>
-              </div>
-              <LeadCalculator />
+            <SectionLabel text="// INDUSTRIES WE SERVE" />
+            <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "var(--text-primary)", marginBottom: "40px" }}>
+              Global Applications
+            </h2>
+            <div className="grid-3" style={{ gap: "24px" }}>
+              {[
+                { title: "Energy Storage", desc: "Automotive, industrial, and UPS battery manufacturing." },
+                { title: "Radiation Shielding", desc: "Medical X-ray rooms and nuclear facility protection." },
+                { title: "Chemical Processing", desc: "Corrosion-resistant tank linings and piping." },
+                { title: "Construction", desc: "Roofing sheets, acoustic soundproofing, and ballasts." },
+                { title: "Glass & Ceramics", desc: "Crystal glass manufacturing and specialty glazes." },
+                { title: "Plastics & Molding", desc: "Automotive components and robust battery casings." },
+              ].map((ind, i) => (
+                <div key={i} className="corporate-card" style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <Building2 size={32} color="var(--red-core)" strokeWidth={1.5} />
+                  <h4 style={{ fontWeight: 800, fontSize: "16px", color: "var(--text-primary)" }}>{ind.title}</h4>
+                  <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>{ind.desc}</p>
+                </div>
+              ))}
             </div>
           </ScrollReveal>
         </div>
       </section>
+
     </div>
   );
 }

@@ -239,6 +239,10 @@ export default function Sourcing() {
                     <label className="float-form-label">Contact (Phone or Email)</label>
                     <input className="float-form-control" type="text" placeholder="+91 or email address" required />
                   </div>
+                  <div className="float-form-group">
+                    <label className="float-form-label">Upload Material Specifications / Photos (Optional)</label>
+                    <input className="float-form-control" type="file" style={{ padding: "10px", cursor: "pointer" }} />
+                  </div>
                   <button type="submit" className="btn-solid-red" style={{ alignSelf: "flex-start", paddingInline: "36px" }}>
                     Submit Sourcing Enquiry →
                   </button>

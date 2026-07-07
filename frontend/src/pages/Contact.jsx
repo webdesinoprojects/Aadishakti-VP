@@ -16,6 +16,9 @@ export default function Contact() {
     additionalDetails: "",
     country: "India", // added default for server satisfaction
     estimatedQuantity: "Not decided yet",
+    materialType: "Ingots",
+    packagingRequirement: "",
+    specFile: null,
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -69,6 +72,9 @@ export default function Contact() {
         additionalDetails: "",
         country: "India",
         estimatedQuantity: "Not decided yet",
+        materialType: "Ingots",
+        packagingRequirement: "",
+        specFile: null,
       });
     } catch (err) {
       console.error(err);
@@ -505,6 +511,114 @@ export default function Contact() {
                         );
                       })}
                     </div>
+                  </div>
+
+                  {/* Material Type Dropdown */}
+                  <div style={{ marginBottom: "2rem" }}>
+                    <label
+                      style={{
+                        display: "block",
+                        fontFamily: "var(--font-primary)",
+                        fontWeight: "600",
+                        fontSize: "11px",
+                        letterSpacing: "0.15em",
+                        color: "var(--silver)",
+                        textTransform: "uppercase",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      TYPE OF MATERIAL*
+                    </label>
+                    <select
+                      name="materialType"
+                      value={formData.materialType}
+                      onChange={handleInputChange}
+                      style={{
+                        width: "100%",
+                        background: "var(--iron)",
+                        border: "1px solid var(--border-light)",
+                        color: "var(--text-primary)",
+                        padding: "12px 16px",
+                        fontFamily: "var(--font-primary)",
+                        fontSize: "14px",
+                        outline: "none",
+                        transition: "border-color 0.3s",
+                      }}
+                      className="custom-contact-select"
+                    >
+                      <option value="Powder">Powder</option>
+                      <option value="Oxide">Oxide</option>
+                      <option value="Balls">Balls</option>
+                      <option value="Sheet">Sheet</option>
+                      <option value="Ingots">Ingots</option>
+                    </select>
+                  </div>
+
+                  {/* Packaging Requirement Input */}
+                  <div style={{ marginBottom: "2rem" }}>
+                    <label
+                      style={{
+                        display: "block",
+                        fontFamily: "var(--font-primary)",
+                        fontWeight: "600",
+                        fontSize: "11px",
+                        letterSpacing: "0.15em",
+                        color: "var(--silver)",
+                        textTransform: "uppercase",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      PACKAGING REQUIREMENT
+                    </label>
+                    <input
+                      type="text"
+                      name="packagingRequirement"
+                      value={formData.packagingRequirement}
+                      onChange={handleInputChange}
+                      placeholder="e.g. 25kg bags, 1MT Jumbo Bags, Wooden Pallets"
+                      style={{
+                        width: "100%",
+                        background: "transparent",
+                        border: "none",
+                        borderBottom: "1.5px solid var(--steel)",
+                        color: "var(--text-primary)",
+                        padding: "10px 0",
+                        fontFamily: "var(--font-primary)",
+                        fontSize: "14px",
+                        outline: "none",
+                        transition: "border-bottom 0.3s ease",
+                      }}
+                      className="custom-contact-input white-contact-input"
+                    />
+                  </div>
+
+                  {/* Upload Specifications */}
+                  <div style={{ marginBottom: "2rem" }}>
+                    <label
+                      style={{
+                        display: "block",
+                        fontFamily: "var(--font-primary)",
+                        fontWeight: "600",
+                        fontSize: "11px",
+                        letterSpacing: "0.15em",
+                        color: "var(--silver)",
+                        textTransform: "uppercase",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      UPLOAD SPECIFICATION / RFQ DOCUMENT (Optional)
+                    </label>
+                    <input
+                      type="file"
+                      name="specFile"
+                      onChange={(e) => setFormData(prev => ({...prev, specFile: e.target.files[0]}))}
+                      style={{
+                        width: "100%",
+                        color: "var(--text-primary)",
+                        fontFamily: "var(--font-primary)",
+                        fontSize: "13px",
+                      }}
+                    />
                   </div>
 
                   {/* Message Input */}

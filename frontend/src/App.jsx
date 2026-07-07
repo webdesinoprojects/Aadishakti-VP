@@ -23,7 +23,6 @@ import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
 import CustomAlloy from "./pages/CustomAlloy";
 import Sourcing from "./pages/Sourcing";
-import Import from "./pages/Import";
 import Media from "./pages/Media";
 import Gallery from "./pages/Gallery";
 
@@ -122,7 +121,6 @@ export default function App() {
             <Route path="/investors" element={<PageTransition><Investors /></PageTransition>} />
             <Route path="/careers" element={<PageTransition><Careers /></PageTransition>} />
             <Route path="/sourcing" element={<PageTransition><Sourcing /></PageTransition>} />
-            <Route path="/import" element={<PageTransition><Import /></PageTransition>} />
             <Route path="/media" element={<PageTransition><Media /></PageTransition>} />
             <Route path="/gallery" element={<PageTransition><Gallery /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
