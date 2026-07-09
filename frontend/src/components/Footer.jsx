@@ -34,23 +34,49 @@ export default function Footer() {
       </div>
 
       {/* ══════════════════════════════════
-          PRE-FOOTER — CTA BAND
+          PRE-FOOTER — VIDEO CTA BAND
       ══════════════════════════════════ */}
-      <div style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-light)" }}>
-        <div className="container" style={{ padding: "52px 0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "28px" }}>
-          <div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: "10px" }}>
+      <div style={{ position: "relative", overflow: "hidden", minHeight: "320px", display: "flex", alignItems: "center", marginTop: "64px" }}>
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            zIndex: 0,
+          }}
+        >
+          <source src="/corporate-video.mp4" type="video/mp4" />
+        </video>
+
+        {/* Frosted/dark overlay — stronger on left, fades right */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 1,
+          background: "linear-gradient(100deg, rgba(10,10,10,0.82) 0%, rgba(10,10,10,0.65) 45%, rgba(10,10,10,0.25) 100%)",
+        }} />
+
+        {/* Content */}
+        <div className="container" style={{ position: "relative", zIndex: 2, padding: "64px 0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "28px" }}>
+          <div style={{ maxWidth: "600px" }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: "12px" }}>
               // PARTNER WITH US
             </div>
-            <h2 style={{ fontWeight: 900, fontSize: "clamp(20px, 2.5vw, 32px)", color: "var(--text-primary)", lineHeight: 1.2, marginBottom: "0" }}>
+            <h2 style={{ fontWeight: 900, fontSize: "clamp(22px, 2.8vw, 36px)", color: "#FFFFFF", lineHeight: 1.2, marginBottom: "12px" }}>
               Ready to source from India&apos;s leading secondary lead group?
             </h2>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", lineHeight: 1.65, margin: 0 }}>
+              Two world-class refineries. LME-grade purity. ISO 9001:2015 certified. Built for partnership.
+            </p>
           </div>
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", flexShrink: 0 }}>
             <Link to="/contact" className="btn-solid-red" style={{ height: "46px", paddingInline: "28px", fontSize: "12px" }}>
               Get In Touch &rarr;
             </Link>
-            <Link to="/sourcing" className="btn-ghost" style={{ height: "46px", paddingInline: "24px", fontSize: "12px", color: "var(--text-secondary)", borderColor: "var(--border-light)" }}>
+            <Link to="/sourcing" style={{ height: "46px", paddingInline: "24px", fontSize: "12px", display: "inline-flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.4)", color: "#FFFFFF", fontFamily: "var(--font-primary)", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s ease", borderRadius: "2px" }}>
               Sell Scrap &rarr;
             </Link>
           </div>

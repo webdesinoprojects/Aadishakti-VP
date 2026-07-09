@@ -2,7 +2,7 @@ import { useState } from "react";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
-import { Send, CheckCircle2, Loader2 } from "lucide-react";
+import { Send, CheckCircle2, Loader2, Paperclip, X } from "lucide-react";
 import { buildApiUrl } from "../config/api";
 
 const ALLOY_ELEMENTS = [
@@ -23,6 +23,7 @@ export default function CustomAlloy() {
     phone: "",
     companyName: "",
     estimatedQuantity: "",
+    packagingType: "",
     notes: "",
   });
 
@@ -30,9 +31,20 @@ export default function CustomAlloy() {
     ALLOY_ELEMENTS.reduce((acc, el) => ({ ...acc, [el.key]: el.defaultVal }), {})
   );
 
+  const [uploadedFile, setUploadedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setUploadedFile(file);
+  };
+
+  const removeFile = () => {
+    setUploadedFile(null);
+    document.getElementById("alloy-file-upload").value = "";
+  };
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -130,6 +142,17 @@ export default function CustomAlloy() {
                       <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Quantity Required (MT) *</label>
                       <input type="text" name="estimatedQuantity" required className="form-input" value={formData.estimatedQuantity} onChange={handleFormChange} placeholder="e.g. 50 MT" />
                     </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Packaging Preference</label>
+                      <select name="packagingType" className="form-input" value={formData.packagingType} onChange={handleFormChange} style={{ background: "var(--bg-secondary)" }}>
+                        <option value="">Select packaging type</option>
+                        <option value="Wooden Pallet (Strapped Ingots)">Wooden Pallet — Strapped Ingots (Standard)</option>
+                        <option value="Jumbo Bag / FIBC">Jumbo Bag / FIBC (Bulk Granules, Oxide, Powder)</option>
+                        <option value="HDPE Drum">HDPE Drum (Oxide, Powder, Small Parts)</option>
+                        <option value="Loose / Bulk">Loose / Bulk (Large Volume Orders)</option>
+                        <option value="Custom / As Discussed">Custom / As Per Requirement</option>
+                      </select>
+                    </div>
                   </div>
 
                   <h3 style={{ fontSize: "18px", fontWeight: 800, marginBottom: "16px", paddingBottom: "12px", borderBottom: "1px solid var(--border-light)" }}>
@@ -167,11 +190,59 @@ export default function CustomAlloy() {
                     <textarea name="notes" className="form-input" value={formData.notes} onChange={handleFormChange} placeholder="Any packaging requirements, delivery timelines, etc." rows={4}></textarea>
                   </div>
 
+                  {/* PDF / Document Upload */}
+                  <div style={{ marginTop: "24px" }}>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Upload Specification / Custom Requirement (Optional)</label>
+                    <div
+                      style={{
+                        border: "2px dashed var(--border-light)",
+                        borderRadius: "4px",
+                        padding: "20px 24px",
+                        background: "var(--bg-secondary)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        cursor: "pointer",
+                        transition: "border-color 0.2s",
+                      }}
+                      onClick={() => document.getElementById("alloy-file-upload").click()}
+                    >
+                      <Paperclip size={20} color="var(--red-core)" style={{ flexShrink: 0 }} />
+                      {uploadedFile ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
+                          <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", wordBreak: "break-all" }}>{uploadedFile.name}</span>
+                          <span style={{ fontSize: "11px", color: "var(--text-muted)", whiteSpace: "nowrap" }}>({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); removeFile(); }}
+                            style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center" }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", margin: 0 }}>
+                            <span style={{ fontWeight: 700, color: "var(--red-core)" }}>Click to upload</span> your specification sheet, RFQ, or custom requirement document
+                          </p>
+                          <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0" }}>PDF, DOC, DOCX, XLS, XLSX — Max 10MB</p>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      id="alloy-file-upload"
+                      type="file"
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      style={{ display: "none" }}
+                      onChange={handleFileChange}
+                    />
+                  </div>
+
                   <div style={{ marginTop: "32px", display: "flex", justifyContent: "flex-end" }}>
-                    <button type="submit" className="btn-solid-red" disabled={loading} style={{ width: "200px", height: "46px" }}>
+                    <button type="submit" className="btn-solid-red" disabled={loading} style={{ width: "240px", height: "46px", whiteSpace: "nowrap" }}>
                       {loading ? <Loader2 className="spinner" size={18} /> : (
                         <>
-                          Submit Quote <Send size={18} />
+                          Submit Request <Send size={18} />
                         </>
                       )}
                     </button>

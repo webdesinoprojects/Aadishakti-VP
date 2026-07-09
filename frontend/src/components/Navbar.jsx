@@ -147,7 +147,7 @@ export default function Navbar() {
           </div>
 
           <Link to="/products" className={`nav-link ${location.pathname === "/products" ? "active" : ""}`}>PRODUCTS</Link>
-          <Link to="/custom-alloy" className={`nav-link ${location.pathname === "/custom-alloy" ? "active" : ""}`}>ALLOY QUOTE</Link>
+          <Link to="/custom-alloy" className={`nav-link ${location.pathname === "/custom-alloy" ? "active" : ""}`}>ALLOY REQ</Link>
 
           {/* ESG — MEGA DROPDOWN */}
           <div className="company-wrap" onMouseEnter={() => setEsgOpen(true)} onMouseLeave={() => setEsgOpen(false)}>
