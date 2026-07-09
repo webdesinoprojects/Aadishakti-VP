@@ -299,6 +299,7 @@ export default function Navbar() {
         )}
 
         <Link to="/products" className="mobile-link">PRODUCTS</Link>
+        <Link to="/custom-alloy" className="mobile-link">ALLOY REQ</Link>
         
         <button type="button" className="mobile-link mobile-company" onClick={() => setMobileEsg(v => !v)}>
           ESG {mobileEsg ? "▲" : "▼"}
