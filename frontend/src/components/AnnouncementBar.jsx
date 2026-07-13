@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 const BAR_TEXT =
   "ISO 9001:2015 Certified  ·  BIS Approved Pure Lead  ·  50,000 MT Annual Capacity  ·  " +
   "Plants: Mundra (Gujarat) & Roorkee (Uttarakhand)  ·  LME Grade Lead — 99.97% Pb Minimum  ·  " +
-  "Enquiries: +91-8743000299  ·  marketing@aadishakti.com  ·  ";
+  "Enquiries: +91-8743000799  ·  gourav.sharma@aadishakti.com  ·  ";
 
 export default function AnnouncementBar() {
   const [visible, setVisible] = useState(() => {

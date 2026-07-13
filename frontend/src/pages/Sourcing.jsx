@@ -172,7 +172,7 @@ export default function Sourcing() {
                     For bulk international procurement enquiries and pre-shipment discussions.
                   </p>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--text-secondary)" }}>
-                    marketing@aadishakti.com · +91-8743000299
+                    gourav.sharma@aadishakti.com · +91-8743000799
                   </div>
                 </div>
               </div>

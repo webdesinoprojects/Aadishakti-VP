@@ -173,10 +173,10 @@ export default function Contact() {
                         Direct Refineries Phone
                       </h4>
                       <p style={{ color: "var(--silver)", fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
-                        HQ Desk: +91-8743000299, +91-8743000799
+                        Lead Sales: +91-8743000799
                       </p>
                       <p style={{ color: "var(--silver)", fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
-                        Mundra Unit: +91-8743000779
+                        Pipe & Coil Division: +91-8743000779
                       </p>
                       <p style={{ color: "var(--silver)", fontSize: "13px", fontFamily: "var(--font-mono)" }}>
                         Roorkee Unit: +91-9045585676
@@ -202,7 +202,8 @@ export default function Contact() {
                         Transmission Channels
                       </h4>
                       <p style={{ fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
-                        <a href="mailto:marketing@aadishakti.com" style={{ color: "var(--text-primary)", textDecoration: "underline" }}>marketing@aadishakti.com</a>
+                        <a href="mailto:gourav.sharma@aadishakti.com" style={{ color: "var(--text-primary)", textDecoration: "underline" }}>gourav.sharma@aadishakti.com</a>
+                        <span style={{ color: "var(--text-muted)", fontSize: "11px", marginLeft: "8px" }}>(Lead Sales)</span>
                       </p>
                       <p style={{ fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
                         <a href="mailto:mundra.smelter@aadishakti.com" style={{ color: "var(--silver)" }}>mundra.smelter@aadishakti.com</a>
