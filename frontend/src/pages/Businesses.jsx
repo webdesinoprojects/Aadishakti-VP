@@ -249,6 +249,199 @@ export default function Businesses() {
           </motion.div>
         </div>
       </section>
+
+      {/* ── AADISHAKTI METAL WORLD LLP — PIPE & COIL ── */}
+      <section
+        id="pipe-coil"
+        style={{
+          minHeight: "85vh",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          background: "#0d0d0d",
+          borderBottom: "1px solid var(--steel)",
+          overflow: "hidden",
+          scrollMarginTop: "84px",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+            backgroundImage: "url('/plant/R1 (1).jpg')",
+            backgroundSize: "cover", backgroundPosition: "center right",
+            opacity: 0.45, zIndex: 1, filter: "saturate(0.8) contrast(1.1)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+            background: "linear-gradient(100deg, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.65) 45%, rgba(8,8,8,0.30) 100%)",
+            zIndex: 2,
+          }}
+        />
+
+        <div className="container" style={{ position: "relative", zIndex: 3, padding: "80px 0" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 52 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.62 }}
+            transition={{ duration: 0.85, ease: smoothEase }}
+            className="grid-2"
+            style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.64 }}
+              transition={{ duration: 0.75, delay: 0.12, ease: smoothEase }}
+            >
+              <SectionLabel text="// PIPE & COIL DIVISION" />
+              <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
+                METAL WORLD DIVISION
+              </h2>
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "var(--red-core)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
+                AADISHAKTI METAL WORLD LLP
+              </h3>
+
+              <p style={{ color: "#E4E4E0", fontSize: "var(--fs-lead)", lineHeight: "1.7", marginBottom: "1.5rem" }}>
+                Delhi-based wholesale trading and distribution entity specialising in high-precision Stainless Steel Pipes and Coils for India's industrial and infrastructure sectors.
+              </p>
+              <p style={{ color: "#D0D0CB", fontSize: "var(--fs-body)", lineHeight: "1.6", marginBottom: "2rem" }}>
+                Incorporated in 2025, Aadishakti Metal World LLP supplies SS Pipes (0.23mm–0.55mm thickness) and SS Coils (0.25mm–1.45mm thickness) as per customer specifications. Operating under the leadership of designated partners Amit Goyal, Taruna Goyal, and Sarla Goyal, the entity extends the Aadishakti Group's footprint into the stainless steel distribution space, supported by the group's established logistics network and long-standing industrial relationships.
+              </p>
+
+              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
+                  SS PIPES &amp; COILS
+                </span>
+                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
+                  WHOLESALE DISTRIBUTOR
+                </span>
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#A7A7A2", lineHeight: 1.8 }}>
+                <div>Sales: Mr. Sunil Pathak — DM Sales</div>
+                <div>📞 +91-8743000779 &nbsp;|&nbsp; ✉ sales.delhi@aadishakti.com</div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
+              initial={{ opacity: 0, y: 36 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.64 }}
+              transition={{ duration: 0.75, delay: 0.22, ease: smoothEase }}
+            >
+              {[
+                { val: "SS Pipes", sub: "0.23–0.55mm" },
+                { val: "SS Coils", sub: "0.25–1.45mm" },
+                { val: "2025", sub: "Incorporated" },
+                { val: "New Delhi", sub: "HQ Location" },
+              ].map((s) => (
+                <div key={s.sub} style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "22px", color: "var(--text-white)", fontWeight: "700" }}>{s.val}</div>
+                  <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{s.sub}</p>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── AADISHAKTI METALS — OXIDE DIVISION ── */}
+      <section
+        id="oxide"
+        style={{
+          minHeight: "85vh",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          background: "#111111",
+          borderBottom: "1px solid var(--steel)",
+          overflow: "hidden",
+          scrollMarginTop: "84px",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+            backgroundImage: "url('/plant/Rotary 1.jpeg')",
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.45, zIndex: 1, filter: "saturate(0.75) contrast(1.1)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+            background: "linear-gradient(100deg, rgba(11,11,11,0.88) 0%, rgba(11,11,11,0.64) 45%, rgba(11,11,11,0.30) 100%)",
+            zIndex: 2,
+          }}
+        />
+
+        <div className="container" style={{ position: "relative", zIndex: 3, padding: "80px 0" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 52 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.62 }}
+            transition={{ duration: 0.85, ease: smoothEase }}
+            className="grid-2"
+            style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.64 }}
+              transition={{ duration: 0.75, delay: 0.12, ease: smoothEase }}
+            >
+              <SectionLabel text="// OXIDE DIVISION" />
+              <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
+                OXIDE MANUFACTURING DIVISION
+              </h2>
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "var(--red-core)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
+                AADISHAKTI METALS
+              </h3>
+
+              <p style={{ color: "#E4E4E0", fontSize: "var(--fs-lead)", lineHeight: "1.7", marginBottom: "1.5rem" }}>
+                Located at the Raipur Sahkari Industrial Area, Bhagwanpur, Roorkee — India's dedicated lead oxide manufacturing facility within the Aadishakti Group ecosystem.
+              </p>
+              <p style={{ color: "#D0D0CB", fontSize: "var(--fs-body)", lineHeight: "1.6", marginBottom: "2rem" }}>
+                Aadishakti Metals specialises in the manufacture of high-purity Lead Oxides — Red Lead (Pb₃O₄), Grey Lead Oxide / Lead Sub-Oxide (2PbO·Pb), and Litharge — produced using Pure Lead with a minimum purity of 99.98%. The facility employs advanced furnace systems, ball mill oxidation processes, cyclone bag-house filtration, and automated packing lines to ensure consistent product quality for battery, glass, paint, and ceramics industries.
+              </p>
+
+              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
+                  RED LEAD (Pb₃O₄)
+                </span>
+                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
+                  GREY OXIDE
+                </span>
+                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
+                  LITHARGE
+                </span>
+              </div>
+            </motion.div>
+
+            <motion.div
+              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
+              initial={{ opacity: 0, y: 36 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.64 }}
+              transition={{ duration: 0.75, delay: 0.22, ease: smoothEase }}
+            >
+              {[
+                { val: "99.98%", sub: "Lead Purity Input" },
+                { val: "3 Grades", sub: "Oxide Products" },
+                { val: "Roorkee", sub: "Uttarakhand" },
+                { val: "Ball Mill", sub: "Oxidation Process" },
+              ].map((s) => (
+                <div key={s.sub} style={{ background: "rgba(11,11,11,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "22px", color: "var(--text-white)", fontWeight: "700" }}>{s.val}</div>
+                  <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{s.sub}</p>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }
