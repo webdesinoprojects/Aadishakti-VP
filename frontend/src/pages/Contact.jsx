@@ -3,20 +3,23 @@ import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
-import { MapPin, Phone, Mail, Check, Loader2 } from "lucide-react";
+import { MapPin, Phone, Mail, Check, Loader2, Paperclip, X } from "lucide-react";
+import { allCountryOptions } from "../utils/countries";
+import CountrySelect from "../components/CountrySelect";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     fullName: "",
     companyName: "",
     workEmail: "",
+    phoneCode: "+91",
     phone: "",
     inquiryType: "Product Inquiry",
-    products: [],
+    productsOfInterest: [],
     additionalDetails: "",
-    country: "India", // added default for server satisfaction
+    country: "India",
     estimatedQuantity: "Not decided yet",
-    materialType: "Ingots",
+    materialTypes: [],
     packagingRequirement: "",
     specFile: null,
   });
@@ -26,16 +29,44 @@ export default function Contact() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "phone" || name === "whatsapp") {
+      setFormData((prev) => ({ ...prev, [name]: value.replace(/\D/g, "") }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleProductToggle = (product) => {
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.size <= 10485760) {
+      setFormData(prev => ({ ...prev, specFile: file }));
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleProductSelect = (product) => {
     setFormData((prev) => {
-      const isSelected = prev.products.includes(product);
+      const currentProducts = prev.productsOfInterest || [];
+      const isSelected = currentProducts.includes(product);
       const newProducts = isSelected
-        ? prev.products.filter((p) => p !== product)
-        : [...prev.products, product];
-      return { ...prev, products: newProducts };
+        ? currentProducts.filter(p => p !== product)
+        : [...currentProducts, product];
+      return { ...prev, productsOfInterest: newProducts };
+    });
+  };
+
+  const handleMaterialSelect = (material) => {
+    setFormData((prev) => {
+      const currentMaterials = prev.materialTypes || [];
+      const isSelected = currentMaterials.includes(material);
+      const newMaterials = isSelected
+        ? currentMaterials.filter(m => m !== material)
+        : [...currentMaterials, material];
+      return { ...prev, materialTypes: newMaterials };
     });
   };
 
@@ -44,14 +75,32 @@ export default function Contact() {
     setSubmitting(true);
     setSubmitStatus(null);
 
+    if (!formData.productsOfInterest || formData.productsOfInterest.length === 0) {
+      setSubmitStatus({ type: "error", msg: "PLEASE SELECT AT LEAST ONE PRODUCT OF INTEREST." });
+      setSubmitting(false);
+      return;
+    }
+
     try {
+      const payload = {
+        ...formData,
+        phone: `${formData.phoneCode} ${formData.phone}`,
+        products: formData.productsOfInterest,
+        materials: formData.materialTypes
+      };
       const response = await fetch(buildApiUrl("/api/enquiries"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
-      const resJson = await response.json();
+      let resJson = {};
+      try {
+        resJson = await response.json();
+      } catch (e) {
+        // Safely ignore empty responses
+      }
+
       if (!response.ok) {
         throw new Error(resJson.error || "Failed to transmit enquiry.");
       }
@@ -66,13 +115,14 @@ export default function Contact() {
         fullName: "",
         companyName: "",
         workEmail: "",
+        phoneCode: "+91",
         phone: "",
         inquiryType: "Product Inquiry",
-        products: [],
+        productsOfInterest: [],
         additionalDetails: "",
         country: "India",
         estimatedQuantity: "Not decided yet",
-        materialType: "Ingots",
+        materialTypes: [],
         packagingRequirement: "",
         specFile: null,
       });
@@ -94,14 +144,21 @@ export default function Contact() {
     "Lead Sub Oxide (Grey Oxide)",
   ];
 
+  const materialOptionsByProduct = {
+    "Refined Lead Ingots": ["Ingots (25 kg)", "Jumbo Ingots (1 MT)"],
+    "Lead Alloys": ["Ingots (25 kg)", "Jumbo Ingots (1 MT)"],
+    "Red Lead Oxide": ["Powder", "Jumbo Bag / FIBC", "HDPE Drum"],
+    "Lead Sub Oxide (Grey Oxide)": ["Powder", "Jumbo Bag / FIBC", "HDPE Drum"],
+  };
+
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="ENGAGE INFRASTRUCTURE" activePage="CONTACT" />
+      <PageHero title="CONTACT" activePage="CONTACT" />
 
       <section className="section-padding" style={{ background: "var(--bg-secondary)" }}>
         <div className="container">
           <ScrollReveal>
-            <div className="grid-2" style={{ gridTemplateColumns: "0.8fr 1.2fr", gap: "60px", alignItems: "start" }}>
+            <div className="contact-layout-grid">
               
               {/* LEFT COLUMN: 40% */}
               <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
@@ -282,6 +339,7 @@ export default function Contact() {
                       placeholder="e.g. Director of Procurement"
                       style={{
                         width: "100%",
+                        minWidth: 0,
                         background: "transparent",
                         border: "none",
                         borderBottom: "1.5px solid var(--steel)",
@@ -321,6 +379,7 @@ export default function Contact() {
                       placeholder="e.g. Mahindra Automotive Ltd."
                       style={{
                         width: "100%",
+                        minWidth: 0,
                         background: "transparent",
                         border: "none",
                         borderBottom: "1.5px solid var(--steel)",
@@ -336,7 +395,7 @@ export default function Contact() {
                   </div>
 
                   {/* Two Column Grid */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "2rem" }}>
+                  <div className="grid-2" style={{ gap: "24px", marginBottom: "2rem" }}>
                     {/* Work Email */}
                     <div>
                       <label
@@ -362,6 +421,7 @@ export default function Contact() {
                         placeholder="name@company.com"
                         style={{
                           width: "100%",
+                          minWidth: 0,
                           background: "transparent",
                           border: "none",
                           borderBottom: "1.5px solid var(--steel)",
@@ -392,27 +452,52 @@ export default function Contact() {
                       >
                         PHONE NUMBER*
                       </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        required
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="+91 XXXXX XXXXX"
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          borderBottom: "1.5px solid var(--steel)",
-                          color: "var(--text-primary)",
-                          padding: "10px 0",
-                          fontFamily: "var(--font-primary)",
-                          fontSize: "14px",
-                          outline: "none",
-                          transition: "border-bottom 0.3s ease",
-                        }}
-                        className="custom-contact-input white-contact-input"
-                      />
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <CountrySelect
+                          name="phoneCode"
+                          value={formData.phoneCode}
+                          onChange={handleInputChange}
+                          style={{
+                            width: "120px",
+                            background: "transparent",
+                            border: "none",
+                            borderBottom: "1.5px solid var(--steel)",
+                            color: "var(--text-primary)",
+                            padding: "10px 0",
+                            fontFamily: "var(--font-primary)",
+                            fontSize: "14px",
+                            outline: "none",
+                            transition: "border-bottom 0.3s ease",
+                            cursor: "pointer",
+                          }}
+                          className="custom-contact-input white-contact-input"
+                        />
+                        <input
+                          type="tel"
+                          name="phone"
+                          required
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          placeholder="XXXXX XXXXX"
+                          pattern="[0-9]{10,15}"
+                          minLength={10}
+                          style={{
+                            flex: 1,
+                            width: "100%",
+                            minWidth: 0,
+                            background: "transparent",
+                            border: "none",
+                            borderBottom: "1.5px solid var(--steel)",
+                            color: "var(--text-primary)",
+                            padding: "10px 0",
+                            fontFamily: "var(--font-primary)",
+                            fontSize: "14px",
+                            outline: "none",
+                            transition: "border-bottom 0.3s ease",
+                          }}
+                          className="custom-contact-input white-contact-input"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -457,7 +542,6 @@ export default function Contact() {
                     </select>
                   </div>
 
-                  {/* Custom Checkboxes: Products of Interest */}
                   <div style={{ marginBottom: "2rem" }}>
                     <label
                       style={{
@@ -471,41 +555,44 @@ export default function Contact() {
                         marginBottom: "12px",
                       }}
                     >
-                      PRODUCTS OF INTEREST
+                      PRODUCT OF INTEREST*
                     </label>
                     
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div className="grid-2" style={{ gap: "12px" }}>
                       {productOptions.map((prod) => {
-                        const isChecked = formData.products.includes(prod);
+                        const isChecked = formData.productsOfInterest.includes(prod);
                         return (
                           <div
                             key={prod}
-                            onClick={() => handleProductToggle(prod)}
+                            onClick={() => handleProductSelect(prod)}
                             style={{
                               display: "flex",
                               alignItems: "center",
                               gap: "12px",
                               cursor: "pointer",
-                              padding: "8px",
+                              padding: "12px",
+                              background: isChecked ? "rgba(231, 76, 60, 0.1)" : "var(--bg-primary)",
+                              border: `1px solid ${isChecked ? "var(--red-core)" : "var(--border-light)"}`,
+                              borderRadius: "4px",
                               userSelect: "none",
+                              transition: "all 0.2s ease"
                             }}
                           >
-                            {/* Custom Red Checkbox Frame */}
                             <div
                               style={{
-                                width: "18px",
-                                height: "18px",
-                                border: `1.5px solid ${isChecked ? "var(--red-core)" : "var(--ash)"}`,
-                                background: isChecked ? "var(--red-core)" : "transparent",
+                                width: "16px",
+                                height: "16px",
+                                borderRadius: "50%",
+                                border: `2px solid ${isChecked ? "var(--red-core)" : "var(--ash)"}`,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 transition: "all 0.25s ease",
                               }}
                             >
-                              {isChecked && <Check size={12} strokeWidth={3} style={{ color: "var(--text-primary)" }} />}
+                              {isChecked && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--red-core)" }} />}
                             </div>
-                            <span style={{ fontSize: "13px", color: isChecked ? "var(--white)" : "var(--silver)", transition: "color 0.25s" }}>
+                            <span style={{ fontSize: "13px", color: isChecked ? "var(--white)" : "var(--silver)", fontWeight: isChecked ? "600" : "400", transition: "color 0.25s" }}>
                               {prod}
                             </span>
                           </div>
@@ -530,29 +617,59 @@ export default function Contact() {
                     >
                       TYPE OF MATERIAL*
                     </label>
-                    <select
-                      name="materialType"
-                      value={formData.materialType}
-                      onChange={handleInputChange}
-                      style={{
-                        width: "100%",
-                        background: "var(--iron)",
-                        border: "1px solid var(--border-light)",
-                        color: "var(--text-primary)",
-                        padding: "12px 16px",
-                        fontFamily: "var(--font-primary)",
-                        fontSize: "14px",
-                        outline: "none",
-                        transition: "border-color 0.3s",
-                      }}
-                      className="custom-contact-select"
-                    >
-                      <option value="Powder">Powder</option>
-                      <option value="Oxide">Oxide</option>
-                      <option value="Balls">Balls</option>
-                      <option value="Sheet">Sheet</option>
-                      <option value="Ingots">Ingots</option>
-                    </select>
+                    <div className="grid-2" style={{
+                      gap: "12px",
+                      opacity: formData.productsOfInterest.length === 0 ? 0.5 : 1,
+                      pointerEvents: formData.productsOfInterest.length === 0 ? "none" : "auto"
+                    }}>
+                      {formData.productsOfInterest.length === 0 ? (
+                        <div style={{ gridColumn: "span 2", fontSize: "13px", color: "var(--silver)", padding: "12px", background: "var(--iron)", border: "1px solid var(--border-light)" }}>
+                          Select at least one product first
+                        </div>
+                      ) : (
+                        Array.from(new Set(
+                          formData.productsOfInterest.flatMap(p => materialOptionsByProduct[p] || [])
+                        )).map((mat) => {
+                          const isChecked = formData.materialTypes.includes(mat);
+                          return (
+                            <div
+                              key={mat}
+                              onClick={() => handleMaterialSelect(mat)}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "12px",
+                                cursor: "pointer",
+                                padding: "12px",
+                                background: isChecked ? "rgba(231, 76, 60, 0.1)" : "var(--bg-primary)",
+                                border: `1px solid ${isChecked ? "var(--red-core)" : "var(--border-light)"}`,
+                                borderRadius: "4px",
+                                userSelect: "none",
+                                transition: "all 0.2s ease"
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  borderRadius: "50%",
+                                  border: `2px solid ${isChecked ? "var(--red-core)" : "var(--ash)"}`,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  transition: "all 0.25s ease",
+                                }}
+                              >
+                                {isChecked && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--red-core)" }} />}
+                              </div>
+                              <span style={{ fontSize: "13px", color: isChecked ? "var(--white)" : "var(--silver)", fontWeight: isChecked ? "600" : "400", transition: "color 0.25s" }}>
+                                {mat}
+                              </span>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
                   </div>
 
                   {/* Packaging Requirement Input */}
@@ -604,20 +721,60 @@ export default function Contact() {
                         letterSpacing: "0.15em",
                         color: "var(--silver)",
                         textTransform: "uppercase",
-                        marginBottom: "8px",
+                        marginBottom: "12px",
                       }}
                     >
                       UPLOAD SPECIFICATION / RFQ DOCUMENT (Optional)
                     </label>
+                    
+                    <div
+                      style={{
+                        border: "2px dashed var(--steel)",
+                        borderRadius: "4px",
+                        padding: "20px 24px",
+                        background: "transparent",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        cursor: "pointer",
+                        transition: "border-color 0.2s",
+                      }}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onClick={() => document.getElementById("contact-file-upload").click()}
+                    >
+                      <Paperclip size={20} color="var(--red-core)" style={{ flexShrink: 0 }} />
+                      {formData.specFile ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
+                          <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", wordBreak: "break-all" }}>{formData.specFile.name}</span>
+                          <span style={{ fontSize: "11px", color: "var(--text-muted)", whiteSpace: "nowrap" }}>({(formData.specFile.size / 1024).toFixed(1)} KB)</span>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setFormData(prev => ({...prev, specFile: null})); }}
+                            style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center" }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <p style={{ fontSize: "13px", color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-primary)" }}>
+                            <span style={{ fontWeight: 700, color: "var(--red-core)" }}>Drag & drop</span> document or <span style={{ fontWeight: 700, color: "var(--red-core)" }}>click to attach</span>
+                          </p>
+                          <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0", fontFamily: "var(--font-primary)" }}>Max 10MB file size</p>
+                        </div>
+                      )}
+                    </div>
                     <input
+                      id="contact-file-upload"
                       type="file"
                       name="specFile"
-                      onChange={(e) => setFormData(prev => ({...prev, specFile: e.target.files[0]}))}
-                      style={{
-                        width: "100%",
-                        color: "var(--text-primary)",
-                        fontFamily: "var(--font-primary)",
-                        fontSize: "13px",
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file && file.size <= 10485760) {
+                          setFormData(prev => ({...prev, specFile: file}));
+                        }
                       }}
                     />
                   </div>

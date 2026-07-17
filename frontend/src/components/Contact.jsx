@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { buildApiUrl } from "../config/api";
 import { MapPin } from "lucide-react";
+import { allCountryOptions } from "../utils/countries";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     fullName: "",
     workEmail: "",
+    phoneCode: "+91",
     phone: "",
     companyName: "",
     country: "",
@@ -44,10 +46,15 @@ export default function Contact() {
     }
 
     try {
+      const payload = {
+        ...formData,
+        phone: `${formData.phoneCode} ${formData.phone}`
+      };
+      
       const response = await fetch(buildApiUrl("/api/enquiries"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const resJson = await response.json();
@@ -62,6 +69,7 @@ export default function Contact() {
       setFormData({
         fullName: "",
         workEmail: "",
+        phoneCode: "+91",
         phone: "",
         companyName: "",
         country: "",
@@ -193,17 +201,35 @@ export default function Contact() {
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-                <div className="dark-form-group">
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    placeholder=" "
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="dark-form-control"
-                  />
-                  <label className="dark-form-label">Phone / WhatsApp Number*</label>
+                <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                  <div className="dark-form-group" style={{ width: "130px", flexShrink: 0 }}>
+                    <select
+                      name="phoneCode"
+                      value={formData.phoneCode}
+                      onChange={handleInputChange}
+                      className="dark-form-control"
+                      style={{ cursor: "pointer", paddingLeft: "8px" }}
+                    >
+                      {allCountryOptions.map((opt) => (
+                        <option key={`${opt.label}-${opt.value}`} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <label className="dark-form-label">Code</label>
+                  </div>
+                  <div className="dark-form-group" style={{ flex: 1 }}>
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      placeholder=" "
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="dark-form-control"
+                    />
+                    <label className="dark-form-label">Phone / WhatsApp Number*</label>
+                  </div>
                 </div>
 
                 <div className="dark-form-group">

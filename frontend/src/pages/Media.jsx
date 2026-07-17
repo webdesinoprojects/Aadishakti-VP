@@ -17,7 +17,6 @@ export default function Media() {
   const defaultMedia = [
     { id: "1", type: "blogs", title: "The Future of Secondary Lead", date: "Oct 12, 2026", img: "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg", desc: "Exploring how sustainable battery recycling is changing the global supply chain." },
     { id: "2", type: "news", title: "Aadishakti Expands Mundra Plant", date: "Sep 28, 2026", img: "/gallery/plants/Mundra/Plant_Pic_02.jpeg", desc: "New rotary furnaces installed to boost pure lead output by 20%." },
-    { id: "3", type: "events", title: "Annual Sustainability Summit", date: "Nov 05, 2026", img: "/gallery/events/PMUD5812.JPG", desc: "Join us for our yearly gathering of eco-conscious partners and suppliers." },
     { id: "4", type: "blogs", title: "Why BIS Certification Matters", date: "Aug 15, 2026", img: "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg", desc: "Understanding the rigorous standards behind IS 27:1992." }
   ];
 
@@ -27,8 +26,7 @@ export default function Media() {
   
   const types = [
     { id: "blogs", label: "BLOGS" },
-    { id: "news", label: "NEWS" },
-    { id: "events", label: "EVENTS" }
+    { id: "news", label: "NEWS" }
   ];
 
   return (

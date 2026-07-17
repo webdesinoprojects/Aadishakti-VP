@@ -16,6 +16,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Businesses from "./pages/Businesses";
 import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
 import Sustainability from "./pages/Sustainability";
 import TrackOrder from "./pages/TrackOrder";
 import Investors from "./pages/Investors";
@@ -116,6 +117,7 @@ export default function App() {
             <Route path="/about" element={<PageTransition><About /></PageTransition>} />
             <Route path="/businesses" element={<PageTransition><Businesses /></PageTransition>} />
             <Route path="/products" element={<PageTransition><Products /></PageTransition>} />
+            <Route path="/products/:slug" element={<PageTransition><ProductDetail /></PageTransition>} />
             <Route path="/sustainability" element={<PageTransition><Sustainability /></PageTransition>} />
             <Route path="/track" element={<PageTransition><TrackOrder /></PageTransition>} />
             <Route path="/investors" element={<PageTransition><Investors /></PageTransition>} />

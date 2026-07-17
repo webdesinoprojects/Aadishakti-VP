@@ -62,7 +62,7 @@ const certifications = [
 export default function About() {
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="CORPORATE OVERVIEW" activePage="ABOUT US" />
+      <PageHero title="ABOUT US" activePage="ABOUT US" />
 
       {/* SECTION 1 — WHO WE ARE */}
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
@@ -165,25 +165,25 @@ export default function About() {
 
             <div style={{ position: "relative" }}>
               {/* Connecting line */}
-              <div style={{ position: "absolute", top: "40px", left: 0, width: "100%", height: "2px", background: "linear-gradient(90deg, var(--red-core) 0%, var(--red-bright) 100%)", zIndex: 1 }} />
+              <div className="about-timeline-line" />
 
-              <div style={{ display: "flex", gap: "0", overflowX: "auto", paddingBottom: "8px", scrollbarWidth: "thin" }}>
+              <div className="grid-4" style={{ gap: "24px", paddingBottom: "16px" }}>
                 {timeline.map((tm, idx) => (
                   <motion.div
                     key={tm.year}
-                    style={{ minWidth: "240px", flex: 1, position: "relative", paddingTop: "68px" }}
+                    className="about-timeline-item"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: idx * 0.15 }}
                     viewport={{ once: true }}
                   >
                     {/* Timeline node */}
-                    <div style={{ position: "absolute", top: "34px", left: "24px", width: "14px", height: "14px", borderRadius: "50%", background: "var(--red-core)", border: "3px solid var(--bg-secondary)", zIndex: 2 }} />
+                    <div className="about-timeline-node" />
 
-                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "22px", fontWeight: 700, color: "var(--red-core)", marginBottom: "12px", paddingLeft: "24px" }}>
+                    <div className="about-timeline-year" style={{ fontFamily: "var(--font-mono)", fontSize: "22px", fontWeight: 700, color: "var(--red-core)", marginBottom: "12px", paddingLeft: "24px" }}>
                       {tm.year}
                     </div>
-                    <div className="corporate-card" style={{ padding: "20px", background: "#FFFFFF" }}>
+                    <div className="corporate-card" style={{ flex: 1, padding: "24px", background: "#FFFFFF", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
                       <h4 style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-primary)", textTransform: "uppercase", marginBottom: "0.5rem" }}>
                         {tm.title}
                       </h4>

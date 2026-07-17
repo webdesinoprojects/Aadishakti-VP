@@ -4,6 +4,8 @@ import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
 import { Send, CheckCircle2, Loader2, Paperclip, X } from "lucide-react";
 import { buildApiUrl } from "../config/api";
+import { allCountryOptions } from "../utils/countries";
+import CountrySelect from "../components/CountrySelect";
 
 const ALLOY_ELEMENTS = [
   { key: "antimony", name: "Antimony (Sb)", defaultVal: "0.001% max" },
@@ -20,6 +22,7 @@ export default function CustomAlloy() {
   const [formData, setFormData] = useState({
     fullName: "",
     workEmail: "",
+    phoneCode: "+91",
     phone: "",
     companyName: "",
     estimatedQuantity: "",
@@ -48,11 +51,30 @@ export default function CustomAlloy() {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "phone" || name === "whatsapp") {
+      setFormData((prev) => ({ ...prev, [name]: value.replace(/\D/g, "") }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSpecChange = (key, value) => {
     setSpecs((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.size <= 10485760) {
+      setUploadedFile(file);
+      setErrorMsg("");
+    } else if (file) {
+      setErrorMsg("File must be under 10MB");
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
   const handleSubmit = async (e) => {
@@ -61,24 +83,32 @@ export default function CustomAlloy() {
     setErrorMsg("");
 
     try {
-      const payload = {
-        ...formData,
-        inquiryType: "Custom Alloy Quote",
-        products: ["Custom Alloy"],
-        additionalDetails: `Custom Specification Request:\n${JSON.stringify(specs, null, 2)}\n\nNotes: ${formData.notes}`,
-      };
+      const data = new FormData();
+      data.append("fullName", formData.fullName);
+      data.append("workEmail", formData.workEmail);
+      data.append("phone", `${formData.phoneCode} ${formData.phone}`);
+      data.append("companyName", formData.companyName);
+      data.append("country", "Not Specified"); // to satisfy backend validation
+      data.append("inquiryType", "Custom Alloy Quote");
+      data.append("products", JSON.stringify(["Custom Alloy"]));
+      data.append("additionalDetails", `Custom Specification Request:\n${JSON.stringify(specs, null, 2)}\n\nNotes: ${formData.notes}`);
+
+      if (uploadedFile) {
+        data.append("attachment", uploadedFile);
+      }
 
       const response = await fetch(buildApiUrl("/api/enquiries"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: data,
       });
-      if (!response.ok) throw new Error("Failed to submit");
+      
+      const resJson = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(resJson.error || "Failed to submit");
       setSuccess(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       console.error("Submit error:", error);
-      setErrorMsg("Failed to submit quote request. Please try again or contact us directly.");
+      setErrorMsg(error.message || "Failed to submit quote request. Please try again or contact us directly.");
     } finally {
       setLoading(false);
     }
@@ -86,7 +116,7 @@ export default function CustomAlloy() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="CUSTOM ALLOY QUOTE" activePage="ALLOY QUOTE" />
+      <PageHero title="CUSTOM ALLOY" activePage="CUSTOM ALLOY" />
 
       <section className="section-padding bg-light">
         <div className="container">
@@ -132,7 +162,26 @@ export default function CustomAlloy() {
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Phone Number</label>
-                      <input type="tel" name="phone" className="form-input" value={formData.phone} onChange={handleFormChange} placeholder="+91 XXXXX XXXXX" />
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <CountrySelect
+                          name="phoneCode"
+                          value={formData.phoneCode}
+                          onChange={handleFormChange}
+                          className="form-input"
+                          style={{ width: "120px", cursor: "pointer", paddingLeft: "8px" }}
+                        />
+                        <input
+                          type="tel"
+                          name="phone"
+                          className="form-input"
+                          value={formData.phone}
+                          onChange={handleFormChange}
+                          placeholder="XXXXX XXXXX"
+                          pattern="[0-9]{10,15}"
+                          minLength={10}
+                          style={{ flex: 1 }}
+                        />
+                      </div>
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Company Name *</label>
@@ -205,6 +254,8 @@ export default function CustomAlloy() {
                         cursor: "pointer",
                         transition: "border-color 0.2s",
                       }}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
                       onClick={() => document.getElementById("alloy-file-upload").click()}
                     >
                       <Paperclip size={20} color="var(--red-core)" style={{ flexShrink: 0 }} />
@@ -221,18 +272,18 @@ export default function CustomAlloy() {
                           </button>
                         </div>
                       ) : (
-                        <div>
+                        <div style={{ width: "100%", textAlign: "center" }}>
                           <p style={{ fontSize: "13px", color: "var(--text-secondary)", margin: 0 }}>
-                            <span style={{ fontWeight: 700, color: "var(--red-core)" }}>Click to upload</span> your specification sheet, RFQ, or custom requirement document
+                            <span style={{ fontWeight: 700, color: "var(--red-core)" }}>Drag & drop or click to upload</span> your specification sheet, RFQ, or custom requirement document
                           </p>
-                          <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0" }}>PDF, DOC, DOCX, XLS, XLSX — Max 10MB</p>
+                          <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0" }}>PDF, DOC, DOCX — Max 10MB</p>
                         </div>
                       )}
                     </div>
                     <input
                       id="alloy-file-upload"
                       type="file"
-                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      accept=".pdf,.doc,.docx"
                       style={{ display: "none" }}
                       onChange={handleFileChange}
                     />

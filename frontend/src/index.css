@@ -100,7 +100,7 @@ a { color: inherit; text-decoration: none; transition: color var(--transition-fa
   width: min(100% - (var(--page-gutter) * 2), 1280px);
   margin-inline: auto;
 }
-.section-padding { padding: clamp(80px, 10vw, 140px) 0; }
+.section-padding { padding: clamp(60px, 8vw, 100px) 0; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
@@ -119,9 +119,9 @@ a { color: inherit; text-decoration: none; transition: color var(--transition-fa
   position: relative;
 }
 .corporate-card:hover, .dominance-card:hover, .founder-card:hover, .timeline-item:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   border-left-color: var(--red-bright);
-  transform: translateY(-3px);
+  transform: translateY(-6px);
 }
 
 .spec-terminal-table {
@@ -244,6 +244,10 @@ body.bar-visible .top-nav { top: 36px; }
 /* ==========================================================================
    HERO — GLASS CERT CARD
    ========================================================================== */
+.normal-case {
+  text-transform: none !important;
+}
+
 .hero-glass-card {
   position: absolute;
   bottom: 188px;
@@ -492,6 +496,7 @@ body.bar-visible .page-hero { padding-top: 196px; }
   height: 38px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   border: 1px solid var(--red-core);
   color: var(--red-core);
   padding: 0 16px;
@@ -659,5 +664,320 @@ body.bar-visible .page-hero { padding-top: 196px; }
   
   .mosaic-grid {
     grid-template-rows: 150px 150px;
+  }
+}
+
+.footer-grid {
+  display: grid;
+}
+@media (max-width: 768px) {
+  .product-photo-band { grid-template-columns: 1fr; }
+}
+
+.btn-portal-login {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--red-core);
+  color: var(--red-core);
+  padding: 0 16px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+}
+.btn-portal-login:hover {
+  background: var(--red-core);
+  color: var(--text-white);
+}
+
+/* ==========================================================================
+   SOURCING TABLE
+   ========================================================================== */
+.sourcing-table { width: 100%; border-collapse: collapse; }
+.sourcing-table th {
+  font-family: var(--font-primary); font-weight: 700; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-primary);
+  padding: 14px 20px; text-align: left;
+  background: var(--bg-secondary); border-bottom: 2px solid var(--red-core);
+}
+.sourcing-table td {
+  padding: 13px 20px; border-bottom: 1px solid var(--border-light);
+  font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary);
+}
+.sourcing-table tr:hover td { background: var(--red-subtle); }
+
+/* ==========================================================================
+   PAGE SPECIFIC LAYOUTS
+   ========================================================================== */
+.gallery-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 4rem;
+  align-items: flex-start;
+}
+@media (max-width: 960px) {
+  .gallery-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* ==========================================================================
+   HERO RESPONSIVE STYLES
+   ========================================================================== */
+.hero-nav-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hero-stats-wrapper {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+  padding: 28px 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 5;
+}
+
+.hero-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.hero-stat-num {
+  font-size: clamp(28px, 3.5vw, 48px);
+}
+
+.hero-stat-label {
+  font-size: 11px;
+}
+
+@media (max-width: 768px) {
+  .hero-nav-arrows {
+    flex-direction: row;
+    top: auto !important;
+    bottom: 20px; /* Sit inside the image, at the bottom right corner */
+    right: 20px !important;
+    transform: none !important;
+  }
+  
+  .hero-stats-wrapper {
+    position: relative; /* Remove absolute positioning so it flows naturally */
+    bottom: auto;
+    padding: 16px 0;
+    margin: 24px 0;
+  }
+  
+  .hero-stats-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .hero-stat-item {
+    border-left: 1px solid var(--border-light) !important;
+    border-bottom: none !important;
+    padding: 0 4px !important;
+  }
+  
+  .hero-stat-item:first-child {
+    border-left: none !important;
+  }
+  
+  .hero-stat-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0 !important;
+  }
+  
+  .hero-stat-num {
+    font-size: 18px !important;
+  }
+  
+  .hero-stat-label {
+    font-size: 8px !important;
+    margin-top: 4px !important;
+  }
+}
+
+/* ==========================================================================
+   HOME PAGE RESPONSIVE GRIDS
+   ========================================================================== */
+.split-grid-55-45 {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  gap: 56px;
+  align-items: center;
+}
+
+.home-stats-row {
+  display: flex;
+  gap: 48px;
+}
+
+.mosaic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 220px 180px;
+  gap: 4px;
+}
+
+.no-gap {
+  gap: 0 !important;
+}
+
+@media (max-width: 960px) {
+  .split-grid-55-45 {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-stats-row {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  
+  .mosaic-grid {
+    grid-template-rows: 150px 150px;
+  }
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1.2fr 1.4fr;
+  gap: 56px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+/* Contact Page Responsive Grid */
+.contact-layout-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 60px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .contact-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+/* About Timeline Responsive */
+.about-timeline-line {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red-core) 0%, var(--red-bright) 100%);
+  z-index: 1;
+}
+
+.about-timeline-node {
+  position: absolute;
+  top: 34px;
+  left: 24px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--red-core);
+  border: 3px solid var(--bg-secondary);
+  z-index: 2;
+}
+
+.about-timeline-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-top: 68px;
+}
+
+@media (max-width: 960px) {
+  .about-timeline-line {
+    top: 0;
+    left: 29px; /* Center of the node at left:24 + 7 = 31, adjusting to 30px */
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--red-core) 0%, var(--red-bright) 100%);
+  }
+  
+  .about-timeline-item {
+    padding-top: 0;
+    padding-left: 56px;
+    margin-bottom: 32px;
+  }
+  
+  .about-timeline-node {
+    top: 0;
+    left: 24px;
+  }
+  
+  .about-timeline-year {
+    padding-left: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   FOOTER RESPONSIVE GRID
+   ========================================================================== */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1.2fr 1.4fr;
+  gap: 56px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+/* ==========================================================================
+   CONTACT RESPONSIVE GRID
+   ========================================================================== */
+.contact-layout-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 60px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .contact-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
   }
 }

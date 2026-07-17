@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { Fragment } from "react";
 import { ASSETS } from "../assets/assetMap";
+import SectionLabel from "./SectionLabel";
 
-function scrollTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
 
 const quickLinks = [
   { to: "/",               label: "Home" },
@@ -36,7 +34,7 @@ export default function Footer() {
       {/* ══════════════════════════════════
           PRE-FOOTER — VIDEO CTA BAND
       ══════════════════════════════════ */}
-      <div style={{ position: "relative", overflow: "hidden", minHeight: "320px", display: "flex", alignItems: "center", marginTop: "64px" }}>
+      <div style={{ position: "relative", overflow: "hidden", padding: "60px 0", display: "flex", alignItems: "center", marginTop: "40px" }}>
         {/* Background Video */}
         <video
           autoPlay
@@ -62,9 +60,7 @@ export default function Footer() {
         {/* Content */}
         <div className="container" style={{ position: "relative", zIndex: 2, padding: "64px 0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "28px" }}>
           <div style={{ maxWidth: "600px" }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: "12px" }}>
-              // PARTNER WITH US
-            </div>
+            <SectionLabel text="// PARTNER WITH US" light={true} />
             <h2 style={{ fontWeight: 900, fontSize: "clamp(22px, 2.8vw, 36px)", color: "#FFFFFF", lineHeight: 1.2, marginBottom: "12px" }}>
               Ready to source from India&apos;s leading secondary lead group?
             </h2>
@@ -87,11 +83,11 @@ export default function Footer() {
           MAIN FOOTER GRID
       ══════════════════════════════════ */}
       <div className="container" style={{ padding: "72px 0 56px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 1.2fr 1.4fr", gap: "56px", alignItems: "start" }}>
+        <div className="footer-grid">
 
           {/* ── COL 1: Brand ── */}
           <div>
-            <Link to="/" onClick={scrollTop} style={{ display: "inline-block", marginBottom: "24px" }}>
+            <Link to="/" style={{ display: "inline-block", marginBottom: "24px" }}>
               <img
                 src={ASSETS.logo}
                 alt="Aadishakti Group"
@@ -156,7 +152,6 @@ export default function Footer() {
                 <li key={link.to} style={{ borderBottom: "1px solid var(--border-light)" }}>
                   <Link
                     to={link.to}
-                    onClick={scrollTop}
                     className="footer-nav-link"
                     style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 0", fontSize: "13px", fontWeight: 500, color: "var(--text-secondary)", transition: "all 0.2s ease" }}
                   >
@@ -179,7 +174,6 @@ export default function Footer() {
                 <Link
                   key={e.to}
                   to={e.to}
-                  onClick={scrollTop}
                   className="footer-entity-link"
                   style={{ display: "block", padding: "14px 0", borderBottom: "1px solid var(--border-light)", transition: "all 0.2s ease" }}
                 >

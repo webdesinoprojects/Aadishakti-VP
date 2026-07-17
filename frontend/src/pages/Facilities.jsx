@@ -36,7 +36,7 @@ export default function Businesses() {
       <section
         id="mundra"
         style={{
-          minHeight: "85vh",
+          padding: "100px 0",
           position: "relative",
           display: "flex",
           alignItems: "center",
@@ -144,7 +144,7 @@ export default function Businesses() {
       <section
         id="roorkee"
         style={{
-          minHeight: "85vh",
+          padding: "100px 0",
           position: "relative",
           display: "flex",
           alignItems: "center",

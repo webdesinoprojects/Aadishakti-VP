@@ -1,8 +1,12 @@
+import { useState } from "react";
+import { Paperclip, X } from "lucide-react";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
 import LeadCalculator from "../components/LeadCalculator";
 import { ASSETS } from "../assets/assetMap";
+import { allCountryOptions } from "../utils/countries";
+import CountrySelect from "../components/CountrySelect";
 
 const whatWeBuy = [
   {
@@ -52,9 +56,33 @@ const criteria = [
 ];
 
 export default function Sourcing() {
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [phoneCode, setPhoneCode] = useState("+91");
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.size <= 10485760) {
+      setUploadedFile(file);
+      setErrorMsg("");
+    } else if (file) {
+      setErrorMsg("File must be under 10MB");
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const removeFile = () => {
+    setUploadedFile(null);
+    setErrorMsg("");
+  };
+
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="SOURCING & PROCUREMENT" activePage="SOURCING" />
+      <PageHero title="SOURCING" activePage="SOURCING" />
 
       {/* SECTION 1: WHAT WE BUY */}
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
@@ -235,13 +263,78 @@ export default function Sourcing() {
                       <input className="float-form-control" type="text" placeholder="City or Port" />
                     </div>
                   </div>
-                  <div className="float-form-group">
-                    <label className="float-form-label">Contact (Phone or Email)</label>
-                    <input className="float-form-control" type="text" placeholder="+91 or email address" required />
+                  <div className="float-form-group" style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                    <div style={{ width: "130px", flexShrink: 0, position: "relative" }}>
+                      <CountrySelect
+                        name="phoneCode"
+                        value={phoneCode}
+                        onChange={(e) => setPhoneCode(e.target.value)}
+                        className="float-form-control"
+                        style={{ cursor: "pointer", paddingLeft: "8px" }}
+                      />
+                      <label className="float-form-label">Code</label>
+                    </div>
+                    <div style={{ flex: 1, position: "relative" }}>
+                      <input className="float-form-control" type="tel" name="phone" placeholder="WhatsApp Number" required onInput={(e) => { e.target.value = e.target.value.replace(/\D/g, ""); }} />
+                      <label className="float-form-label">WhatsApp Number*</label>
+                    </div>
                   </div>
                   <div className="float-form-group">
-                    <label className="float-form-label">Upload Material Specifications / Photos (Optional)</label>
-                    <input className="float-form-control" type="file" style={{ padding: "10px", cursor: "pointer" }} />
+                    <label className="float-form-label" style={{ marginBottom: "8px", display: "block" }}>Upload Material Specifications / Photos (Optional)</label>
+                    <div
+                      style={{
+                        border: "2px dashed var(--border-light)",
+                        borderRadius: "4px",
+                        padding: "20px 24px",
+                        background: "var(--bg-secondary)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        cursor: "pointer",
+                        transition: "border-color 0.2s",
+                      }}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onClick={() => document.getElementById("sourcing-file-upload").click()}
+                    >
+                      <Paperclip size={20} color="var(--red-core)" style={{ flexShrink: 0 }} />
+                      {uploadedFile ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
+                          <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", wordBreak: "break-all" }}>{uploadedFile.name}</span>
+                          <span style={{ fontSize: "11px", color: "var(--text-muted)", whiteSpace: "nowrap" }}>({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); removeFile(); }}
+                            style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center" }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <p style={{ fontSize: "13px", color: "var(--text-secondary)", margin: 0 }}>
+                            <span style={{ fontWeight: 700, color: "var(--red-core)" }}>Drag & drop</span> or <span style={{ fontWeight: 700, color: "var(--red-core)" }}>click to upload</span> your material specs/photos
+                          </p>
+                          <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0" }}>PDF, JPG, PNG, DOCX — Max 10MB</p>
+                        </div>
+                      )}
+                    </div>
+                    {errorMsg && <p style={{ color: "var(--red-core)", fontSize: "12px", marginTop: "4px" }}>{errorMsg}</p>}
+                    <input
+                      id="sourcing-file-upload"
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file && file.size <= 10485760) {
+                          setUploadedFile(file);
+                          setErrorMsg("");
+                        } else if (file) {
+                          setErrorMsg("File must be under 10MB");
+                        }
+                      }}
+                    />
                   </div>
                   <button type="submit" className="btn-solid-red" style={{ alignSelf: "flex-start", paddingInline: "36px" }}>
                     Submit Sourcing Enquiry →
@@ -273,6 +366,26 @@ export default function Sourcing() {
                       <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>{point}</span>
                     </div>
                   ))}
+                </div>
+                
+                <div className="corporate-card" style={{ padding: "20px 22px", marginTop: "20px" }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>
+                    Direct Sourcing Contact
+                  </div>
+                  <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "4px" }}>
+                    Rajesh Mehta
+                  </div>
+                  <div style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "12px" }}>
+                    Head of Sourcing & Import
+                  </div>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--red-core)" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                    <a href="tel:+918743000799" style={{ fontSize: "13px", color: "var(--text-primary)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.target.style.color = "var(--red-core)"} onMouseLeave={(e) => e.target.style.color = "var(--text-primary)"}>+91 8743 000 799</a>
+                  </div>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--red-core)" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <a href="mailto:rajesh.mehta@aadishakti.com" style={{ fontSize: "13px", color: "var(--text-primary)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.target.style.color = "var(--red-core)"} onMouseLeave={(e) => e.target.style.color = "var(--text-primary)"}>rajesh.mehta@aadishakti.com</a>
+                  </div>
                 </div>
               </div>
             </div>

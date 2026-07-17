@@ -99,14 +99,14 @@ const esgCerts = [
 export default function Sustainability() {
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="OUR COMMITMENT TO THE PLANET" activePage="SUSTAINABILITY" />
+      <PageHero title="SUSTAINABILITY" activePage="SUSTAINABILITY" />
 
       {/* SECTION 1 — THREE PILLARS (dark photo background) */}
-      <section className="dark-photo-section" style={{ minHeight: "580px" }}>
+      <section className="dark-photo-section">
         <img className="dps-bg" src={ASSETS.mundraPlant[16]} alt="Aadishakti plant" loading="lazy" />
-        <div className="dps-content container" style={{ padding: "90px 0" }}>
+        <div className="dps-content container" style={{ padding: "60px 0" }}>
           <ScrollReveal>
-            <SectionLabel text="// SUSTAINABILITY PILLARS" />
+            <SectionLabel text="// SUSTAINABILITY PILLARS" light={true} />
             <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "#FFFFFF", lineHeight: 1.15, marginBottom: "48px", maxWidth: "560px" }}>
               Environmental, Social &amp; Governance
             </h2>
@@ -258,11 +258,11 @@ export default function Sustainability() {
       </section>
 
       {/* SECTION 6 — CTA DARK */}
-      <section className="dark-photo-section" style={{ minHeight: "320px" }}>
+      <section className="dark-photo-section">
         <img className="dps-bg" src={ASSETS.mundraPlant[15]} alt="Plant at dusk" loading="lazy" />
-        <div className="dps-content container" style={{ padding: "80px 0", textAlign: "center" }}>
+        <div className="dps-content container" style={{ padding: "60px 0", textAlign: "center" }}>
           <ScrollReveal>
-            <SectionLabel text="// PARTNER WITH PURPOSE" />
+            <SectionLabel text="// PARTNER WITH PURPOSE" light={true} />
             <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "#FFFFFF", marginBottom: "20px", maxWidth: "600px", margin: "0 auto 20px" }}>
               Work with an ISO-certified, ESG-committed lead recycler
             </h2>

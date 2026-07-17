@@ -95,10 +95,10 @@ const strengths = [
 ];
 
 const products = [
-  { key: "pureLead",   name: "Refined Pure Lead", spec: "99.97-99.985% Pb", desc: "LME-grade for battery and industrial applications.", img: ASSETS.products.pureLead },
-  { key: "leadAlloys", name: "Lead Alloys",        spec: "Sb, Ca, Sn variants", desc: "Custom metallurgy for automotive and energy storage.", img: ASSETS.products.leadAlloys },
-  { key: "redLead",   name: "Red Lead Oxide",     spec: "Pb3O4",           desc: "Consistent particle profile for battery and glass.", img: ASSETS.products.redLead },
-  { key: "greyOxide", name: "Grey Lead Oxide",    spec: "2PbO·Pb",         desc: "Controlled reactivity for electrochemical battery use.", img: ASSETS.products.greyOxide },
+  { key: "pure-lead-ingots",   name: "Refined Pure Lead", spec: "99.97-99.985% Pb", desc: "LME-grade for battery and industrial applications.", apps: "Batteries, Chemicals, Sheathing", img: ASSETS.products.pureLead },
+  { key: "lead-antimony-alloys", name: "Lead Alloys",        spec: "Sb, Ca, Sn Variants", desc: "Custom metallurgy for automotive and energy storage.", apps: "Automotive, Energy Storage", img: ASSETS.products.leadAlloys },
+  { key: "red-lead-oxide",   name: "Red Lead Oxide",     spec: "Pb₃O₄",           desc: "Consistent particle profile for battery and glass.", apps: "Batteries, Glass, Paint", img: ASSETS.products.redLead },
+  { key: "grey-lead-oxide", name: "Grey Lead Oxide",    spec: "2PbO·Pb",        desc: "Precision milled for active material manufacturing.", apps: "Active Electrodes", img: ASSETS.products.greyOxide }
 ];
 
 const statsStrip = [
@@ -156,7 +156,7 @@ export default function Home() {
       <div style={{ position: "relative" }}>
         <section
           className="hero-section"
-        style={{ minHeight: "100vh", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}
+        style={{ minHeight: "80vh", padding: "120px 0", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}
       >
         {/* Carousel backgrounds */}
         <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
@@ -186,7 +186,7 @@ export default function Home() {
         {/* Content â€” dark text on white side */}
         <div
           className="container"
-          style={{ position: "relative", zIndex: 4, paddingBottom: "120px" }}
+          style={{ position: "relative", zIndex: 4, marginTop: "60px" }}
         >
           <motion.div
             key={activeSlide}
@@ -285,7 +285,7 @@ export default function Home() {
               { num: "20",    suffix: "+", label: "Years of Excellence" },
               { num: "2",     suffix: "",  label: "World-Class Plants" },
             ].map((stat, i) => (
-              <div key={stat.label} className="hero-stat-item" style={{ padding: "0 24px", borderLeft: i > 0 ? "1px solid var(--border-light)" : "none" }}>
+              <div key={stat.label} className="hero-stat-item" style={{ padding: "0 24px", textAlign: "center", borderLeft: i > 0 ? "1px solid var(--border-light)" : "none" }}>
                 <div className="hero-stat-num" style={{ fontFamily: "var(--font-primary)", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1 }}>
                   <AnimatedNumber value={stat.num} suffix={stat.suffix} />
                 </div>
@@ -342,7 +342,7 @@ export default function Home() {
       {/* ════════════════════════════════════════════════════════════════════
           SECTION 3 — WHO WE ARE (expanded, image mosaic)
           ════════════════════════════════════════════════════════════════════ */}
-      <section className="section-padding" style={{ background: "var(--bg-primary)", minHeight: "600px" }}>
+      <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
           <ScrollReveal>
             <div className="split-grid-55-45">
@@ -367,7 +367,7 @@ export default function Home() {
                   we deliver certified quality with environmental responsibility built in.
                 </p>
 
-                <div className="home-stats-row">
+                <div className="home-stats-row" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginTop: "24px" }}>
                   {[
                     { num: "50,000+", label: "MT Annual Capacity" },
                     { num: "₹1000+",  label: "Crore Group Turnover" },
@@ -420,10 +420,12 @@ export default function Home() {
             <img className="entity-card-bg" src={ASSETS.mundraPlant[0]} alt="AGRPL Mundra Plant" loading="lazy" />
             <div className="entity-card-overlay" />
             <div className="entity-card-glass">
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.16em", marginBottom: "8px" }}>AGRPL</div>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(18px, 2vw, 26px)", color: "#FFFFFF", marginBottom: "8px" }}>
-                Mundra Smelter Division
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(28px, 3vw, 42px)", color: "#FFFFFF", marginBottom: "4px", lineHeight: 1 }}>
+                AGRPL
               </h3>
+              <h4 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: "14px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>
+                Mundra Smelter Division
+              </h4>
               <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
                 Export-oriented processing hub — 30,000 MT active, 120,000 MT by 2026. Port-adjacent logistics.
               </p>
@@ -445,10 +447,12 @@ export default function Home() {
             <img className="entity-card-bg" src={ASSETS.roorkeeOffice[0]} alt="AMRPL Roorkee Plant" loading="lazy" />
             <div className="entity-card-overlay" />
             <div className="entity-card-glass">
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.16em", marginBottom: "8px" }}>AMRPL</div>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(18px, 2vw, 26px)", color: "#FFFFFF", marginBottom: "8px" }}>
-                Roorkee Domestic Division
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(28px, 3vw, 42px)", color: "#FFFFFF", marginBottom: "4px", lineHeight: 1 }}>
+                AMRPL
               </h3>
+              <h4 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: "14px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>
+                Roorkee Domestic Division
+              </h4>
               <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
                 Domestic supply hub — 40,000 MT capacity. OES spectrograph quality lab. North India distribution.
               </p>
@@ -470,7 +474,7 @@ export default function Home() {
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 5 â€” CORE STRENGTHS
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section className="section-padding bg-diagonal-hatch" style={{ minHeight: "480px" }}>
+      <section className="section-padding bg-diagonal-hatch">
         <div className="container">
           <ScrollReveal>
             <SectionLabel text="// WHY AADISHAKTI" />
@@ -496,7 +500,7 @@ export default function Home() {
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 6 â€” PRODUCTS TEASER (with photos)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section className="section-padding bg-steel-grid" style={{ minHeight: "520px" }}>
+      <section className="section-padding bg-steel-grid">
         <div className="container">
           <ScrollReveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "36px" }}>
@@ -511,20 +515,34 @@ export default function Home() {
               {products.map((p) => (
                 <div key={p.key} className="product-teaser-card">
                   <div style={{ height: "180px", overflow: "hidden" }}>
-                    <img
-                      className="pt-img"
-                      src={p.img}
-                      alt={p.name}
-                      loading="lazy"
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                    />
+                    <Link to={`/products/${p.key}`}>
+                      <img
+                        className="pt-img"
+                        src={p.img}
+                        alt={p.name}
+                        loading="lazy"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                      />
+                    </Link>
                   </div>
                   <div style={{ padding: "20px" }}>
-                    <div style={{ fontFamily: "var(--font-mono)", color: "var(--red-core)", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "6px" }}>
+                    <div className="normal-case" style={{ fontFamily: "var(--font-mono)", color: "var(--red-core)", fontSize: "11px", letterSpacing: "0.12em", textTransform: "none", marginBottom: "6px" }}>
                       {p.spec}
                     </div>
-                    <h3 style={{ fontSize: "var(--fs-h3)", fontWeight: 800, marginBottom: "8px" }}>{p.name}</h3>
-                    <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.6 }}>{p.desc}</p>
+                    <Link to={`/products/${p.key}`} style={{ textDecoration: "none" }}>
+                      <h3 style={{ fontSize: "var(--fs-h3)", fontWeight: 800, marginBottom: "8px", color: "var(--text-primary)" }}>{p.name}</h3>
+                    </Link>
+                    <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.6, marginBottom: "16px" }}>{p.desc}</p>
+                    {p.apps && (
+                      <div style={{ borderTop: "1px solid var(--border-light)", paddingTop: "12px" }}>
+                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-secondary)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "4px", fontWeight: "600" }}>
+                          INDUSTRY APPLICATIONS
+                        </div>
+                        <div style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.5 }}>
+                          {p.apps}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -558,14 +576,14 @@ export default function Home() {
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 8 â€” SUSTAINABILITY (dark photo)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section className="dark-photo-section" style={{ minHeight: "500px" }}>
+      <section className="dark-photo-section">
         <img className="dps-bg" src={ASSETS.sustainabilityBg} alt="Aadishakti plant operations" loading="lazy" />
-        <div className="dps-content container" style={{ padding: "100px 0" }}>
+        <div className="dps-content container" style={{ padding: "60px 0" }}>
           <ScrollReveal>
             <div className="grid-2" style={{ gridTemplateColumns: "1.1fr 0.9fr", gap: "60px", alignItems: "center" }}>
               {/* Left â€” quote + link */}
               <div>
-                <SectionLabel text="// SUSTAINABILITY" />
+                <SectionLabel text="// SUSTAINABILITY" light={true} />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "#FFFFFF", lineHeight: 1.15, marginBottom: "24px" }}>
                   Responsible Circular Economy Practices
                 </h2>
@@ -596,7 +614,7 @@ export default function Home() {
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 10 â€” INVESTORS PREVIEW
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section style={{ background: "var(--bg-primary)", padding: "80px 0", minHeight: "400px" }}>
+      <section style={{ background: "var(--bg-primary)", padding: "60px 0" }}>
         <div className="container">
           <ScrollReveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "20px", marginBottom: "40px" }}>

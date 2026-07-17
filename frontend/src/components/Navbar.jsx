@@ -5,7 +5,7 @@ import { useCms } from "../context/CmsContext";
 
 const companyLinks = [
   { to: "/about",                    label: "About Us" },
-  { to: "/businesses",               label: "Our Businesses" },
+  { to: "/businesses",               label: "Businesses" },
   { to: "/businesses?plant=mundra",  label: "AGRPL — Mundra Plant",  sub: true },
   { to: "/businesses?plant=roorkee", label: "AMRPL — Roorkee Plant", sub: true },
 ];
@@ -20,7 +20,6 @@ const esgLinks = [
 const mediaLinks = [
   { to: "/media?type=blogs", label: "Blogs" },
   { to: "/media?type=news",  label: "News" },
-  { to: "/media?type=events", label: "Events" },
 ];
 
 const galleryLinks = [
@@ -39,8 +38,7 @@ const megaContent = {
   },
   media: {
     "Blogs": { img: ASSETS.gallery[0] || ASSETS.megaMenuPhoto, eyebrow: "LATEST INSIGHTS", title: "Read our latest technical blogs on lead recycling." },
-    "News": { img: ASSETS.gallery[1] || ASSETS.megaMenuPhoto, eyebrow: "COMPANY NEWS", title: "Stay updated with Aadishakti's latest announcements." },
-    "Events": { img: ASSETS.gallery[2] || ASSETS.megaMenuPhoto, eyebrow: "INDUSTRY EVENTS", title: "Join us at upcoming global battery conferences." }
+    "News": { img: ASSETS.gallery[1] || ASSETS.megaMenuPhoto, eyebrow: "COMPANY NEWS", title: "Stay updated with Aadishakti's latest announcements." }
   },
   gallery: {
     "Office": { img: ASSETS.roorkeeOffice[0] || ASSETS.megaMenuPhoto, eyebrow: "CORPORATE HUB", title: "A glimpse inside our modern corporate headquarters." },
@@ -112,7 +110,7 @@ export default function Navbar() {
         </Link>
 
         {/* ── Desktop Nav ── */}
-        <nav className="desktop-nav" aria-label="Primary" style={{ gap: '1.2vw', marginRight: 'auto' }}>
+        <nav className="desktop-nav" aria-label="Primary" style={{ flex: 1, justifyContent: "center", gap: "1.5vw", height: "100%" }}>
           <Link to="/" className={`nav-link ${location.pathname === "/" ? "active" : ""}`}>HOME</Link>
 
           {/* COMPANY — MEGA DROPDOWN */}
@@ -178,7 +176,7 @@ export default function Navbar() {
           </div>
 
           <Link to="/investors" className={`nav-link ${location.pathname === "/investors" ? "active" : ""}`}>INVESTORS</Link>
-          <Link to="/sourcing" className={`nav-link ${location.pathname === "/sourcing" ? "active" : ""}`}>SOURCING & IMPORT</Link>
+          <Link to="/sourcing" className={`nav-link ${location.pathname === "/sourcing" ? "active" : ""}`}>SOURCING</Link>
 
           {/* MEDIA DROPDOWN */}
           <div className="company-wrap" onMouseEnter={() => setMediaOpen(true)} onMouseLeave={() => setMediaOpen(false)}>
@@ -264,9 +262,9 @@ export default function Navbar() {
           </div>
         </nav>
 
-        <div className="desktop-cta" style={{ gap: '12px', marginLeft: '12px', alignItems: 'center' }}>
+        <div className="desktop-cta" style={{ gap: '12px', marginLeft: 'auto', alignItems: 'center' }}>
           <Link to="/login" className="btn-portal-login">PORTAL LOGIN</Link>
-          <Link to="/contact" className="cta">{navCtaText}</Link>
+          <Link to="/contact" className="cta" style={{ display: 'inline-flex', alignItems: 'center', height: '38px', boxSizing: 'border-box' }}>{navCtaText}</Link>
         </div>
 
         <button type="button" className={`hamburger ${mobileOpen ? "open" : ""}`} onClick={() => setMobileOpen(v => !v)} aria-label="Toggle navigation" aria-expanded={mobileOpen}>
@@ -313,7 +311,7 @@ export default function Navbar() {
         )}
 
         <Link to="/investors" className="mobile-link">INVESTORS</Link>
-        <Link to="/sourcing" className="mobile-link">SOURCING & IMPORT</Link>
+        <Link to="/sourcing" className="mobile-link">SOURCING</Link>
 
         <button type="button" className="mobile-link mobile-company" onClick={() => setMobileMedia(v => !v)}>
           MEDIA {mobileMedia ? "▲" : "▼"}
@@ -361,12 +359,12 @@ export default function Navbar() {
         .top-nav.scrolled .nav-logo { height: 34px; }
         .desktop-nav { display: flex; align-items: center; flex-wrap: nowrap; }
         .desktop-cta { display: flex; }
-        .nav-link { position: relative; font: 600 11px var(--font-primary); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-primary); transition: color 0.2s ease; white-space: nowrap; }
+        .nav-link { position: relative; display: inline-flex; align-items: center; font: 600 11px var(--font-primary); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-primary); transition: color 0.2s ease; white-space: nowrap; }
         .nav-link:hover { color: var(--red-core); }
-        .nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -26px; height: 2px; background: var(--red-core); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+        .nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 2px; background: var(--red-core); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
         .nav-link.active { color: var(--red-core); }
         .nav-link.active::after { transform: scaleX(1); }
-        .company-wrap { position: relative; padding: 24px 0; }
+        .company-wrap { position: relative; display: inline-flex; align-items: center; }
         .company-trigger { border: 0; background: transparent; display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
         .caret { width: 8px; color: var(--text-muted); transition: transform 0.2s ease; }
         .caret.open { transform: rotate(180deg); }

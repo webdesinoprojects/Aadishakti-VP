@@ -698,7 +698,7 @@ app.get("/api/admin/crm/applications/:id/cv", requireAdmin, async (req, res) => 
 });
 
 // POST /api/enquiries - Receive customer / lead inquiries
-app.post("/api/enquiries", async (req, res) => {
+app.post("/api/enquiries", upload.single("attachment"), async (req, res) => {
   try {
     const {
       fullName,
@@ -718,8 +718,15 @@ app.post("/api/enquiries", async (req, res) => {
     }
 
     const dataPath = path.join(__dirname, "data", "enquiries.json");
-    const dataContent = await fs.readFile(dataPath, "utf-8");
-    const enquiries = JSON.parse(dataContent);
+    let enquiries = [];
+    try {
+      const dataContent = await fs.readFile(dataPath, "utf-8");
+      if (dataContent.trim()) {
+        enquiries = JSON.parse(dataContent);
+      }
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err;
+    }
 
     const newEnquiry = {
       id: Date.now().toString(),
@@ -732,6 +739,7 @@ app.post("/api/enquiries", async (req, res) => {
       products: products || [],
       estimatedQuantity: estimatedQuantity || "Not specified",
       additionalDetails: additionalDetails || "",
+      attachmentPath: req.file ? `/uploads/${req.file.filename}` : null,
       submittedAt: new Date().toISOString(),
     };
 
@@ -758,8 +766,15 @@ app.post("/api/careers", upload.single("resume"), async (req, res) => {
     }
 
     const dataPath = path.join(__dirname, "data", "applications.json");
-    const dataContent = await fs.readFile(dataPath, "utf-8");
-    const applications = JSON.parse(dataContent);
+    let applications = [];
+    try {
+      const dataContent = await fs.readFile(dataPath, "utf-8");
+      if (dataContent.trim()) {
+        applications = JSON.parse(dataContent);
+      }
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err;
+    }
 
     const newApplication = {
       id: Date.now().toString(),

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DragDropUpload from '../../components/DragDropUpload';
 
 export default function VendorRegister() {
   const [step, setStep] = useState(1);
@@ -18,11 +19,8 @@ export default function VendorRegister() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (files.length > 0) {
-      setFormData(prev => ({ ...prev, [name]: files[0] }));
-    }
+  const handleFileChange = (name, file) => {
+    setFormData(prev => ({ ...prev, [name]: file }));
   };
 
   const nextStep = (e) => {
@@ -118,18 +116,24 @@ export default function VendorRegister() {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '30px' }}>
-              <div style={{ border: '1px dashed var(--border-light)', padding: '20px', borderRadius: '4px', background: 'var(--bg-secondary)', position: 'relative' }}>
-                <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '10px' }}>MSME Certificate</h4>
-                <input type="file" name="msmeDoc" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" style={{ fontSize: '13px' }} required />
-              </div>
-              <div style={{ border: '1px dashed var(--border-light)', padding: '20px', borderRadius: '4px', background: 'var(--bg-secondary)', position: 'relative' }}>
-                <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '10px' }}>Bank Details Proof</h4>
-                <input type="file" name="bankDoc" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" style={{ fontSize: '13px' }} required />
-              </div>
-              <div style={{ border: '1px dashed var(--border-light)', padding: '20px', borderRadius: '4px', background: 'var(--bg-secondary)', position: 'relative' }}>
-                <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '10px' }}>Quality Certificate</h4>
-                <input type="file" name="qualityDoc" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" style={{ fontSize: '13px' }} required />
-              </div>
+              <DragDropUpload
+                id="msme-upload"
+                label="MSME Certificate"
+                file={formData.msmeDoc}
+                setFile={(file) => handleFileChange("msmeDoc", file)}
+              />
+              <DragDropUpload
+                id="bank-upload"
+                label="Bank Details Proof"
+                file={formData.bankDoc}
+                setFile={(file) => handleFileChange("bankDoc", file)}
+              />
+              <DragDropUpload
+                id="quality-upload"
+                label="Quality Certificate"
+                file={formData.qualityDoc}
+                setFile={(file) => handleFileChange("qualityDoc", file)}
+              />
             </div>
 
             <div style={{ display: 'flex', gap: '15px' }}>

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { buildApiUrl } from "../config/api";
+import { allCountryOptions } from "../utils/countries";
 
 export default function Careers() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    phoneCode: "+91",
     phone: "",
     roleCategory: "Office",
     experience: "",
@@ -69,7 +71,7 @@ export default function Careers() {
       const data = new FormData();
       data.append("fullName", formData.fullName);
       data.append("email", formData.email);
-      data.append("phone", formData.phone);
+      data.append("phone", `${formData.phoneCode} ${formData.phone}`);
       data.append("roleCategory", formData.roleCategory);
       data.append("experience", formData.experience);
       data.append("description", formData.description);
@@ -279,17 +281,35 @@ export default function Careers() {
                   <label className="dark-form-label">Work Email*</label>
                 </div>
 
-                <div className="dark-form-group">
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    placeholder=" "
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="dark-form-control"
-                  />
-                  <label className="dark-form-label">Phone / WhatsApp Number*</label>
+                <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                  <div className="dark-form-group" style={{ width: "130px", flexShrink: 0 }}>
+                    <select
+                      name="phoneCode"
+                      value={formData.phoneCode}
+                      onChange={handleInputChange}
+                      className="dark-form-control"
+                      style={{ cursor: "pointer", paddingLeft: "8px" }}
+                    >
+                      {allCountryOptions.map((opt) => (
+                        <option key={`${opt.label}-${opt.value}`} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <label className="dark-form-label">Code</label>
+                  </div>
+                  <div className="dark-form-group" style={{ flex: 1 }}>
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      placeholder=" "
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="dark-form-control"
+                    />
+                    <label className="dark-form-label">Phone / WhatsApp Number*</label>
+                  </div>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>

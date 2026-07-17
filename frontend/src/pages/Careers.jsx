@@ -2,9 +2,12 @@ import { useState } from "react";
 import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
-import { Loader2 } from "lucide-react";
+import ScrollReveal from "../components/ScrollReveal";
+import { Search, MapPin, Building2, ChevronRight, Loader2, Paperclip, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCms } from "../context/CmsContext";
+import { allCountryOptions } from "../utils/countries";
+import CountrySelect from "../components/CountrySelect";
 
 export default function Careers() {
   const { cms } = useCms();
@@ -21,6 +24,7 @@ export default function Careers() {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    phoneCode: "+91",
     phone: "",
     experience: "",
     description: "",
@@ -69,11 +73,29 @@ export default function Careers() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "phone" || name === "whatsapp") {
+      setFormData((prev) => ({ ...prev, [name]: value.replace(/\D/g, "") }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleFileChange = (e) => {
-    setResume(e.target.files[0]);
+    const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
+    if (file && file.size <= 10485760) {
+      setResume(file);
+    } else if (file) {
+      alert("File must be under 10MB");
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    handleFileChange(e);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
   const handleFormSubmit = async (e) => {
@@ -91,7 +113,7 @@ export default function Careers() {
       const data = new FormData();
       data.append("fullName", formData.fullName);
       data.append("email", formData.email);
-      data.append("phone", formData.phone);
+      data.append("phone", `${formData.phoneCode} ${formData.phone}`);
       data.append("roleCategory", activeJob ? activeJob.category : activeCategory);
       data.append("experience", formData.experience);
       data.append("description", `Applying for ${selectedRole}. ${formData.description}`);
@@ -102,7 +124,13 @@ export default function Careers() {
         body: data,
       });
 
-      const resJson = await response.json();
+      let resJson = {};
+      try {
+        resJson = await response.json();
+      } catch (e) {
+        // Safely ignore empty responses
+      }
+      
       if (!response.ok) {
         throw new Error(resJson.error || "Failed to submit career request.");
       }
@@ -114,6 +142,7 @@ export default function Careers() {
       setFormData({
         fullName: "",
         email: "",
+        phoneCode: "+91",
         phone: "",
         experience: "",
         description: "",
@@ -280,7 +309,7 @@ export default function Careers() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="JOIN OUR TEAM" activePage="CAREERS" />
+      <PageHero title="CAREERS" activePage="CAREERS" />
 
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
@@ -319,7 +348,7 @@ export default function Careers() {
               padding: "40px",
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "2rem", gap: "1rem" }}>
               <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "20px", fontWeight: "700", color: "var(--text-primary)", textTransform: "uppercase", margin: 0 }}>
                 APPLICATION: {selectedRole}
               </h3>
@@ -385,23 +414,40 @@ export default function Careers() {
               </div>
 
               <div className="grid-2" style={{ gap: "1rem", marginBottom: "1rem" }}>
-                <div className="float-form-group" style={{ marginBottom: 0 }}>
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    placeholder=" "
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="float-form-control"
-                  />
-                  <label className="float-form-label">Phone / WhatsApp Number*</label>
+                <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                  <div className="float-form-group" style={{ marginBottom: 0, width: "130px", flexShrink: 0 }}>
+                    <CountrySelect
+                      name="phoneCode"
+                      value={formData.phoneCode}
+                      onChange={handleInputChange}
+                      className="float-form-control"
+                      style={{ cursor: "pointer", paddingLeft: "8px" }}
+                    />
+                    <label className="float-form-label">Code</label>
+                  </div>
+                  <div className="float-form-group" style={{ marginBottom: 0, flex: 1 }}>
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      placeholder=" "
+                      pattern="[0-9]{10,15}"
+                      minLength={10}
+                      title="Phone number must be between 10 and 15 digits"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="float-form-control"
+                    />
+                    <label className="float-form-label">WhatsApp Number*</label>
+                  </div>
                 </div>
                 <div className="float-form-group" style={{ marginBottom: 0 }}>
                   <input
                     type="number"
                     name="experience"
                     required
+                    min="0"
+                    step="0.5"
                     placeholder=" "
                     value={formData.experience}
                     onChange={handleInputChange}
@@ -411,34 +457,53 @@ export default function Careers() {
                 </div>
               </div>
 
-              <div
-                style={{
-                  border: "2px dashed var(--red-core)",
-                  padding: "24px",
-                  textAlign: "center",
-                  background: "var(--bg-secondary)",
-                  marginBottom: "2rem",
-                  position: "relative",
-                }}
-              >
+              <div style={{ marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    border: "2px dashed var(--red-core)",
+                    borderRadius: "4px",
+                    padding: "20px 24px",
+                    background: "var(--bg-secondary)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                    cursor: "pointer",
+                    transition: "border-color 0.2s",
+                  }}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onClick={() => document.getElementById("resume-upload").click()}
+                >
+                  <Paperclip size={20} color="var(--red-core)" style={{ flexShrink: 0 }} />
+                  {resume ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
+                      <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", wordBreak: "break-all" }}>{resume.name}</span>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", whiteSpace: "nowrap" }}>({(resume.size / 1024).toFixed(1)} KB)</span>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setResume(null); }}
+                        style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center" }}
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: "13px", color: "var(--text-secondary)", margin: 0, fontFamily: "var(--font-primary)" }}>
+                        <span style={{ fontWeight: 700, color: "var(--red-core)" }}>Drag & drop</span> resume or <span style={{ fontWeight: 700, color: "var(--red-core)" }}>click to attach</span>*
+                      </p>
+                      <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0", fontFamily: "var(--font-primary)" }}>.PDF, .DOC, .DOCX — Max 10MB</p>
+                    </div>
+                  )}
+                </div>
                 <input
+                  id="resume-upload"
                   type="file"
                   accept=".pdf,.doc,.docx"
                   required
+                  style={{ display: "none" }}
                   onChange={handleFileChange}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    opacity: 0,
-                    cursor: "pointer",
-                  }}
                 />
-                <div style={{ fontFamily: "var(--font-primary)", fontSize: "14px", color: "var(--text-secondary)" }}>
-                  {resume ? `Attached: ${resume.name}` : "DRAG & DROP RESUME OR CLICK TO ATTACH (.PDF, .DOC)*"}
-                </div>
               </div>
 
               <div style={{ display: "flex", gap: "1rem" }}>

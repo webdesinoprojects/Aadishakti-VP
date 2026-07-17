@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+
 import { useEffect } from "react";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
@@ -31,12 +31,12 @@ export default function Businesses() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="OUR OPERATING UNITS" activePage="BUSINESSES" />
+      <PageHero title="BUSINESSES" activePage="BUSINESSES" />
 
       <section
         id="mundra"
         style={{
-          minHeight: "85vh",
+          padding: "80px 0",
           position: "relative",
           display: "flex",
           alignItems: "center",
@@ -73,26 +73,20 @@ export default function Businesses() {
           }}
         />
 
-        <div className="container" style={{ position: "relative", zIndex: 3, padding: "80px 0" }}>
-          <motion.div
-            initial={{ opacity: 0, y: 52 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.62 }}
-            transition={{ duration: 0.85, ease: smoothEase }}
+        <div className="container" style={{ position: "relative", zIndex: 3 }}>
+          <div
+
             className="grid-2"
             style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
           >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.12, ease: smoothEase }}
+            <div
+
             >
-              <SectionLabel text="// AGRPL DIVISION" />
+              <SectionLabel text="// AGRPL DIVISION" light={true} />
               <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
                 MUNDRA SMELTER DIVISION
               </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "var(--red-core)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
                 AADISHAKTI GREEN RECYCLING PVT. LTD.
               </h3>
 
@@ -111,14 +105,11 @@ export default function Businesses() {
                   BASEL COMPLIANT SMELTER
                 </span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
+            <div
               style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-              initial={{ opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.22, ease: smoothEase }}
+
             >
               <div style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>30,000 MT</div>
@@ -136,15 +127,15 @@ export default function Businesses() {
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>Mundra Port</div>
                 <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Primary Node</p>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
       <section
         id="roorkee"
         style={{
-          minHeight: "85vh",
+          padding: "80px 0",
           position: "relative",
           display: "flex",
           alignItems: "center",
@@ -182,26 +173,20 @@ export default function Businesses() {
           }}
         />
 
-        <div className="container" style={{ position: "relative", zIndex: 3, padding: "80px 0" }}>
-          <motion.div
-            initial={{ opacity: 0, y: 52 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.62 }}
-            transition={{ duration: 0.85, ease: smoothEase }}
+        <div className="container" style={{ position: "relative", zIndex: 3 }}>
+          <div
+
             className="grid-2"
             style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
           >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.12, ease: smoothEase }}
+            <div
+
             >
-              <SectionLabel text="// AMRPL DIVISION" />
+              <SectionLabel text="// AMRPL DIVISION" light={true} />
               <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
                 ROORKEE DOMESTIC DIVISION
               </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "var(--red-core)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
                 AADISHAKTI METAL RECYCLING PVT. LTD.
               </h3>
 
@@ -220,14 +205,11 @@ export default function Businesses() {
                   HAZARDOUS RECYCLING PERMIT
                 </span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
+            <div
               style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-              initial={{ opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.22, ease: smoothEase }}
+
             >
               <div style={{ background: "rgba(11,11,11,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>40,000 MT</div>
@@ -245,8 +227,8 @@ export default function Businesses() {
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>OES Testing</div>
                 <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Lab Analysis</p>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -254,7 +236,7 @@ export default function Businesses() {
       <section
         id="pipe-coil"
         style={{
-          minHeight: "85vh",
+          padding: "80px 0",
           position: "relative",
           display: "flex",
           alignItems: "center",
@@ -280,26 +262,20 @@ export default function Businesses() {
           }}
         />
 
-        <div className="container" style={{ position: "relative", zIndex: 3, padding: "80px 0" }}>
-          <motion.div
-            initial={{ opacity: 0, y: 52 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.62 }}
-            transition={{ duration: 0.85, ease: smoothEase }}
+        <div className="container" style={{ position: "relative", zIndex: 3 }}>
+          <div
+
             className="grid-2"
             style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
           >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.12, ease: smoothEase }}
+            <div
+
             >
-              <SectionLabel text="// PIPE & COIL DIVISION" />
+              <SectionLabel text="// PIPE & COIL DIVISION" light={true} />
               <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
                 METAL WORLD DIVISION
               </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "var(--red-core)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
                 AADISHAKTI METAL WORLD LLP
               </h3>
 
@@ -322,14 +298,11 @@ export default function Businesses() {
                 <div>Sales: Mr. Sunil Pathak — DM Sales</div>
                 <div>📞 +91-8743000779 &nbsp;|&nbsp; ✉ sales.delhi@aadishakti.com</div>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
+            <div
               style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-              initial={{ opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.22, ease: smoothEase }}
+
             >
               {[
                 { val: "SS Pipes", sub: "0.23–0.55mm" },
@@ -342,8 +315,8 @@ export default function Businesses() {
                   <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{s.sub}</p>
                 </div>
               ))}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -351,7 +324,7 @@ export default function Businesses() {
       <section
         id="oxide"
         style={{
-          minHeight: "85vh",
+          padding: "80px 0",
           position: "relative",
           display: "flex",
           alignItems: "center",
@@ -377,26 +350,20 @@ export default function Businesses() {
           }}
         />
 
-        <div className="container" style={{ position: "relative", zIndex: 3, padding: "80px 0" }}>
-          <motion.div
-            initial={{ opacity: 0, y: 52 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.62 }}
-            transition={{ duration: 0.85, ease: smoothEase }}
+        <div className="container" style={{ position: "relative", zIndex: 3 }}>
+          <div
+
             className="grid-2"
             style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
           >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.12, ease: smoothEase }}
+            <div
+
             >
-              <SectionLabel text="// OXIDE DIVISION" />
+              <SectionLabel text="// OXIDE DIVISION" light={true} />
               <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
                 OXIDE MANUFACTURING DIVISION
               </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "var(--red-core)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
+              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
                 AADISHAKTI METALS
               </h3>
 
@@ -418,14 +385,11 @@ export default function Businesses() {
                   LITHARGE
                 </span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
+            <div
               style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-              initial={{ opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.64 }}
-              transition={{ duration: 0.75, delay: 0.22, ease: smoothEase }}
+
             >
               {[
                 { val: "99.98%", sub: "Lead Purity Input" },
@@ -438,8 +402,8 @@ export default function Businesses() {
                   <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{s.sub}</p>
                 </div>
               ))}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
