@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { ASSETS } from '../../assets/assetMap';
+import { portalAuthApi } from '../../services/portalAuthApi';
 import { 
   LayoutDashboard, FileQuestion, FileSignature, ShoppingCart, 
   Package, Receipt, CreditCard, Activity, FolderOpen, User, LogOut, ChevronLeft, ChevronRight, FileSpreadsheet, Users
@@ -10,10 +11,13 @@ export default function VendorSidebar() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
-  const handleLogout = (e) => {
+  const handleLogout = async (e) => {
     e.preventDefault();
-    localStorage.removeItem('vendor_session');
-    navigate('/login');
+    try {
+      await portalAuthApi.logout();
+    } finally {
+      navigate('/login');
+    }
   };
 
   const navItems = [

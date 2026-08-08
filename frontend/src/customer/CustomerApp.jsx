@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Smartphone } from 'lucide-react';
 import './customer.css';
 
@@ -19,15 +19,16 @@ import MyProfilePage from './pages/MyProfilePage';
 import PaymentsPage from './pages/PaymentsPage';
 import SustainabilityReportsPage from './pages/SustainabilityReportsPage';
 import SupportPage from './pages/SupportPage';
-
-const ProtectedCustomerRoute = () => {
-  const session = localStorage.getItem('customer_session');
-  if (!session) return <Navigate to="/login" replace />;
-  return <Outlet />;
-};
+import { usePortalSession } from '../portal/usePortalSession';
 
 export default function CustomerApp() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { session, loading, error } = usePortalSession('customer');
+  if (loading) return <div style={{ padding: '40px' }}>Checking secure session...</div>;
+  if (error && ![401, 403].includes(error.status)) {
+    return <div style={{ padding: '40px' }}>Portal authentication is temporarily unavailable. Please try again.</div>;
+  }
+  if (!session) return <Navigate to="/login" replace />;
 
   return (
     <>
@@ -44,27 +45,25 @@ export default function CustomerApp() {
         
         <main className="customer-main-content">
           <Routes>
-            <Route element={<ProtectedCustomerRoute />}>
-              <Route path="/customer" element={<Navigate to="/customer/dashboard" replace />} />
-              <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-              <Route path="/customer/reconciliation" element={<ReconciliationPage />} />
-              <Route path="/customer/orders" element={<OrdersPage />} />
-              <Route path="/customer/orders/:id" element={<OrderDetailPage />}>
+            <Route path="/customer" element={<Navigate to="/customer/dashboard" replace />} />
+            <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+            <Route path="/customer/reconciliation" element={<ReconciliationPage />} />
+            <Route path="/customer/orders" element={<OrdersPage />} />
+            <Route path="/customer/orders/:id" element={<OrderDetailPage />}>
               <Route index element={<OrderDetailIndex />} />
               <Route path="shipments" element={<OrderDetailShipments />} />
               <Route path="documents" element={<OrderDetailDocuments />} />
               <Route path="invoices" element={<OrderDetailInvoices />} />
               <Route path="payments" element={<OrderDetailPayments />} />
             </Route>
-              <Route path="/customer/shipments" element={<ShipmentsPage />} />
-              <Route path="/customer/invoices" element={<InvoicesPage />} />
-              <Route path="/customer/documents" element={<DocumentsPage />} />
-              <Route path="/customer/payments" element={<PaymentsPage />} />
-              <Route path="/customer/sustainability" element={<SustainabilityReportsPage />} />
-              <Route path="/customer/support" element={<SupportPage />} />
-              <Route path="/customer/profile" element={<MyProfilePage />} />
-              <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />
-            </Route>
+            <Route path="/customer/shipments" element={<ShipmentsPage />} />
+            <Route path="/customer/invoices" element={<InvoicesPage />} />
+            <Route path="/customer/documents" element={<DocumentsPage />} />
+            <Route path="/customer/payments" element={<PaymentsPage />} />
+            <Route path="/customer/sustainability" element={<SustainabilityReportsPage />} />
+            <Route path="/customer/support" element={<SupportPage />} />
+            <Route path="/customer/profile" element={<MyProfilePage portalSession={session} />} />
+            <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />
           </Routes>
         </main>
         <CustomerChatBubble />

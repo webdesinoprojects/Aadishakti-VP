@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { portalAuthApi } from '../../services/portalAuthApi';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -9,28 +10,25 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!code || !password) {
       setError('Please enter your ID and Password.');
       return;
     }
-    
-    if (tab === 'vendor') {
-      if (code === 'VEN10234' && password === 'password') {
-        localStorage.setItem('vendor_session', JSON.stringify({ vendorCode: 'VEN10234', name: 'Shree Metal Traders' }));
-        navigate('/vendor/dashboard');
-      } else {
-        setError('Invalid Vendor Code or Password.');
-      }
-    } else {
-      if (code === 'CUST992' && password === 'password') {
-        localStorage.setItem('customer_session', JSON.stringify({ customerId: 'CUST992', name: 'ABC Batteries Pvt. Ltd.' }));
-        navigate('/customer/dashboard');
-      } else {
-        setError('Invalid Customer ID or Password. (Hint: CUST992 / password)');
-      }
+
+    setError('');
+    setLoading(true);
+    try {
+      const response = await portalAuthApi.login({ identifier: code, password, role: tab });
+      const role = response.data?.session?.role;
+      navigate(role === 'vendor' ? '/vendor/dashboard' : '/customer/dashboard');
+    } catch (loginError) {
+      setError(loginError.response?.data?.error || 'Unable to sign in. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,8 +111,8 @@ export default function Login() {
             <label className="float-form-label" style={{ marginTop: '8px' }}>Password</label>
           </div>
 
-          <button type="submit" style={{ width: '100%', padding: '14px', background: 'var(--red-core)', color: '#fff', border: 'none', borderRadius: '2px', fontFamily: 'var(--font-primary)', fontWeight: '700', fontSize: '14px', letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase', transition: 'background 0.3s' }}>
-            Secure Login
+          <button type="submit" disabled={loading} style={{ width: '100%', padding: '14px', background: 'var(--red-core)', color: '#fff', border: 'none', borderRadius: '2px', fontFamily: 'var(--font-primary)', fontWeight: '700', fontSize: '14px', letterSpacing: '0.1em', cursor: loading ? 'wait' : 'pointer', textTransform: 'uppercase', transition: 'background 0.3s', opacity: loading ? 0.75 : 1 }}>
+            {loading ? 'Signing In...' : 'Secure Login'}
           </button>
         </form>
 

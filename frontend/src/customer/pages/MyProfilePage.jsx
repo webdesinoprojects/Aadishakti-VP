@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import CustomerPageHeader from '../components/CustomerPageHeader';
 
-export default function MyProfilePage() {
-  const session = JSON.parse(localStorage.getItem('customer_session') || '{}');
+export default function MyProfilePage({ portalSession }) {
+  const displayName = portalSession?.displayName || 'Customer Account';
   const [activeTab, setActiveTab] = useState('Company Details');
 
   const tabs = ['Company Details', 'Address Book', 'Security'];
@@ -39,7 +39,7 @@ export default function MyProfilePage() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px' }}>
                 <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--red-core)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 'bold' }}>
-                  {session.name ? session.name.charAt(0) : 'C'}
+                  {displayName.charAt(0)}
                 </div>
                 <div>
                   <button className="customer-btn-outline" style={{ marginBottom: '8px' }}>Upload Logo</button>
@@ -49,11 +49,11 @@ export default function MyProfilePage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Company Name</label>
-                  <input type="text" defaultValue={session.name || 'Company Name'} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
+                  <input type="text" defaultValue={displayName} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Customer ID</label>
-                  <input type="text" defaultValue={session.customerId || 'CUST992'} disabled style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)', background: '#f1f5f9' }} />
+                  <input type="text" defaultValue="Available after SAP profile integration" disabled style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)', background: '#f1f5f9' }} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Email Address</label>

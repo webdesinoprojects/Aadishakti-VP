@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { portalAuthApi } from '../../services/portalAuthApi';
 import { 
   LayoutDashboard, 
   ShoppingCart, 
@@ -19,9 +20,12 @@ import {
 export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('customer_session');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await portalAuthApi.logout();
+    } finally {
+      navigate('/login');
+    }
   };
 
   const menuItems = [

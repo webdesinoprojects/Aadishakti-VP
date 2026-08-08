@@ -7,6 +7,10 @@ import { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import portalAuthRoutes from "./routes/portalAuth.js";
+import portalCustomerRoutes from "./routes/portalCustomer.js";
+import portalVendorRoutes from "./routes/portalVendor.js";
 
 dotenv.config();
 
@@ -36,7 +40,13 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
+
+// Portal authentication and role boundaries. SAP-backed data endpoints are added in Phases 1B and 1C.
+app.use("/api/portal/auth", portalAuthRoutes);
+app.use("/api/portal/customer", portalCustomerRoutes);
+app.use("/api/portal/vendor", portalVendorRoutes);
 
 // Serve uploads as static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

@@ -14,20 +14,15 @@ import PaymentsPage from './pages/PaymentsPage';
 import DocumentsPage from './pages/DocumentsPage';
 import PerformancePage from './pages/PerformancePage';
 import './vendor.css';
+import { usePortalSession } from '../portal/usePortalSession';
 
 const ProtectedVendorRoute = ({ children }) => {
-  const session = localStorage.getItem('vendor_session');
-  let isAuth = false;
-  if (session) {
-    try {
-      JSON.parse(session);
-      isAuth = true;
-    } catch { /* ignore */ }
+  const { session, loading, error } = usePortalSession('vendor');
+  if (loading) return <div style={{ padding: '40px' }}>Checking secure session...</div>;
+  if (error && ![401, 403].includes(error.status)) {
+    return <div style={{ padding: '40px' }}>Portal authentication is temporarily unavailable. Please try again.</div>;
   }
-  
-  if (!isAuth) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!session) return <Navigate to="/login" replace />;
   return children;
 };
 
