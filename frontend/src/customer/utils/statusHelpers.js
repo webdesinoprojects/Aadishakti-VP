@@ -1,5 +1,7 @@
 export const getStatusClass = (status) => {
   switch(status?.toLowerCase()) {
+    case 'open': return 'intransit';
+    case 'closed': return 'delivered';
     case 'delivered': return 'delivered';
     case 'in transit': return 'intransit';
     case 'confirmed': return 'confirmed';

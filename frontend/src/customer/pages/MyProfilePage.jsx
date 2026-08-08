@@ -1,97 +1,91 @@
-import { useState } from 'react';
+import CustomerDataState from '../components/CustomerDataState';
 import CustomerPageHeader from '../components/CustomerPageHeader';
+import { useCustomerProfile } from '../hooks/useCustomerApi';
+import { formatAmount, formatValue } from '../utils/customerFormatters';
 
-export default function MyProfilePage({ portalSession }) {
-  const displayName = portalSession?.displayName || 'Customer Account';
-  const [activeTab, setActiveTab] = useState('Company Details');
+function ReadOnlyField({ label, value }) {
+  return (
+    <div>
+      <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>
+        {label}
+      </label>
+      <div
+        style={{
+          width: '100%',
+          minHeight: '42px',
+          padding: '10px',
+          borderRadius: '4px',
+          border: '1px solid var(--border-color)',
+          background: '#f8fafc',
+          color: 'var(--text-secondary)',
+        }}
+      >
+        {formatValue(value)}
+      </div>
+    </div>
+  );
+}
 
-  const tabs = ['Company Details', 'Address Book', 'Security'];
+export default function MyProfilePage() {
+  const { data, loading, error } = useCustomerProfile();
+  if (loading || error || !data) {
+    return <CustomerDataState loading={loading} error={error} />;
+  }
 
   return (
     <div style={{ padding: '40px' }}>
-      <CustomerPageHeader title="My Profile" subtitle="Manage your company details and portal settings." />
-      
-      <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
-        
-        {/* Left Nav */}
-        <div className="customer-card" style={{ width: '250px', padding: '16px' }}>
-          {tabs.map(tab => (
-            <button 
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left',
-                background: activeTab === tab ? 'var(--red-subtle)' : 'transparent',
-                color: activeTab === tab ? 'var(--red-core)' : 'var(--text-primary)',
-                border: 'none', borderRadius: '6px', fontWeight: '600', cursor: 'pointer', marginBottom: '4px'
-              }}
-            >
-              {tab}
-            </button>
-          ))}
+      <CustomerPageHeader
+        title="My Profile"
+        subtitle="Read-only business-partner information supplied by SAP."
+      />
+      <div className="customer-card">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px' }}>
+          <div
+            style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '50%',
+              background: 'var(--red-core)',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '28px',
+              fontWeight: 700,
+            }}
+          >
+            {(data.name || 'C').charAt(0)}
+          </div>
+          <div>
+            <h2>{formatValue(data.name)}</h2>
+            <p style={{ color: 'var(--text-muted)' }}>SAP-owned fields cannot be edited in this portal.</p>
+          </div>
         </div>
 
-        {/* Right Content */}
-        <div className="customer-card" style={{ flex: 1 }}>
-          <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>{activeTab}</h2>
-          
-          {activeTab === 'Company Details' && (
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--red-core)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 'bold' }}>
-                  {displayName.charAt(0)}
-                </div>
-                <div>
-                  <button className="customer-btn-outline" style={{ marginBottom: '8px' }}>Upload Logo</button>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '12px' }}>JPG, GIF or PNG. Max size 800K</p>
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Company Name</label>
-                  <input type="text" defaultValue={displayName} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Customer ID</label>
-                  <input type="text" defaultValue="Available after SAP profile integration" disabled style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)', background: '#f1f5f9' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Email Address</label>
-                  <input type="email" defaultValue="contact@company.com" style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>GSTIN</label>
-                  <input type="text" defaultValue="27ABCDE1234F1Z5" style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
-                </div>
-              </div>
-              <button className="customer-btn-outline" style={{ background: 'var(--red-core)', color: 'white', border: 'none', marginTop: '30px' }}>Save Changes</button>
-            </div>
-          )}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <ReadOnlyField label="Company Name" value={data.name} />
+          <ReadOnlyField label="Account Reference" value={data.accountReference} />
+          <ReadOnlyField label="Email Address" value={data.email} />
+          <ReadOnlyField label="Phone" value={data.phone} />
+          <ReadOnlyField label="Address" value={data.address} />
+          <ReadOnlyField label="Currency" value={data.currency} />
+          <ReadOnlyField
+            label="Current Account Balance"
+            value={formatAmount(data.accountBalance, data.currency)}
+          />
+        </div>
 
-          {activeTab === 'Address Book' && (
-            <div>
-              <div style={{ padding: '20px', border: '1px solid var(--border-color)', borderRadius: '6px', marginBottom: '20px' }}>
-                <h4 style={{ fontWeight: '700', marginBottom: '10px', display: 'flex', justifyContent: 'space-between' }}>Billing Address <span className="status-badge confirmed">Primary</span></h4>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.5' }}>123 Industrial Area, Phase 1<br/>Mumbai, Maharashtra 400001<br/>India</p>
-                <button className="customer-btn-outline" style={{ marginTop: '16px', padding: '6px 12px' }}>Edit</button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'Security' && (
-            <div style={{ maxWidth: '400px' }}>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Current Password</label>
-                <input type="password" style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
-              </div>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>New Password</label>
-                <input type="password" style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
-              </div>
-              <button className="customer-btn-outline" style={{ background: 'var(--text-primary)', color: 'white', border: 'none' }}>Update Password</button>
-            </div>
-          )}
-
+        <div
+          style={{
+            marginTop: '28px',
+            padding: '16px',
+            background: '#f8fafc',
+            color: 'var(--text-muted)',
+            borderRadius: '6px',
+          }}
+        >
+          Logo upload, profile editing, and password management are unavailable in this read-only SAP phase.
+          Account management is planned for Phase 3.
         </div>
       </div>
     </div>

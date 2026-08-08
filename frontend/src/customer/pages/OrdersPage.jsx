@@ -1,80 +1,112 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import CustomerDataState from '../components/CustomerDataState';
 import CustomerPageHeader from '../components/CustomerPageHeader';
+import CustomerPagination from '../components/CustomerPagination';
+import { useCustomerOrders } from '../hooks/useCustomerApi';
+import {
+  formatAmount,
+  formatSapDate,
+  UNKNOWN_TRANSACTION_CURRENCY_NOTE,
+} from '../utils/customerFormatters';
 import { getStatusClass } from '../utils/statusHelpers';
 
+const SEARCH_DEBOUNCE_MS = 400;
+
 export default function OrdersPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchInput, setSearchInput] = useState('');
+  const [request, setRequest] = useState({ page: 1, q: '' });
+  const { data, loading, error } = useCustomerOrders({
+    page: request.page,
+    pageSize: 10,
+    q: request.q,
+  });
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/orders');
-        const data = await res.json();
-        // Since we don't have auth, just show all live orders for the demo
-        setOrders(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+    const timeout = window.setTimeout(() => {
+      const effectiveQuery = searchInput.trim();
+      setRequest((current) => (
+        current.q === effectiveQuery
+          ? current
+          : { page: 1, q: effectiveQuery }
+      ));
+    }, SEARCH_DEBOUNCE_MS);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  if (loading) return <div style={{ padding: '40px' }}>Loading orders...</div>;
+    return () => window.clearTimeout(timeout);
+  }, [searchInput]);
 
   return (
     <div style={{ padding: '40px' }}>
-      <CustomerPageHeader 
-        title="All Orders" 
-        subtitle="View and track your live purchase orders."
+      <CustomerPageHeader
+        title="Orders"
+        subtitle="Customer orders returned by SAP across document statuses."
       />
 
-      <div className="customer-card" style={{ padding: 0 }}>
-        <table className="customer-table">
-          <thead>
-            <tr>
-              <th>Order No.</th>
-              <th>Product</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.slice(indexOfFirstItem, indexOfLastItem).map(order => (
-              <tr key={order.id}>
-                <td style={{ fontWeight: '600' }}>{order.id}</td>
-                <td>{order.product || 'Scrap Material'}</td>
-                <td>{order.createdAt ? format(new Date(order.createdAt), 'MMM dd, yyyy') : '-'}</td>
-                <td style={{ fontWeight: '500' }}>₹ {order.amount ? order.amount.toLocaleString('en-IN') : '0'}</td>
-                <td><span className={`status-badge ${getStatusClass(order.status)}`}>{order.status}</span></td>
-                <td>
-                  <button 
-                    className="customer-btn-outline" 
-                    onClick={() => navigate(`/customer/orders/${encodeURIComponent(order.id)}`)}
-                  >
-                    View Details
-                  </button>
-                </td>
+      <input
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+        placeholder="Search order number, date, or status"
+        style={{
+          padding: '10px 14px',
+          width: '320px',
+          maxWidth: '100%',
+          marginBottom: '10px',
+          border: '1px solid var(--border-color)',
+          borderRadius: '6px',
+        }}
+      />
+      <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>
+        {UNKNOWN_TRANSACTION_CURRENCY_NOTE}
+      </p>
+
+      <CustomerDataState loading={loading} error={error} />
+      {data && (
+        <div className="customer-card" style={{ padding: 0 }}>
+          <table className="customer-table">
+            <thead>
+              <tr>
+                <th>Order Number</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>SAP Status</th>
+                <th>Action</th>
               </tr>
-            ))}
-            {orders.length === 0 && (
-              <tr><td colSpan="6" style={{ textAlign: 'center', padding: '30px', color: '#888' }}>No active orders found.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {data.items.map((order) => (
+                <tr key={order.id}>
+                  <td style={{ fontWeight: 600 }}>{order.number}</td>
+                  <td>{formatSapDate(order.date)}</td>
+                  <td>{formatAmount(order.amount)}</td>
+                  <td>
+                    <span className={`status-badge ${getStatusClass(order.status)}`}>{order.status}</span>
+                  </td>
+                  <td>
+                    <button
+                      className="customer-btn-outline"
+                      onClick={() => navigate(`/customer/orders/${order.id}`)}
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {data.items.length === 0 && (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '30px' }}>No orders found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          <CustomerPagination
+            currentPage={data.pagination.page}
+            totalItems={data.pagination.total}
+            itemsPerPage={data.pagination.pageSize}
+            onPageChange={(page) => setRequest((current) => ({ ...current, page }))}
+          />
+        </div>
+      )}
     </div>
   );
 }

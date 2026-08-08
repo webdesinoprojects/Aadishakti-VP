@@ -76,6 +76,21 @@ test("SAP GET retries 500 once but does not retry 400", async () => {
     (error) => error instanceof SapIntegrationError && error.status === 400 && error.retryable === false,
   );
   assert.equal(nonRetryableCalls, 1);
+
+  let notFoundCalls = 0;
+  const notFoundClient = createSapClient({
+    configProvider: () => createConfig(),
+    fetchImpl: async () => {
+      notFoundCalls += 1;
+      return jsonResponse({ detail: "not found" }, 404);
+    },
+    logger: { warn() {} },
+  });
+  await assert.rejects(
+    notFoundClient.get({ pathSegments: ["api", "orders", 999] }),
+    (error) => error instanceof SapIntegrationError && error.status === 404 && error.retryable === false,
+  );
+  assert.equal(notFoundCalls, 1);
 });
 
 test("SAP diagnostics never include the API key or provider response detail", async () => {

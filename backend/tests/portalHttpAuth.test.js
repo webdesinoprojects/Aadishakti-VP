@@ -40,12 +40,15 @@ const environment = {
   PORTAL_VENDOR_DISPLAY_NAME: "Vendor Test",
 };
 
-const startTestServer = async () => {
+const startTestServer = async ({ customerPortalService } = {}) => {
   const app = dependencies.express();
   app.use(dependencies.cookieParser());
   app.use(dependencies.express.json());
   app.use("/api/portal/auth", dependencies.createPortalAuthRouter({ environment }));
-  app.use("/api/portal/customer", dependencies.createPortalCustomerRouter({ environment }));
+  app.use("/api/portal/customer", dependencies.createPortalCustomerRouter({
+    environment,
+    ...(customerPortalService ? { customerPortalService } : {}),
+  }));
   app.use("/api/portal/vendor", dependencies.createPortalVendorRouter({ environment }));
 
   const server = await new Promise((resolve) => {
@@ -98,6 +101,68 @@ test("portal login issues an HttpOnly cookie and resolves session server-side", 
     assert.equal(logout.status, 204);
     assert.match(logout.headers.get("set-cookie"), /Expires=Thu, 01 Jan 1970/i);
     assert.match(logout.headers.get("set-cookie"), /Path=\/api\/portal/i);
+  } finally {
+    await server.close();
+  }
+});
+
+test("customer portal ignores caller CardCode and uses the server-side account mapping", { skip: dependencyUnavailable }, async () => {
+  let observedAccount;
+  let observedOptions;
+  const customerPortalService = {
+    getOrders: async (account, options) => {
+      observedAccount = account;
+      observedOptions = options;
+      return { items: [], pagination: { page: 1, pageSize: 10, total: 0, totalPages: 0 } };
+    },
+  };
+  const server = await startTestServer({ customerPortalService });
+  try {
+    const login = await fetch(`${server.baseUrl}/api/portal/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: "customer-login", password: "customer-password", role: "customer" }),
+    });
+    const cookie = login.headers.get("set-cookie").split(";", 1)[0];
+    const response = await fetch(`${server.baseUrl}/api/portal/customer/orders?cardCode=ATTACKER-CARD`, {
+      headers: { Cookie: cookie },
+    });
+
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.equal(observedAccount.cardCode, "SERVER-CUSTOMER-CARD");
+    assert.deepEqual(observedOptions, { page: undefined, pageSize: undefined, q: undefined });
+    assert.doesNotMatch(JSON.stringify(await response.json()), /ATTACKER-CARD|SERVER-CUSTOMER-CARD/);
+  } finally {
+    await server.close();
+  }
+});
+
+test("customer detail routes return 404 for records outside the authenticated account", { skip: dependencyUnavailable }, async () => {
+  const { CustomerPortalRecordNotFoundError } = await import("../services/customerPortalService.js");
+  const rejectOwnership = async () => { throw new CustomerPortalRecordNotFoundError(); };
+  const customerPortalService = {
+    getOrder: rejectOwnership,
+    getInvoice: rejectOwnership,
+    getDelivery: rejectOwnership,
+    getPayment: rejectOwnership,
+  };
+  const server = await startTestServer({ customerPortalService });
+  try {
+    const login = await fetch(`${server.baseUrl}/api/portal/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: "customer-login", password: "customer-password", role: "customer" }),
+    });
+    const cookie = login.headers.get("set-cookie").split(";", 1)[0];
+    for (const area of ["orders", "invoices", "deliveries", "payments"]) {
+      const response = await fetch(`${server.baseUrl}/api/portal/customer/${area}/99`, { headers: { Cookie: cookie } });
+      assert.equal(response.status, 404);
+      assert.deepEqual(await response.json(), {
+        code: "CUSTOMER_RECORD_NOT_FOUND",
+        error: "The requested record was not found.",
+      });
+    }
   } finally {
     await server.close();
   }

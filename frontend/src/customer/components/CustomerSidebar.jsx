@@ -31,7 +31,7 @@ export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/customer/dashboard' },
     { name: 'Orders', icon: ShoppingCart, path: '/customer/orders' },
-    { name: 'Shipments', icon: Truck, path: '/customer/shipments' },
+    { name: 'Deliveries', icon: Truck, path: '/customer/shipments' },
     { name: 'Documents', icon: FileText, path: '/customer/documents' },
     { name: 'Invoices', icon: Receipt, path: '/customer/invoices' },
     { name: 'Payments', icon: CreditCard, path: '/customer/payments' },

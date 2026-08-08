@@ -62,7 +62,7 @@ export default function CustomerApp() {
             <Route path="/customer/payments" element={<PaymentsPage />} />
             <Route path="/customer/sustainability" element={<SustainabilityReportsPage />} />
             <Route path="/customer/support" element={<SupportPage />} />
-            <Route path="/customer/profile" element={<MyProfilePage portalSession={session} />} />
+            <Route path="/customer/profile" element={<MyProfilePage />} />
             <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />
           </Routes>
         </main>

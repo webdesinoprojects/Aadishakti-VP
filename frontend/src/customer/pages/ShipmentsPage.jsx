@@ -1,67 +1,82 @@
 import { useState } from 'react';
+import CustomerDataState from '../components/CustomerDataState';
 import CustomerPageHeader from '../components/CustomerPageHeader';
 import CustomerPagination from '../components/CustomerPagination';
-import { useCustomerData } from '../hooks/useCustomerData';
+import CustomerTransactionDrawer from '../components/CustomerTransactionDrawer';
+import { useCustomerDeliveries } from '../hooks/useCustomerApi';
+import {
+  formatAmount,
+  formatSapDate,
+  UNKNOWN_TRANSACTION_CURRENCY_NOTE,
+} from '../utils/customerFormatters';
 
 export default function ShipmentsPage() {
-  const { data, loading } = useCustomerData();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filter, setFilter] = useState('All');
-  const itemsPerPage = 10;
-
-  if (loading || !data) return <div style={{ padding: '40px' }}>Loading...</div>;
-
-  const trackingData = data.tracking || [];
-  const filteredItems = filter === 'All' ? trackingData : trackingData.filter(t => t.status === filter);
-  
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentItems = filteredItems.slice(indexOfFirst, indexOfLast);
-
-  const activeShipments = trackingData.filter(t => t.status === 'In Transit').length;
-
-
-
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState(null);
+  const { data, loading, error } = useCustomerDeliveries({ page, pageSize: 10 });
 
   return (
     <div style={{ padding: '40px' }}>
-      <CustomerPageHeader title="Shipments Tracker" subtitle={`You have ${activeShipments} active shipments in transit.`} />
-      
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <button onClick={() => { setFilter("All"); setCurrentPage(1); }} style={{ padding: "8px 16px", background: filter === "All" ? "var(--red-core)" : "transparent", color: filter === "All" ? "white" : "var(--text-secondary)", border: "1px solid", borderColor: filter === "All" ? "var(--red-core)" : "var(--border-color)", borderRadius: "20px", fontWeight: "500", fontSize: "13px", cursor: "pointer", transition: "all 0.2s" }}>All</button>
-        <button onClick={() => { setFilter("In Transit"); setCurrentPage(1); }} style={{ padding: "8px 16px", background: filter === "In Transit" ? "var(--red-core)" : "transparent", color: filter === "In Transit" ? "white" : "var(--text-secondary)", border: "1px solid", borderColor: filter === "In Transit" ? "var(--red-core)" : "var(--border-color)", borderRadius: "20px", fontWeight: "500", fontSize: "13px", cursor: "pointer", transition: "all 0.2s" }}>In Transit</button>
-        <button onClick={() => { setFilter("Delivered"); setCurrentPage(1); }} style={{ padding: "8px 16px", background: filter === "Delivered" ? "var(--red-core)" : "transparent", color: filter === "Delivered" ? "white" : "var(--text-secondary)", border: "1px solid", borderColor: filter === "Delivered" ? "var(--red-core)" : "var(--border-color)", borderRadius: "20px", fontWeight: "500", fontSize: "13px", cursor: "pointer", transition: "all 0.2s" }}>Delivered</button>
-      </div>
+      <CustomerPageHeader
+        title="SAP Delivery Documents"
+        subtitle="Current delivery documents exposed by SAP. These are not live logistics tracking events."
+      />
+      <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>
+        {UNKNOWN_TRANSACTION_CURRENCY_NOTE}
+      </p>
 
-      <div className="customer-card" style={{ padding: 0 }}>
-        <table className="customer-table">
-          <thead>
-            <tr><th>Shipment ID</th><th>Journey</th><th>Status / ETA</th></tr>
-          </thead>
-          <tbody>
-            {currentItems.map(t => (
-              <tr key={t.id}>
-                <td style={{ fontWeight: '600', width: '20%' }}>{t.id}</td>
-                <td style={{ width: '50%' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ flex: 1, textAlign: 'right', fontWeight: '500' }}>{t.origin}</div>
-                    <div style={{ height: '2px', flex: 2, background: t.status === 'Delivered' ? 'var(--status-delivered)' : 'var(--border-color)', position: 'relative' }}>
-                       {t.status === 'In Transit' && <div style={{ position: 'absolute', top: '-4px', left: '50%', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--status-intransit)' }}></div>}
-                    </div>
-                    <div style={{ flex: 1, textAlign: 'left', fontWeight: '500' }}>{t.destination}</div>
-                  </div>
-                </td>
-                <td style={{ width: '30%', textAlign: 'center' }}>
-                  <div style={{ fontWeight: '600', color: t.status === 'Delivered' ? 'var(--status-delivered)' : 'var(--status-intransit)' }}>{t.status}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>{t.status === 'Delivered' ? `On: ${t.deliveredOn}` : `ETA: ${t.eta}`}</div>
-                </td>
+      <CustomerDataState loading={loading} error={error} />
+      {data && (
+        <div className="customer-card" style={{ padding: 0 }}>
+          <table className="customer-table">
+            <thead>
+              <tr>
+                <th>Delivery Number</th>
+                <th>Date</th>
+                <th>Due Date</th>
+                <th>Amount</th>
+                <th>SAP Document Status</th>
+                <th>Action</th>
               </tr>
-            ))}
-            {currentItems.length === 0 && <tr><td colSpan="3" style={{ textAlign: 'center' }}>No shipments found for this filter.</td></tr>}
-          </tbody>
-        </table>
-        {filteredItems.length > 0 && <CustomerPagination currentPage={currentPage} totalPages={Math.ceil(filteredItems.length / itemsPerPage)} onPageChange={setCurrentPage} totalItems={filteredItems.length} itemsPerPage={itemsPerPage} />}
-      </div>
+            </thead>
+            <tbody>
+              {data.items.map((delivery) => (
+                <tr key={delivery.id}>
+                  <td style={{ fontWeight: 600 }}>{delivery.number}</td>
+                  <td>{formatSapDate(delivery.date)}</td>
+                  <td>{formatSapDate(delivery.dueDate)}</td>
+                  <td>{formatAmount(delivery.amount)}</td>
+                  <td>{delivery.status}</td>
+                  <td>
+                    <button className="customer-btn-outline" onClick={() => setSelected(delivery.id)}>
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {data.items.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center' }}>
+                    No current delivery documents were returned.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          <CustomerPagination
+            currentPage={data.pagination.page}
+            totalItems={data.pagination.total}
+            itemsPerPage={data.pagination.pageSize}
+            onPageChange={setPage}
+          />
+        </div>
+      )}
+
+      <CustomerTransactionDrawer
+        type="delivery"
+        docEntry={selected}
+        onClose={() => setSelected(null)}
+      />
     </div>
   );
 }
