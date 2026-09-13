@@ -5,7 +5,7 @@ import customerApi from '../../services/customerApi';
 const normalizeError = (error) => ({
   status: error?.response?.status || 0,
   message: error?.response?.data?.error || (error?.code === 'ECONNABORTED'
-    ? 'The SAP service is temporarily unavailable.'
+    ? 'The CIS service is temporarily unavailable.'
     : 'Customer data is temporarily unavailable.'),
 });
 

@@ -1,33 +1,20 @@
-import { ArrowRight, Banknote, CalendarClock, Package, Receipt, Truck } from 'lucide-react';
+import { CreditCard, PackageX, Receipt, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { OrderStatusPieChart, PurchaseVolumeChart } from '../components/CustomerCharts';
 import CustomerDataState from '../components/CustomerDataState';
 import CustomerPageHeader from '../components/CustomerPageHeader';
 import { useCustomerDashboard } from '../hooks/useCustomerApi';
-import {
-  formatAmount,
-  formatSapDate,
-  UNAVAILABLE_VALUE,
-  UNKNOWN_TRANSACTION_CURRENCY_NOTE,
-} from '../utils/customerFormatters';
-import { getStatusClass } from '../utils/statusHelpers';
+import { formatAmount, formatSapDate, UNAVAILABLE_VALUE, UNKNOWN_TRANSACTION_CURRENCY_NOTE } from '../utils/customerFormatters';
 
-function formatCount(value) {
-  return typeof value === 'number' ? value : UNAVAILABLE_VALUE;
-}
+const formatCount = (value) => typeof value === 'number' ? value : UNAVAILABLE_VALUE;
 
 function StatCard({ title, value, subtitle, icon: Icon }) {
   return (
     <div className="customer-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: value === UNAVAILABLE_VALUE ? '18px' : '28px', fontWeight: 700 }}>
-          {value}
-        </h3>
+        <h3 style={{ fontSize: value === UNAVAILABLE_VALUE ? '18px' : '28px', fontWeight: 700 }}>{value}</h3>
         <Icon size={24} color="var(--text-muted)" />
       </div>
-      <p style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>
-        {title}
-      </p>
+      <p style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>{title}</p>
       <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{subtitle}</p>
     </div>
   );
@@ -35,78 +22,43 @@ function StatCard({ title, value, subtitle, icon: Icon }) {
 
 export default function CustomerDashboard() {
   const { data, loading, error } = useCustomerDashboard();
-  if (loading || error || !data) {
-    return <CustomerDataState loading={loading} error={error} />;
-  }
-
-  const {
-    availability,
-    charts,
-    completeness,
-    kpis,
-    recentOrders,
-  } = data;
+  if (loading || error || !data) return <CustomerDataState loading={loading} error={error} />;
 
   const unavailableSections = [
-    !availability.orders && 'orders',
-    !availability.invoices && 'invoices',
-    !availability.deliveries && 'deliveries',
+    !data.availability.invoices && 'invoices',
+    !data.availability.deliveries && 'deliveries',
+    !data.availability.payments && 'payments',
   ].filter(Boolean);
 
   return (
     <div style={{ padding: '40px' }}>
-      <CustomerPageHeader
-        title="Customer Dashboard"
-        subtitle="Live commercial data currently exposed by SAP."
-      />
+      <CustomerPageHeader title="Customer Dashboard" subtitle="Live records exposed for your account by CIS." />
 
       {unavailableSections.length > 0 && (
         <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>
-          Some SAP sections are temporarily unavailable: {unavailableSections.join(', ')}. Available sections remain live.
+          Some CIS sections are temporarily unavailable: {unavailableSections.join(', ')}. Other sections remain live.
         </p>
       )}
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '20px',
-          marginBottom: '20px',
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+        <StatCard title="Sales Orders" value={UNAVAILABLE_VALUE} subtitle="No Sales Order API is supplied by CIS" icon={PackageX} />
         <StatCard
-          title="Orders Returned by SAP"
-          value={formatCount(kpis.totalOrders)}
-          subtitle={availability.orders ? `${formatCount(kpis.openOrders)} open` : 'Order data unavailable'}
-          icon={Package}
-        />
-        <StatCard
-          title="Open Invoices"
-          value={formatCount(kpis.openInvoices)}
-          subtitle={availability.invoices ? 'From the current unpaid-invoice query' : 'Invoice data unavailable'}
+          title="Current Open AR Invoices"
+          value={formatCount(data.kpis.openInvoices)}
+          subtitle={data.availability.invoices ? 'Current open records, not full history' : 'Invoice data unavailable'}
           icon={Receipt}
         />
         <StatCard
-          title="Outstanding Invoice Amount"
-          value={formatAmount(kpis.outstandingInvoiceAmount)}
-          subtitle={completeness.outstandingInvoiceAmount
-            ? 'Complete for invoices returned by the unpaid query'
-            : 'Unavailable because invoice payment data is incomplete'}
-          icon={Banknote}
-        />
-        <StatCard
-          title="Overdue Invoice Amount"
-          value={formatAmount(kpis.overdueInvoiceAmount)}
-          subtitle={completeness.overdueInvoiceAmount
-            ? 'Due dates are compared as calendar dates'
-            : 'Unavailable because due-date or payment data is incomplete'}
-          icon={CalendarClock}
-        />
-        <StatCard
-          title="Current Delivery Documents"
-          value={formatCount(kpis.currentDeliveryDocuments)}
-          subtitle={availability.deliveries ? 'Not a logistics or in-transit count' : 'Delivery data unavailable'}
+          title="Current Open Deliveries"
+          value={formatCount(data.kpis.currentDeliveryDocuments)}
+          subtitle={data.availability.deliveries ? 'CIS delivery documents, not live tracking' : 'Delivery data unavailable'}
           icon={Truck}
+        />
+        <StatCard
+          title="Incoming Payments"
+          value={formatCount(data.kpis.incomingPayments)}
+          subtitle={data.availability.payments ? 'Not-cancelled records exposed by CIS' : 'Payment data unavailable'}
+          icon={CreditCard}
         />
       </div>
 
@@ -114,64 +66,31 @@ export default function CustomerDashboard() {
         {UNKNOWN_TRANSACTION_CURRENCY_NOTE}
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px', marginBottom: '30px' }}>
-        <PurchaseVolumeChart data={charts.monthlyOrderValue} available={availability.orders} />
-        <OrderStatusPieChart data={charts.orderStatus} available={availability.orders} />
-      </div>
-
       <div className="customer-card" style={{ padding: 0 }}>
         <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Recent Orders</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Recent Current Open Invoices</h3>
         </div>
         <table className="customer-table">
-          <thead>
-            <tr>
-              <th>Order Number</th>
-              <th>Date</th>
-              <th>SAP Status</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Invoice Number</th><th>Date</th><th>Due Date</th><th>Amount</th></tr></thead>
           <tbody>
-            {recentOrders.map((order) => (
-              <tr key={order.id}>
-                <td style={{ fontWeight: 600 }}>
-                  <Link
-                    to={`/customer/orders/${order.id}`}
-                    style={{ color: 'inherit', textDecoration: 'none' }}
-                  >
-                    {order.number}
-                  </Link>
-                </td>
-                <td>{formatSapDate(order.date)}</td>
-                <td>
-                  <span className={`status-badge ${getStatusClass(order.status)}`}>{order.status}</span>
-                </td>
-                <td>{formatAmount(order.amount)}</td>
+            {data.recentInvoices.map((invoice) => (
+              <tr key={invoice.id}>
+                <td style={{ fontWeight: 600 }}>{invoice.number}</td>
+                <td>{formatSapDate(invoice.date)}</td>
+                <td>{formatSapDate(invoice.dueDate)}</td>
+                <td>{formatAmount(invoice.amount)}</td>
               </tr>
             ))}
-            {recentOrders.length === 0 && (
-              <tr>
-                <td colSpan="4" style={{ textAlign: 'center' }}>
-                  {availability.orders ? 'No orders were returned.' : 'Order data is temporarily unavailable.'}
-                </td>
-              </tr>
+            {data.recentInvoices.length === 0 && (
+              <tr><td colSpan="4" style={{ textAlign: 'center' }}>
+                {data.availability.invoices ? 'No current open invoices were returned.' : 'Invoice data is temporarily unavailable.'}
+              </td></tr>
             )}
           </tbody>
         </table>
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)' }}>
-          <Link
-            to="/customer/orders"
-            style={{
-              color: 'var(--red-core)',
-              fontWeight: 600,
-              textDecoration: 'none',
-              fontSize: '14px',
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}
-          >
-            View All Orders <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+          <Link to="/customer/invoices" style={{ color: 'var(--red-core)', fontWeight: 600, textDecoration: 'none' }}>
+            View current open invoices →
           </Link>
         </div>
       </div>

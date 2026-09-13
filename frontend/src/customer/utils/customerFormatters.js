@@ -1,5 +1,5 @@
 export const UNAVAILABLE_VALUE = 'Unavailable';
-export const UNKNOWN_TRANSACTION_CURRENCY_NOTE = 'Currency is not supplied by this SAP transaction endpoint.';
+export const UNKNOWN_TRANSACTION_CURRENCY_NOTE = 'Currency is not supplied by this CIS transaction endpoint.';
 
 const isFiniteNumber = (value) => typeof value === 'number' && Number.isFinite(value);
 

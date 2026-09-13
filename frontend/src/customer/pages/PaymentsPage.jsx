@@ -19,7 +19,7 @@ export default function PaymentsPage() {
     <div style={{ padding: '40px' }}>
       <CustomerPageHeader
         title="Incoming Payments"
-        subtitle="Current incoming-payment records exposed by SAP. Receipt files and UTR data are not supplied."
+        subtitle="Not-cancelled incoming-payment records exposed by CIS. Receipt files and UTR data are not supplied."
       />
       <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>
         {UNKNOWN_TRANSACTION_CURRENCY_NOTE}

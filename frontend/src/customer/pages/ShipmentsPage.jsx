@@ -18,8 +18,8 @@ export default function ShipmentsPage() {
   return (
     <div style={{ padding: '40px' }}>
       <CustomerPageHeader
-        title="SAP Delivery Documents"
-        subtitle="Current delivery documents exposed by SAP. These are not live logistics tracking events."
+        title="Current Open Deliveries"
+        subtitle="Current delivery documents exposed by CIS. These are not live logistics tracking events."
       />
       <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>
         {UNKNOWN_TRANSACTION_CURRENCY_NOTE}
@@ -35,7 +35,7 @@ export default function ShipmentsPage() {
                 <th>Date</th>
                 <th>Due Date</th>
                 <th>Amount</th>
-                <th>SAP Document Status</th>
+                <th>CIS Scope</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -46,7 +46,7 @@ export default function ShipmentsPage() {
                   <td>{formatSapDate(delivery.date)}</td>
                   <td>{formatSapDate(delivery.dueDate)}</td>
                   <td>{formatAmount(delivery.amount)}</td>
-                  <td>{delivery.status}</td>
+                  <td>Current open</td>
                   <td>
                     <button className="customer-btn-outline" onClick={() => setSelected(delivery.id)}>
                       View Details
