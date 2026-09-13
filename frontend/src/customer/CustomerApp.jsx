@@ -4,7 +4,6 @@ import { Smartphone } from 'lucide-react';
 import './customer.css';
 
 import CustomerSidebar from './components/CustomerSidebar';
-import CustomerChatBubble from './components/CustomerChatBubble';
 
 // Pages to be implemented
 import CustomerDashboard from './pages/CustomerDashboard';
@@ -66,7 +65,6 @@ export default function CustomerApp() {
             <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />
           </Routes>
         </main>
-        <CustomerChatBubble />
       </div>
     </>
   );

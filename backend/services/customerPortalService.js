@@ -58,6 +58,7 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
   };
 
   const loadInvoices = (account) => loadExact(account, "arinvoice", toInvoice);
+  const loadCreditNotes = (account) => loadExact(account, "arcreditnote", toCisDocumentSummary);
   const loadDeliveries = (account) => loadExact(account, "delivery", toCisDocumentSummary);
   const loadPayments = (account) => loadExact(account, "incomingpayment", toCisPaymentSummary);
 
@@ -81,6 +82,18 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
 
   const getInvoice = async (account, docEntry) => ({
     ...findPortalRecord(await loadInvoices(account), docEntry, CustomerPortalRecordNotFoundError),
+    lines: [],
+    detailAvailable: false,
+  });
+
+  const getCreditNotes = async (account, options) => paginatePortalRecords(
+    await loadCreditNotes(account),
+    options,
+    { supported: true, scope: "current-open" },
+  );
+
+  const getCreditNote = async (account, docEntry) => ({
+    ...findPortalRecord(await loadCreditNotes(account), docEntry, CustomerPortalRecordNotFoundError),
     lines: [],
     detailAvailable: false,
   });
@@ -153,6 +166,8 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
     getOrder,
     getInvoices,
     getInvoice,
+    getCreditNotes,
+    getCreditNote,
     getDeliveries,
     getDelivery,
     getPayments,

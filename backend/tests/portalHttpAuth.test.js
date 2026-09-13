@@ -149,6 +149,7 @@ test("customer detail routes return 404 for records outside the authenticated ac
   const customerPortalService = {
     getOrder: rejectOwnership,
     getInvoice: rejectOwnership,
+    getCreditNote: rejectOwnership,
     getDelivery: rejectOwnership,
     getPayment: rejectOwnership,
   };
@@ -160,11 +161,43 @@ test("customer detail routes return 404 for records outside the authenticated ac
       body: JSON.stringify({ identifier: "customer-login", password: "customer-password", role: "customer" }),
     });
     const cookie = login.headers.get("set-cookie").split(";", 1)[0];
-    for (const area of ["orders", "invoices", "deliveries", "payments"]) {
+    for (const area of ["orders", "invoices", "credit-notes", "deliveries", "payments"]) {
       const response = await fetch(`${server.baseUrl}/api/portal/customer/${area}/99`, { headers: { Cookie: cookie } });
       assert.equal(response.status, 404);
       assert.deepEqual(await response.json(), {
         code: "CUSTOMER_RECORD_NOT_FOUND",
+        error: "The requested record was not found.",
+      });
+    }
+  } finally {
+    await server.close();
+  }
+});
+
+test("vendor detail routes return 404 for records outside the authenticated account", { skip: dependencyUnavailable }, async () => {
+  const { VendorPortalRecordNotFoundError } = await import("../services/vendorPortalService.js");
+  const rejectOwnership = async () => { throw new VendorPortalRecordNotFoundError(); };
+  const vendorPortalService = {
+    getPurchaseOrder: rejectOwnership,
+    getInvoice: rejectOwnership,
+    getCreditNote: rejectOwnership,
+    getDebitNote: rejectOwnership,
+    getGrpo: rejectOwnership,
+    getPayment: rejectOwnership,
+  };
+  const server = await startTestServer({ vendorPortalService });
+  try {
+    const login = await fetch(`${server.baseUrl}/api/portal/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: "vendor-login", password: "vendor-password", role: "vendor" }),
+    });
+    const cookie = login.headers.get("set-cookie").split(";", 1)[0];
+    for (const area of ["purchase-orders", "invoices", "credit-notes", "debit-notes", "grpos", "payments"]) {
+      const response = await fetch(`${server.baseUrl}/api/portal/vendor/${area}/99`, { headers: { Cookie: cookie } });
+      assert.equal(response.status, 404);
+      assert.deepEqual(await response.json(), {
+        code: "VENDOR_RECORD_NOT_FOUND",
         error: "The requested record was not found.",
       });
     }

@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import VendorSidebar from './components/VendorSidebar';
-import VendorChatBubble from './components/VendorChatBubble';
 import VendorDashboard from './pages/VendorDashboard';
 import RFQsPage from './pages/RFQsPage';
 import ReconciliationPage from './pages/ReconciliationPage';
@@ -64,7 +63,6 @@ export default function VendorApp() {
             </Routes>
           </main>
         </div>
-        <VendorChatBubble />
       </div>
     </ProtectedVendorRoute>
   );

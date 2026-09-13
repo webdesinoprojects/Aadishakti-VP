@@ -1,64 +1,42 @@
-import { useVendorData } from '../hooks/useVendorData';
-import { getStatusClass } from '../utils/statusHelpers';
 import { useState } from 'react';
-import VendorPagination from '../components/VendorPagination';
+import VendorDataState from '../components/VendorDataState';
 import VendorPageHeader from '../components/VendorPageHeader';
-import DocumentViewerModal from '../components/DocumentViewerModal';
+import VendorPagination from '../components/VendorPagination';
+import VendorTransactionDrawer from '../components/VendorTransactionDrawer';
+import { useVendorGrpos } from '../hooks/useVendorApi';
+import { formatVendorAmount, formatVendorDate, UNKNOWN_CURRENCY_NOTE } from '../utils/vendorFormatters';
 
 export default function GRNPage() {
-  const { data, loading, error } = useVendorData();
-  const [selectedDoc, setSelectedDoc] = useState(null);
-
-  if (loading) return <div className="vendor-page">Loading GRN...</div>;
-  if (error || !data) return <div className="vendor-page" style={{ color: 'var(--red-core)' }}>Error loading data.</div>;
-
-  const { grn, profile } = data;
-
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState(null);
+  const { data, loading, error } = useVendorGrpos({ page, pageSize: 10 });
   return (
     <div className="vendor-page">
-      <VendorPageHeader 
-        title="GRN & Receipts" 
-        subtitle="View Goods Receipt Notes for your deliveries." 
-      />
-
-      <div className="vendor-panel">
-        <table className="vendor-table">
-          <thead>
-            <tr>
-              <th>GRN No</th>
-              <th>PO Number</th>
-              <th>Material</th>
-              <th>Quantity</th>
-              <th>Received Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {grn.map((receipt) => (
-              <tr key={receipt.id} className="vendor-table-row-clickable" onClick={() => setSelectedDoc(receipt)}>
-                <td style={{ fontWeight: '600', color: '#111' }}>{receipt.grnNo}</td>
-                <td>{receipt.poNumber}</td>
-                <td>{receipt.material}</td>
-                <td style={{ fontWeight: '600' }}>{receipt.quantity}</td>
-                <td>{receipt.receivedDate}</td>
-                <td>
-                  <span className={`status-badge ${getStatusClass(receipt.status)}`}>
-                    {receipt.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <VendorPagination totalItems={grn.length} />
-      </div>
-      <DocumentViewerModal 
-        isOpen={!!selectedDoc} 
-        onClose={() => setSelectedDoc(null)} 
-        data={selectedDoc} 
-        type="grn" 
-        vendorProfile={profile} 
-      />
+      <VendorPageHeader title="Current Open GRPOs" subtitle="Read-only Goods Receipt PO headers supplied by CIS. Materials, quantities, lines, and downloadable GRNs are not exposed." />
+      <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>{UNKNOWN_CURRENCY_NOTE}</p>
+      <VendorDataState loading={loading} error={error} />
+      {data && (
+        <div className="vendor-panel">
+          <table className="vendor-table">
+            <thead><tr><th>GRPO Number</th><th>Date</th><th>Due Date</th><th>Amount</th><th>Scope</th><th>Action</th></tr></thead>
+            <tbody>
+              {data.items.map((grpo) => (
+                <tr key={grpo.id}>
+                  <td style={{ fontWeight: 600 }}>{grpo.number}</td>
+                  <td>{formatVendorDate(grpo.date)}</td>
+                  <td>{formatVendorDate(grpo.dueDate)}</td>
+                  <td>{formatVendorAmount(grpo.amount)}</td>
+                  <td>Current open</td>
+                  <td><button className="vendor-btn-outline" onClick={() => setSelected(grpo.id)}>View Summary</button></td>
+                </tr>
+              ))}
+              {data.items.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No current open GRPOs were returned.</td></tr>}
+            </tbody>
+          </table>
+          <VendorPagination totalItems={data.pagination.total} itemsPerPage={data.pagination.pageSize} currentPage={data.pagination.page} onPageChange={setPage} />
+        </div>
+      )}
+      <VendorTransactionDrawer type="grpo" docEntry={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

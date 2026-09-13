@@ -76,6 +76,7 @@ test("Customer commercial lists exact-filter before mapping and paginate locally
         document({ docEntry: "2", docNum: "1002" }),
         document({ docEntry: "3", docNum: "1003", cardCode: "CUSTOMER-B" }),
       ],
+      arcreditnote: [document({ docEntry: "4", docNum: "4001" })],
       delivery: [document({ docEntry: "8", docNum: "800" })],
       incomingpayment: [payment()],
     }),
@@ -89,8 +90,10 @@ test("Customer commercial lists exact-filter before mapping and paginate locally
   assert.equal(invoices.scope, "current-open");
 
   const deliveries = await service.getDeliveries(customer);
+  const creditNotes = await service.getCreditNotes(customer);
   const payments = await service.getPayments(customer);
   assert.equal(deliveries.items[0].id, 8);
+  assert.equal(creditNotes.items[0].id, 4);
   assert.equal(payments.items[0].totalPaymentAmount, 100);
 });
 
@@ -98,11 +101,12 @@ test("Customer list-resolved details cannot expose another CardCode", async () =
   const service = createCustomerPortalService({
     cisClient: createClient({
       arinvoice: [document({ cardCode: "CUSTOMER-B", docEntry: "99" })],
+      arcreditnote: [document({ cardCode: "CUSTOMER-B", docEntry: "99" })],
       delivery: [document({ cardCode: "CUSTOMER-B", docEntry: "99" })],
       incomingpayment: [payment({ cardCode: "CUSTOMER-B", docEntry: "99" })],
     }),
   });
-  for (const method of ["getInvoice", "getDelivery", "getPayment"]) {
+  for (const method of ["getInvoice", "getCreditNote", "getDelivery", "getPayment"]) {
     await assert.rejects(
       () => service[method](customer, 99),
       (error) => error instanceof CustomerPortalRecordNotFoundError,

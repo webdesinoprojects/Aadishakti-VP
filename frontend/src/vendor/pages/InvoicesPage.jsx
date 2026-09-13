@@ -1,69 +1,59 @@
-import { useVendorData } from '../hooks/useVendorData';
-import { getStatusClass } from '../utils/statusHelpers';
 import { useState } from 'react';
-import VendorPagination from '../components/VendorPagination';
+import VendorDataState from '../components/VendorDataState';
 import VendorPageHeader from '../components/VendorPageHeader';
-import DocumentViewerModal from '../components/DocumentViewerModal';
+import VendorPagination from '../components/VendorPagination';
+import VendorTransactionDrawer from '../components/VendorTransactionDrawer';
+import { useVendorFinancialDocuments } from '../hooks/useVendorApi';
+import { formatVendorAmount, formatVendorDate, UNKNOWN_CURRENCY_NOTE } from '../utils/vendorFormatters';
 
 export default function InvoicesPage() {
-  const { data, loading, error } = useVendorData();
-  const [selectedDoc, setSelectedDoc] = useState(null);
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState(null);
+  const [kind, setKind] = useState('invoice');
+  const { data, loading, error } = useVendorFinancialDocuments({ kind, page, pageSize: 10 });
+  const labels = {
+    invoice: { title: 'Current Open AP Invoices', number: 'Invoice Number', empty: 'AP Invoices', drawer: 'invoice' },
+    'credit-note': { title: 'Current Open AP Credit Notes', number: 'Credit Note Number', empty: 'AP Credit Notes', drawer: 'creditNote' },
+    'debit-note': { title: 'Current Open AP Debit Notes', number: 'Debit Note Number', empty: 'AP Debit Notes', drawer: 'debitNote' },
+  }[kind];
 
-  if (loading) return <div style={{ padding: '40px' }}>Loading Invoices...</div>;
-  if (error || !data) return <div style={{ padding: '40px', color: 'var(--red-core)' }}>Error loading data.</div>;
-
-  const { invoices, kpis, profile } = data;
-
+  const changeKind = (nextKind) => {
+    setKind(nextKind);
+    setPage(1);
+    setSelected(null);
+  };
   return (
-    <div style={{ padding: '40px' }}>
-      <VendorPageHeader 
-        title="Invoices & Payments" 
-        subtitle="View your invoice history and payment statuses."
-      >
-        <div className="vendor-kpi-card" style={{ width: '250px', padding: '16px 24px' }}>
-          <div className="vendor-kpi-value" style={{ fontSize: '24px' }}>₹ {kpis.totalReceivables}</div>
-          <div className="vendor-kpi-label" style={{ marginBottom: 0 }}>Total Receivables</div>
-        </div>
-      </VendorPageHeader>
-
-      <div className="vendor-panel">
-        <table className="vendor-table">
-          <thead>
-            <tr>
-              <th>Invoice ID</th>
-              <th>Invoice No</th>
-              <th>PO Number</th>
-              <th>Amount</th>
-              <th>Due Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.map((inv) => (
-              <tr key={inv.id} className="vendor-table-row-clickable" onClick={() => setSelectedDoc(inv)}>
-                <td>{inv.id}</td>
-                <td style={{ fontWeight: '600', color: '#111' }}>{inv.invoiceNo}</td>
-                <td>{inv.poNumber}</td>
-                <td style={{ fontWeight: '600' }}>₹ {inv.amount}</td>
-                <td>{inv.dueDate}</td>
-                <td>
-                  <span className={`status-badge ${getStatusClass(inv.status)}`}>
-                    {inv.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <VendorPagination totalItems={invoices.length} />
+    <div className="vendor-page">
+      <VendorPageHeader title={labels.title} subtitle="Read-only current/open headers supplied by CIS. Full history, lines, associations, and files are unavailable." />
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '18px' }}>
+        <button className="vendor-btn-outline" onClick={() => changeKind('invoice')} disabled={kind === 'invoice'}>AP Invoices</button>
+        <button className="vendor-btn-outline" onClick={() => changeKind('credit-note')} disabled={kind === 'credit-note'}>AP Credit Notes</button>
+        <button className="vendor-btn-outline" onClick={() => changeKind('debit-note')} disabled={kind === 'debit-note'}>AP Debit Notes</button>
       </div>
-      <DocumentViewerModal 
-        isOpen={!!selectedDoc} 
-        onClose={() => setSelectedDoc(null)} 
-        data={selectedDoc} 
-        type="invoice" 
-        vendorProfile={profile} 
-      />
+      <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>{UNKNOWN_CURRENCY_NOTE}</p>
+      <VendorDataState loading={loading} error={error} />
+      {data && (
+        <div className="vendor-panel">
+          <table className="vendor-table">
+            <thead><tr><th>{labels.number}</th><th>Date</th><th>Due Date</th><th>Amount</th><th>Scope</th><th>Action</th></tr></thead>
+            <tbody>
+              {data.items.map((document) => (
+                <tr key={document.id}>
+                  <td style={{ fontWeight: 600 }}>{document.number}</td>
+                  <td>{formatVendorDate(document.date)}</td>
+                  <td>{formatVendorDate(document.dueDate)}</td>
+                  <td>{formatVendorAmount(document.amount)}</td>
+                  <td>Current open</td>
+                  <td><button className="vendor-btn-outline" onClick={() => setSelected(document.id)}>View Summary</button></td>
+                </tr>
+              ))}
+              {data.items.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No current open {labels.empty} were returned.</td></tr>}
+            </tbody>
+          </table>
+          <VendorPagination totalItems={data.pagination.total} itemsPerPage={data.pagination.pageSize} currentPage={data.pagination.page} onPageChange={setPage} />
+        </div>
+      )}
+      <VendorTransactionDrawer type={labels.drawer} docEntry={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

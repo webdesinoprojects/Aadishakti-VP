@@ -1,167 +1,87 @@
+import { FileCheck2, Receipt, ShoppingCart, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { FileText, ShoppingCart, Receipt, Wallet } from 'lucide-react';
-import { useVendorData } from '../hooks/useVendorData';
-import { getStatusClass } from '../utils/statusHelpers';
-import { VendorRevenueChart, VendorPerformancePie } from '../components/VendorCharts';
+import VendorDataState from '../components/VendorDataState';
+import { useVendorDashboard, useVendorProfile } from '../hooks/useVendorApi';
+import { formatVendorAmount, formatVendorDate, UNAVAILABLE_VALUE, UNKNOWN_CURRENCY_NOTE } from '../utils/vendorFormatters';
+
+const count = (value) => typeof value === 'number' ? value : UNAVAILABLE_VALUE;
+
+function Kpi({ label, value, note, icon: Icon, to }) {
+  return (
+    <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
+      <Icon size={100} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-14px', color: 'var(--red-core)', opacity: 0.06 }} />
+      <div style={{ position: 'relative' }}>
+        <div className="vendor-kpi-value">{value}</div>
+        <div className="vendor-kpi-label">{label}</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '8px' }}>{note}</div>
+        <Link to={to} className="vendor-kpi-link">View records</Link>
+      </div>
+    </div>
+  );
+}
 
 export default function VendorDashboard() {
-  const { data, loading, error } = useVendorData();
-
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <p>Loading Dashboard...</p>
-      </div>
-    );
+  const dashboard = useVendorDashboard();
+  const profile = useVendorProfile();
+  if (dashboard.loading || dashboard.error || !dashboard.data) {
+    return <VendorDataState loading={dashboard.loading} error={dashboard.error} />;
   }
 
-  if (error || !data) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'var(--red-core)' }}>
-        <p>{error || 'Failed to load data.'}</p>
-      </div>
-    );
-  }
-
-  const { profile, kpis, purchaseOrders, upcomingDeliveries, performance, revenueHistory } = data;
-
+  const data = dashboard.data;
+  const unavailable = Object.entries(data.availability).filter(([, available]) => !available).map(([name]) => name);
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px 40px 0 40px' }}>
-        <div className="vendor-badge-security">
-          Connected & Secured with <strong>EISENVAULT</strong>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-        </div>
-      </div>
-
       <header className="vendor-header">
         <div className="vendor-greeting">
-          <h1>Welcome back, Vendor Partner!</h1>
-          <p>Here's an overview of your business with us.</p>
+          <h1>Welcome back, {profile.data?.name || 'Vendor Partner'}!</h1>
+          <p>Current records exposed for your account by CIS.</p>
         </div>
         <div className="vendor-header-right">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: 'pointer' }}>
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-          </svg>
-          <div style={{ textAlign: 'right', lineHeight: '1.2' }}>
-            <div style={{ fontSize: '13px', fontWeight: '700', color: '#111' }}>{profile.name}</div>
-            <div style={{ fontSize: '11px', color: '#666' }}>Vendor Code: {profile.vendorCode}</div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '13px', fontWeight: 700 }}>{profile.data?.name || 'Vendor Partner'}</div>
+            <div style={{ fontSize: '11px', color: '#666' }}>{profile.loading ? 'Loading profile…' : profile.data?.accountReference || ''}</div>
           </div>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: 'pointer' }}>
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
         </div>
       </header>
 
+      {unavailable.length > 0 && (
+        <p style={{ padding: '0 40px 20px', color: 'var(--text-muted)' }}>
+          Some CIS sections are temporarily unavailable: {unavailable.join(', ')}. Other sections remain live.
+        </p>
+      )}
+
       <section className="vendor-kpi-grid">
-        <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
-          <FileText size={120} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-20px', color: 'var(--red-core)', opacity: 0.06, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div className="vendor-kpi-value">{kpis.activeRFQs}</div>
-            <div className="vendor-kpi-label">Active RFQs</div>
-            <Link to="/vendor/rfqs" className="vendor-kpi-link">View all</Link>
-          </div>
-        </div>
-        <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
-          <ShoppingCart size={120} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-20px', color: '#1976d2', opacity: 0.06, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div className="vendor-kpi-value">{kpis.purchaseOrders}</div>
-            <div className="vendor-kpi-label">Purchase Orders</div>
-            <Link to="/vendor/orders" className="vendor-kpi-link">View all</Link>
-          </div>
-        </div>
-        <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
-          <Receipt size={120} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-20px', color: '#f57c00', opacity: 0.06, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div className="vendor-kpi-value">{kpis.pendingInvoices}</div>
-            <div className="vendor-kpi-label">Pending Invoices</div>
-            <Link to="/vendor/invoices" className="vendor-kpi-link">View all</Link>
-          </div>
-        </div>
-        <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
-          <Wallet size={120} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-20px', color: '#2e7d32', opacity: 0.06, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div className="vendor-kpi-value">₹ {kpis.totalReceivables}</div>
-            <div className="vendor-kpi-label">Total Receivables</div>
-            <Link to="/vendor/invoices" className="vendor-kpi-link">View statement</Link>
-          </div>
-        </div>
+        <Kpi label="Current Open Purchase Orders" value={count(data.kpis.openPurchaseOrders)} note="Not full history" icon={ShoppingCart} to="/vendor/orders" />
+        <Kpi label="Current Open AP Invoices" value={count(data.kpis.openApInvoices)} note="Not full history" icon={Receipt} to="/vendor/invoices" />
+        <Kpi label="Current Open GRPOs" value={count(data.kpis.openGrpos)} note="Header summaries only" icon={FileCheck2} to="/vendor/grn" />
+        <Kpi label="Outgoing Payments" value={count(data.kpis.outgoingPayments)} note="Not-cancelled records" icon={Wallet} to="/vendor/payments" />
       </section>
 
-      <section className="vendor-dashboard-content" style={{ marginBottom: '20px' }}>
-        <div className="vendor-panel">
-          <VendorRevenueChart data={revenueHistory} />
-        </div>
-        <div className="vendor-panel">
-          <VendorPerformancePie performance={performance} />
-        </div>
-      </section>
-
-      <section className="vendor-dashboard-content">
+      <section className="vendor-dashboard-content" style={{ gridTemplateColumns: '1fr' }}>
         <div className="vendor-panel" style={{ overflowX: 'auto' }}>
-          <h3>Purchase Orders</h3>
+          <h3>Recent Current Open Purchase Orders</h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '14px' }}>{UNKNOWN_CURRENCY_NOTE}</p>
           <table className="vendor-table">
-            <thead>
-              <tr>
-                <th>PO Number</th>
-                <th>Date</th>
-                <th>Delivery Date</th>
-                <th>Status</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
+            <thead><tr><th>PO Number</th><th>Date</th><th>Due Date</th><th>Amount</th></tr></thead>
             <tbody>
-              {purchaseOrders.map((po) => (
-                <tr key={po.poNumber}>
-                  <td>{po.poNumber}</td>
-                  <td>{po.date}</td>
-                  <td>{po.deliveryDate}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(po.status)}`}>
-                      {po.status}
-                    </span>
-                  </td>
-                  <td style={{ fontWeight: '600' }}>₹ {po.amount}</td>
+              {data.recentPurchaseOrders.map((order) => (
+                <tr key={order.id}>
+                  <td style={{ fontWeight: 600 }}>{order.number}</td>
+                  <td>{formatVendorDate(order.date)}</td>
+                  <td>{formatVendorDate(order.dueDate)}</td>
+                  <td>{formatVendorAmount(order.amount)}</td>
                 </tr>
               ))}
+              {data.recentPurchaseOrders.length === 0 && (
+                <tr><td colSpan="4" style={{ textAlign: 'center' }}>
+                  {data.availability.purchaseOrders ? 'No current open Purchase Orders were returned.' : 'Purchase Order data is unavailable.'}
+                </td></tr>
+              )}
             </tbody>
           </table>
-          <Link to="/vendor/orders" className="vendor-kpi-link" style={{ display: 'inline-block', marginTop: '20px' }}>
-            View All Purchase Orders →
-          </Link>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="vendor-panel">
-            <h3>
-              <span>Upcoming Deliveries</span>
-              <Link to="/vendor/orders" className="vendor-kpi-link" style={{ marginTop: 0 }}>View Calendar →</Link>
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {upcomingDeliveries.map((delivery) => (
-                <div key={delivery.poNumber} className="upcoming-delivery-item">
-                  <span style={{ fontWeight: '600', color: '#111' }}>{delivery.poNumber}</span>
-                  <span style={{ color: '#666' }}>{delivery.date}</span>
-                  <span style={{ color: '#666' }}>{delivery.material}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 40px 40px 40px' }}>
-        <div style={{ fontSize: '11px', color: '#888', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          Secure collaboration. Trusted partnership.
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-        </div>
-      </div>
     </>
   );
 }

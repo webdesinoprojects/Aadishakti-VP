@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { useCustomerDelivery, useCustomerInvoice, useCustomerPayment } from '../hooks/useCustomerApi';
+import { useCustomerCreditNote, useCustomerDelivery, useCustomerInvoice, useCustomerPayment } from '../hooks/useCustomerApi';
 import { formatAmount, formatSapDate, formatValue, UNKNOWN_TRANSACTION_CURRENCY_NOTE } from '../utils/customerFormatters';
 import CustomerDataState from './CustomerDataState';
 
@@ -26,13 +26,15 @@ function DetailRows({ record, type }) {
 
 const drawerTitle = (type) => type === 'invoice'
   ? 'Invoice Summary'
-  : type === 'delivery' ? 'Delivery Summary' : 'Incoming Payment Summary';
+  : type === 'creditNote' ? 'AR Credit Note Summary'
+    : type === 'delivery' ? 'Delivery Summary' : 'Incoming Payment Summary';
 
 export default function CustomerTransactionDrawer({ type, docEntry, onClose }) {
   const invoice = useCustomerInvoice(type === 'invoice' ? docEntry : null);
+  const creditNote = useCustomerCreditNote(type === 'creditNote' ? docEntry : null);
   const delivery = useCustomerDelivery(type === 'delivery' ? docEntry : null);
   const payment = useCustomerPayment(type === 'payment' ? docEntry : null);
-  const state = type === 'invoice' ? invoice : type === 'delivery' ? delivery : payment;
+  const state = type === 'invoice' ? invoice : type === 'creditNote' ? creditNote : type === 'delivery' ? delivery : payment;
   if (!docEntry) return null;
 
   return (

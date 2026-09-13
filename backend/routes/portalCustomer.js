@@ -67,6 +67,8 @@ export const createPortalCustomerRouter = ({
   router.get("/orders/:docEntry", detailHandler(customerPortalService.getOrder));
   router.get("/invoices", listHandler(customerPortalService.getInvoices));
   router.get("/invoices/:docEntry", detailHandler(customerPortalService.getInvoice));
+  router.get("/credit-notes", listHandler(customerPortalService.getCreditNotes));
+  router.get("/credit-notes/:docEntry", detailHandler(customerPortalService.getCreditNote));
   router.get("/deliveries", listHandler(customerPortalService.getDeliveries));
   router.get("/deliveries/:docEntry", detailHandler(customerPortalService.getDelivery));
   router.get("/payments", listHandler(customerPortalService.getPayments));

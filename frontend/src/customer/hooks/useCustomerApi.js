@@ -53,8 +53,26 @@ export const useCustomerInvoices = ({ page = 1, pageSize = 10, q = '' } = {}) =>
   return useCustomerResource(load);
 };
 
+export const useCustomerFinancialDocuments = ({ kind = 'invoice', page = 1, pageSize = 10, q = '' } = {}) => {
+  const load = useCallback(
+    () => (kind === 'credit-note' ? customerApi.getCreditNotes : customerApi.getInvoices)({ page, pageSize, q: q || undefined }),
+    [kind, page, pageSize, q],
+  );
+  return useCustomerResource(load);
+};
+
 export const useCustomerInvoice = (docEntry) => {
   const load = useCallback(() => customerApi.getInvoice(docEntry), [docEntry]);
+  return useCustomerResource(load, Boolean(docEntry));
+};
+
+export const useCustomerCreditNotes = ({ page = 1, pageSize = 10, q = '' } = {}) => {
+  const load = useCallback(() => customerApi.getCreditNotes({ page, pageSize, q: q || undefined }), [page, pageSize, q]);
+  return useCustomerResource(load);
+};
+
+export const useCustomerCreditNote = (docEntry) => {
+  const load = useCallback(() => customerApi.getCreditNote(docEntry), [docEntry]);
   return useCustomerResource(load, Boolean(docEntry));
 };
 

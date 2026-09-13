@@ -1,70 +1,42 @@
-import { useVendorData } from '../hooks/useVendorData';
-import VendorPagination from '../components/VendorPagination';
 import { useState } from 'react';
-import PaymentDrawer from '../components/PaymentDrawer';
+import VendorDataState from '../components/VendorDataState';
 import VendorPageHeader from '../components/VendorPageHeader';
+import VendorPagination from '../components/VendorPagination';
+import VendorTransactionDrawer from '../components/VendorTransactionDrawer';
+import { useVendorPayments } from '../hooks/useVendorApi';
+import { formatVendorAmount, formatVendorDate, UNKNOWN_CURRENCY_NOTE } from '../utils/vendorFormatters';
 
 export default function PaymentsPage() {
-  const { data, loading, error } = useVendorData();
-  const [selectedPayment, setSelectedPayment] = useState(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  if (loading) return <div className="vendor-page">Loading Payments...</div>;
-  if (error || !data) return <div className="vendor-page" style={{ color: 'var(--red-core)' }}>Error loading data.</div>;
-
-  const { payments } = data;
-
-  const handleRowClick = (pay) => {
-    setSelectedPayment(pay);
-    setIsDrawerOpen(true);
-  };
-
-  const totalPaidThisMonth = payments.reduce((acc, pay) => {
-    // Mock sum, parsing commas
-    const num = parseInt(pay.amount.replace(/,/g, ''), 10);
-    return acc + num;
-  }, 0).toLocaleString('en-IN');
-
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState(null);
+  const { data, loading, error } = useVendorPayments({ page, pageSize: 10 });
   return (
     <div className="vendor-page">
-      <VendorPageHeader 
-        title="Payments Received" 
-        subtitle="Track your recent payouts."
-      >
-        <div className="vendor-kpi-card" style={{ width: '250px', padding: '16px 24px' }}>
-          <div className="vendor-kpi-value" style={{ fontSize: '24px' }}>₹ {totalPaidThisMonth}</div>
-          <div className="vendor-kpi-label" style={{ marginBottom: 0 }}>Paid This Month</div>
+      <VendorPageHeader title="Outgoing Payments" subtitle="Not-cancelled outgoing-payment records supplied by CIS. UTR, receipt files, and invoice associations are not exposed." />
+      <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>{UNKNOWN_CURRENCY_NOTE}</p>
+      <VendorDataState loading={loading} error={error} />
+      {data && (
+        <div className="vendor-panel">
+          <table className="vendor-table">
+            <thead><tr><th>Payment Number</th><th>Date</th><th>Cash Amount</th><th>Transfer Amount</th><th>Total</th><th>Action</th></tr></thead>
+            <tbody>
+              {data.items.map((payment) => (
+                <tr key={payment.id}>
+                  <td style={{ fontWeight: 600 }}>{payment.number}</td>
+                  <td>{formatVendorDate(payment.date)}</td>
+                  <td>{formatVendorAmount(payment.cashAmount)}</td>
+                  <td>{formatVendorAmount(payment.transferAmount)}</td>
+                  <td>{formatVendorAmount(payment.totalPaymentAmount)}</td>
+                  <td><button className="vendor-btn-outline" onClick={() => setSelected(payment.id)}>View Summary</button></td>
+                </tr>
+              ))}
+              {data.items.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No outgoing payments were returned.</td></tr>}
+            </tbody>
+          </table>
+          <VendorPagination totalItems={data.pagination.total} itemsPerPage={data.pagination.pageSize} currentPage={data.pagination.page} onPageChange={setPage} />
         </div>
-      </VendorPageHeader>
-
-      <div className="vendor-panel">
-        <table className="vendor-table">
-          <thead>
-            <tr>
-              <th>Payment ID</th>
-              <th>Invoice No</th>
-              <th>Amount</th>
-              <th>Paid Date</th>
-              <th>Mode</th>
-              <th>UTR / Ref</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payments.map((pay) => (
-              <tr key={pay.id} className="vendor-table-row-clickable" onClick={() => handleRowClick(pay)}>
-                <td>{pay.id}</td>
-                <td style={{ fontWeight: '600', color: '#111' }}>{pay.invoiceNo}</td>
-                <td style={{ fontWeight: '600' }}>₹ {pay.amount}</td>
-                <td>{pay.paidDate}</td>
-                <td>{pay.mode}</td>
-                <td style={{ fontFamily: 'var(--font-mono)' }}>{pay.utr}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <VendorPagination totalItems={payments.length} />
-      </div>
-      <PaymentDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} payment={selectedPayment} />
+      )}
+      <VendorTransactionDrawer type="payment" docEntry={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
