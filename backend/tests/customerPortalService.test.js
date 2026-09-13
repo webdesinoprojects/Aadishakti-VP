@@ -1,143 +1,108 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  CustomerPortalFeatureUnavailableError,
   CustomerPortalRecordNotFoundError,
   createCustomerPortalService,
 } from "../services/customerPortalService.js";
-import { SapIntegrationError } from "../integrations/sap/sapErrors.js";
+import { CisIntegrationError } from "../integrations/cis/cisErrors.js";
 
-const customer = { role: "customer", cardCode: "CUSTOMER-A" };
+const customer = { role: "customer", cardCode: "CUSTOMER-A", companyCode: "AGRPL" };
 
-const transaction = (overrides = {}) => ({
-  DocEntry: 1,
-  DocNum: 1001,
-  DocDate: "2026-08-08",
-  DocTotal: 100,
-  DocumentStatus: "bost_Open",
-  CardCode: "CUSTOMER-A",
-  ...overrides,
-});
-
-const invoice = (overrides = {}) => transaction({
-  DocDueDate: "2026-08-10",
-  PaidToDate: 25,
+const document = (overrides = {}) => ({
+  docEntry: "1",
+  docNum: "1001",
+  cardCode: "CUSTOMER-A",
+  cardName: "Customer A",
+  docDate: "2026-08-08T00:00:00.0000000",
+  docDueDate: "2026-08-10T00:00:00.0000000",
+  docTotal: "100",
   ...overrides,
 });
 
 const payment = (overrides = {}) => ({
-  DocEntry: 20,
-  DocNum: 2001,
-  DocDate: "2026-08-08",
-  CardCode: "CUSTOMER-A",
-  CashSum: 20,
-  TransferSum: 80,
+  docEntry: "20",
+  docNum: "2001",
+  cardCode: "CUSTOMER-A",
+  cardName: "Customer A",
+  docDate: "2026-08-08T00:00:00.0000000",
+  cashSum: "20",
+  trsfrSum: "80",
   ...overrides,
 });
 
-test("customer convenience lists use the authorized CardCode and portal-side pagination", async () => {
-  const requests = [];
-  const service = createCustomerPortalService({
-    sapClient: {
-      get: async (request) => {
-        requests.push(request);
-        return [
-          transaction({ DocEntry: 1, DocNum: 1001 }),
-          transaction({ DocEntry: 2, DocNum: 1002, DocumentStatus: "bost_Close" }),
-          transaction({ DocEntry: 3, DocNum: 1003, CardCode: "CUSTOMER-B" }),
-        ];
-      },
-    },
-  });
-
-  const response = await service.getOrders(customer, { page: 1, pageSize: 1, q: "closed" });
-  assert.deepEqual(requests[0].pathSegments, ["api", "orders", "by-customer", "CUSTOMER-A"]);
-  assert.equal(response.pagination.total, 1);
-  assert.equal(response.items[0].id, 2);
-  assert.equal(response.items[0].number, 1002);
-  assert.equal(response.items[0].dueDate, undefined);
-  assert.equal(response.items[0].currency, undefined);
-  assert.equal(response.items[0].partyCode, undefined);
+const createClient = (responses, requests = []) => ({
+  getResource: async (request) => {
+    requests.push(request);
+    return responses[request.resource] ?? [];
+  },
 });
 
-test("customer generic lists delegate exact account filtering to the SAP scanner", async () => {
-  const calls = [];
+test("Customer profile is exact-filtered by server account and normalized", async () => {
+  const requests = [];
   const service = createCustomerPortalService({
-    sapClient: {
-      listAllExactDocumentRecords: async (request) => {
-        calls.push(request);
-        return request.type === "incoming-payment"
-          ? { items: [payment()] }
-          : { items: [transaction({ DocEntry: 8, DocNum: 800 })] };
-      },
-    },
+    cisClient: createClient({
+      customer: [
+        { cardCode: "CUSTOMER-B", cardName: "Other Customer", balance: "900" },
+        {
+          cardCode: "CUSTOMER-A",
+          cardName: "Customer A",
+          phone1: null,
+          cellular: "9999",
+          e_Mail: null,
+          licTradNum: null,
+          currency: "INR",
+          balance: "125.5",
+          groupName: "Domestic",
+          slpName: "Manager",
+          secret: "do-not-leak",
+        },
+      ],
+    }, requests),
   });
+  const profile = await service.getProfile(customer);
+  assert.deepEqual(requests, [{ companyCode: "AGRPL", resource: "customer" }]);
+  assert.equal(profile.accountReference, "CUSTOMER-A");
+  assert.equal(profile.accountBalance, 125.5);
+  assert.equal(profile.phone, null);
+  assert.doesNotMatch(JSON.stringify(profile), /secret|Other Customer/);
+});
+
+test("Customer commercial lists exact-filter before mapping and paginate locally", async () => {
+  const service = createCustomerPortalService({
+    cisClient: createClient({
+      arinvoice: [
+        document({ docEntry: "1", docNum: "1001" }),
+        document({ docEntry: "2", docNum: "1002" }),
+        document({ docEntry: "3", docNum: "1003", cardCode: "CUSTOMER-B" }),
+      ],
+      delivery: [document({ docEntry: "8", docNum: "800" })],
+      incomingpayment: [payment()],
+    }),
+  });
+
+  const invoices = await service.getInvoices(customer, { page: 1, pageSize: 1, q: "1002" });
+  assert.equal(invoices.pagination.total, 1);
+  assert.equal(invoices.items[0].id, 2);
+  assert.equal(invoices.items[0].paidAmount, null);
+  assert.equal(invoices.items[0].outstandingAmount, null);
+  assert.equal(invoices.scope, "current-open");
 
   const deliveries = await service.getDeliveries(customer);
   const payments = await service.getPayments(customer);
-  assert.deepEqual(calls, [
-    { type: "delivery", authorizedCardCode: "CUSTOMER-A" },
-    { type: "incoming-payment", authorizedCardCode: "CUSTOMER-A" },
-  ]);
   assert.equal(deliveries.items[0].id, 8);
-  assert.equal(payments.items[0].id, 20);
+  assert.equal(payments.items[0].totalPaymentAmount, 100);
 });
 
-test("full invoices omit unpaidOnly while dashboard invoices request unpaidOnly=true", async () => {
-  const requests = [];
+test("Customer list-resolved details cannot expose another CardCode", async () => {
   const service = createCustomerPortalService({
-    sapClient: {
-      get: async (request) => {
-        requests.push(request);
-        if (request.endpointLabel === "customer-orders") return [];
-        return [];
-      },
-      listAllExactDocumentRecords: async () => ({ items: [] }),
-    },
+    cisClient: createClient({
+      arinvoice: [document({ cardCode: "CUSTOMER-B", docEntry: "99" })],
+      delivery: [document({ cardCode: "CUSTOMER-B", docEntry: "99" })],
+      incomingpayment: [payment({ cardCode: "CUSTOMER-B", docEntry: "99" })],
+    }),
   });
-
-  await service.getInvoices(customer);
-  await service.getDashboard(customer);
-
-  const invoiceRequests = requests.filter((request) => request.endpointLabel === "customer-invoices");
-  assert.equal(invoiceRequests.length, 2);
-  assert.equal(invoiceRequests[0].query, undefined);
-  assert.deepEqual(invoiceRequests[1].query, { unpaidOnly: true });
-});
-
-test("customer profile and detail methods use the documented SAP routes", async () => {
-  const paths = [];
-  const service = createCustomerPortalService({
-    sapClient: {
-      get: async ({ pathSegments }) => {
-        paths.push(pathSegments);
-        if (pathSegments[1] === "customers") return { CardCode: "CUSTOMER-A", CardName: "Customer A" };
-        if (pathSegments[1] === "documents" && pathSegments[2] === "incoming-payment") return payment();
-        return transaction({ DocumentLines: [] });
-      },
-    },
-  });
-
-  await service.getProfile(customer);
-  await service.getOrder(customer, 7);
-  await service.getInvoice(customer, 7);
-  await service.getDelivery(customer, 7);
-  await service.getPayment(customer, 7);
-
-  assert.deepEqual(paths, [
-    ["api", "customers", "CUSTOMER-A"],
-    ["api", "orders", 7],
-    ["api", "invoices", 7],
-    ["api", "documents", "delivery", 7],
-    ["api", "documents", "incoming-payment", 7],
-  ]);
-});
-
-test("all customer detail operations hide cross-account records as 404 candidates", async () => {
-  const service = createCustomerPortalService({
-    sapClient: { get: async () => ({ CardCode: "CUSTOMER-B", DocEntry: 99 }) },
-  });
-
-  for (const method of ["getOrder", "getInvoice", "getDelivery", "getPayment"]) {
+  for (const method of ["getInvoice", "getDelivery", "getPayment"]) {
     await assert.rejects(
       () => service[method](customer, 99),
       (error) => error instanceof CustomerPortalRecordNotFoundError,
@@ -145,161 +110,56 @@ test("all customer detail operations hide cross-account records as 404 candidate
   }
 });
 
-test("customer detail DTOs expose only intentionally normalized fields", async () => {
+test("Customer details expose summaries only because CIS has no detail or line APIs", async () => {
   const service = createCustomerPortalService({
-    sapClient: {
-      get: async () => transaction({
-        CardName: "Private party name",
-        InternalSecret: "must-not-leak",
-        PaymentInvoices: [{ InternalId: "must-not-leak" }],
-        DocumentLines: [{
-          LineNum: 0,
-          ItemCode: "PB",
-          ItemDescription: "Pure Lead",
-          Quantity: 2,
-          Price: 50,
-          LineTotal: 100,
-          WarehouseCode: "must-not-leak",
-        }],
-      }),
-    },
+    cisClient: createClient({
+      arinvoice: [document({ privateField: "must-not-leak", DocumentLines: [{ secret: true }] })],
+    }),
   });
-
-  const order = await service.getOrder(customer, 1);
-  assert.deepEqual(order.lines[0], {
-    lineNumber: 0,
-    itemCode: "PB",
-    description: "Pure Lead",
-    quantity: 2,
-    unitPrice: 50,
-    lineTotal: 100,
-  });
-  assert.doesNotMatch(JSON.stringify(order), /InternalSecret|WarehouseCode|PaymentInvoices|CUSTOMER-A|Private party/);
+  const invoice = await service.getInvoice(customer, 1);
+  assert.equal(invoice.detailAvailable, false);
+  assert.deepEqual(invoice.lines, []);
+  assert.doesNotMatch(JSON.stringify(invoice), /privateField|DocumentLines|CUSTOMER-A|Customer A/);
 });
 
-test("empty customer arrays are successful and malformed rows fail safely", async () => {
-  const emptyService = createCustomerPortalService({ sapClient: { get: async () => [] } });
-  assert.deepEqual(await emptyService.getOrders(customer), {
-    items: [],
-    pagination: { page: 1, pageSize: 10, total: 0, totalPages: 0 },
-  });
-
-  const malformedPayload = createCustomerPortalService({ sapClient: { get: async () => ({ items: [] }) } });
-  await assert.rejects(
-    () => malformedPayload.getOrders(customer),
-    (error) => error instanceof SapIntegrationError && error.code === "SAP_MALFORMED_RESPONSE",
-  );
-
-  const malformedRow = createCustomerPortalService({
-    sapClient: { get: async () => [transaction({ DocEntry: null })] },
-  });
-  await assert.rejects(
-    () => malformedRow.getOrders(customer),
-    (error) => error instanceof SapIntegrationError && error.code === "SAP_MALFORMED_RESPONSE",
-  );
+test("Sales Orders are explicitly unsupported by the new CIS contract", async () => {
+  const service = createCustomerPortalService({ cisClient: createClient({}) });
+  const orders = await service.getOrders(customer);
+  assert.equal(orders.supported, false);
+  assert.deepEqual(orders.items, []);
+  await assert.rejects(() => service.getOrder(customer, 1), CustomerPortalFeatureUnavailableError);
 });
 
-test("invoice aggregates fail closed when any required outstanding value is unknown", async () => {
+test("Customer dashboard keeps successful sections when one CIS resource fails", async () => {
   const service = createCustomerPortalService({
-    now: () => new Date(2026, 7, 8, 12),
-    sapClient: {
-      get: async () => [
-        invoice({ DocEntry: 1, PaidToDate: 25, DocTotal: 100, DocDueDate: "2026-08-07" }),
-        invoice({ DocEntry: 2, PaidToDate: undefined, DocTotal: 200, DocDueDate: "2026-08-07" }),
-      ],
-    },
-  });
-
-  const response = await service.getInvoices(customer);
-  assert.equal(response.summary.outstandingAmount, null);
-  assert.equal(response.summary.outstandingAmountComplete, false);
-  assert.equal(response.summary.overdueAmount, null);
-  assert.equal(response.summary.overdueAmountComplete, false);
-});
-
-test("invoice overdue calculations use date-only semantics and report completeness", async () => {
-  const service = createCustomerPortalService({
-    now: () => new Date(2026, 7, 8, 12),
-    sapClient: {
-      get: async () => [
-        invoice({ DocEntry: 1, DocTotal: 100, PaidToDate: 0, DocDueDate: "2026-08-07" }),
-        invoice({ DocEntry: 2, DocTotal: 200, PaidToDate: 0, DocDueDate: "2026-08-08T00:00:00Z" }),
-        invoice({ DocEntry: 3, DocTotal: 300, PaidToDate: 0, DocDueDate: "2026-08-09" }),
-      ],
-    },
-  });
-
-  const response = await service.getInvoices(customer);
-  assert.equal(response.summary.outstandingAmount, 600);
-  assert.equal(response.summary.outstandingAmountComplete, true);
-  assert.equal(response.summary.overdueAmount, 100);
-  assert.equal(response.summary.overdueAmountComplete, true);
-
-  const incompleteService = createCustomerPortalService({
-    now: () => new Date(2026, 7, 8, 12),
-    sapClient: { get: async () => [invoice({ DocDueDate: "not-a-date", PaidToDate: 0 })] },
-  });
-  const incomplete = await incompleteService.getInvoices(customer);
-  assert.equal(incomplete.summary.overdueAmount, null);
-  assert.equal(incomplete.summary.overdueAmountComplete, false);
-});
-
-test("zero invoices produce complete zero financial aggregates", async () => {
-  const service = createCustomerPortalService({
-    now: () => new Date(2026, 7, 8, 12),
-    sapClient: { get: async () => [] },
-  });
-  const response = await service.getInvoices(customer);
-  assert.deepEqual(response.summary, {
-    openCount: 0,
-    outstandingAmount: 0,
-    outstandingAmountComplete: true,
-    overdueAmount: 0,
-    overdueAmountComplete: true,
-  });
-});
-
-test("dashboard financial KPIs do not under-report incomplete unpaid invoices", async () => {
-  const service = createCustomerPortalService({
-    now: () => new Date(2026, 7, 8, 12),
-    sapClient: {
-      get: async ({ endpointLabel }) => endpointLabel === "customer-invoices"
-        ? [
-          invoice({ DocEntry: 1, DocTotal: 100, PaidToDate: 25, DocDueDate: "2026-08-07" }),
-          invoice({ DocEntry: 2, DocTotal: 200, PaidToDate: undefined, DocDueDate: "2026-08-07" }),
-        ]
-        : [],
-      listAllExactDocumentRecords: async () => ({ items: [] }),
-    },
-  });
-
-  const dashboard = await service.getDashboard(customer);
-  assert.equal(dashboard.kpis.outstandingInvoiceAmount, null);
-  assert.equal(dashboard.kpis.overdueInvoiceAmount, null);
-  assert.equal(dashboard.completeness.outstandingInvoiceAmount, false);
-  assert.equal(dashboard.completeness.overdueInvoiceAmount, false);
-});
-
-test("customer dashboard preserves available SAP sections when one upstream call fails", async () => {
-  const service = createCustomerPortalService({
-    now: () => new Date(2026, 7, 8, 12),
-    sapClient: {
-      get: async ({ endpointLabel }) => {
-        if (endpointLabel === "customer-orders") return [
-          transaction({ DocEntry: 1, DocNum: 10, DocDate: "2026-07-01", DocTotal: 100 }),
-          transaction({ DocEntry: 2, DocNum: 11, DocDate: "2026-07-02", DocTotal: 50, DocumentStatus: "bost_Close" }),
-        ];
-        throw new SapIntegrationError("SAP_UPSTREAM_ERROR", "provider detail", { status: 500 });
+    cisClient: {
+      getResource: async ({ resource }) => {
+        if (resource === "delivery") throw new CisIntegrationError("CIS_UPSTREAM_ERROR", "failed");
+        if (resource === "arinvoice") return [document(), document({ docEntry: "2", docNum: "1002" })];
+        if (resource === "incomingpayment") return [payment()];
+        return [];
       },
-      listAllExactDocumentRecords: async () => ({ items: [transaction({ DocEntry: 3 })] }),
     },
   });
-
   const dashboard = await service.getDashboard(customer);
-  assert.deepEqual(dashboard.availability, { orders: true, invoices: false, deliveries: true });
-  assert.equal(dashboard.kpis.totalOrders, 2);
-  assert.equal(dashboard.kpis.openOrders, 1);
-  assert.equal(dashboard.kpis.openInvoices, null);
-  assert.equal(dashboard.completeness.outstandingInvoiceAmount, false);
-  assert.deepEqual(dashboard.charts.monthlyOrderValue, [{ period: "2026-07", amount: 150 }]);
+  assert.equal(dashboard.availability.orders, false);
+  assert.equal(dashboard.availability.invoices, true);
+  assert.equal(dashboard.availability.deliveries, false);
+  assert.equal(dashboard.availability.payments, true);
+  assert.equal(dashboard.kpis.openInvoices, 2);
+  assert.equal(dashboard.kpis.outstandingInvoiceAmount, null);
+  assert.equal(dashboard.recentInvoices.length, 2);
+});
+
+test("Malformed Customer records fail safely and empty lists remain successful", async () => {
+  const empty = createCustomerPortalService({ cisClient: createClient({ arinvoice: [] }) });
+  assert.equal((await empty.getInvoices(customer)).pagination.total, 0);
+
+  const malformed = createCustomerPortalService({
+    cisClient: createClient({ arinvoice: [document({ docEntry: "invalid" })] }),
+  });
+  await assert.rejects(
+    () => malformed.getInvoices(customer),
+    (error) => error instanceof CisIntegrationError && error.code === "CIS_MALFORMED_RESPONSE",
+  );
 });

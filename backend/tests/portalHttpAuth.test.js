@@ -33,14 +33,16 @@ const environment = {
   PORTAL_CUSTOMER_LOGIN_ID: "customer-login",
   PORTAL_CUSTOMER_LOGIN_PASSWORD: "customer-password",
   PORTAL_CUSTOMER_SAP_CARD_CODE: "SERVER-CUSTOMER-CARD",
+  PORTAL_CUSTOMER_CIS_COMPANY_CODE: "AGRPL",
   PORTAL_CUSTOMER_DISPLAY_NAME: "Customer Test",
   PORTAL_VENDOR_LOGIN_ID: "vendor-login",
   PORTAL_VENDOR_LOGIN_PASSWORD: "vendor-password",
   PORTAL_VENDOR_SAP_CARD_CODE: "SERVER-VENDOR-CARD",
+  PORTAL_VENDOR_CIS_COMPANY_CODE: "AMRPL",
   PORTAL_VENDOR_DISPLAY_NAME: "Vendor Test",
 };
 
-const startTestServer = async ({ customerPortalService } = {}) => {
+const startTestServer = async ({ customerPortalService, vendorPortalService } = {}) => {
   const app = dependencies.express();
   app.use(dependencies.cookieParser());
   app.use(dependencies.express.json());
@@ -49,7 +51,10 @@ const startTestServer = async ({ customerPortalService } = {}) => {
     environment,
     ...(customerPortalService ? { customerPortalService } : {}),
   }));
-  app.use("/api/portal/vendor", dependencies.createPortalVendorRouter({ environment }));
+  app.use("/api/portal/vendor", dependencies.createPortalVendorRouter({
+    environment,
+    ...(vendorPortalService ? { vendorPortalService } : {}),
+  }));
 
   const server = await new Promise((resolve) => {
     const listening = app.listen(0, "127.0.0.1", () => resolve(listening));
@@ -163,6 +168,46 @@ test("customer detail routes return 404 for records outside the authenticated ac
         error: "The requested record was not found.",
       });
     }
+  } finally {
+    await server.close();
+  }
+});
+
+test("vendor portal ignores caller CardCode and enforces the server-side role and mapping", { skip: dependencyUnavailable }, async () => {
+  let observedAccount;
+  const vendorPortalService = {
+    getPurchaseOrders: async (account) => {
+      observedAccount = account;
+      return { items: [], pagination: { page: 1, pageSize: 10, total: 0, totalPages: 0 } };
+    },
+  };
+  const server = await startTestServer({ vendorPortalService });
+  try {
+    const vendorLogin = await fetch(`${server.baseUrl}/api/portal/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: "vendor-login", password: "vendor-password", role: "vendor" }),
+    });
+    const vendorCookie = vendorLogin.headers.get("set-cookie").split(";", 1)[0];
+    const response = await fetch(`${server.baseUrl}/api/portal/vendor/purchase-orders?cardCode=ATTACKER-CARD`, {
+      headers: { Cookie: vendorCookie },
+    });
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.equal(observedAccount.cardCode, "SERVER-VENDOR-CARD");
+    assert.equal(observedAccount.companyCode, "AMRPL");
+    assert.doesNotMatch(JSON.stringify(await response.json()), /ATTACKER-CARD|SERVER-VENDOR-CARD/);
+
+    const customerLogin = await fetch(`${server.baseUrl}/api/portal/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: "customer-login", password: "customer-password", role: "customer" }),
+    });
+    const customerCookie = customerLogin.headers.get("set-cookie").split(";", 1)[0];
+    const wrongRole = await fetch(`${server.baseUrl}/api/portal/vendor/purchase-orders`, {
+      headers: { Cookie: customerCookie },
+    });
+    assert.equal(wrongRole.status, 403);
   } finally {
     await server.close();
   }

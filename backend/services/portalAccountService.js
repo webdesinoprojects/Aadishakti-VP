@@ -17,8 +17,9 @@ const readAccount = (environment, role, prefix) => {
   const identifier = environment[`PORTAL_${prefix}_LOGIN_ID`]?.trim();
   const password = environment[`PORTAL_${prefix}_LOGIN_PASSWORD`];
   const cardCode = environment[`PORTAL_${prefix}_SAP_CARD_CODE`]?.trim();
+  const companyCode = environment[`PORTAL_${prefix}_CIS_COMPANY_CODE`]?.trim();
   const displayName = environment[`PORTAL_${prefix}_DISPLAY_NAME`]?.trim() || role;
-  const values = [identifier, password, cardCode];
+  const values = [identifier, password, cardCode, companyCode];
   const populated = values.filter(Boolean).length;
 
   if (populated === 0) return null;
@@ -26,7 +27,7 @@ const readAccount = (environment, role, prefix) => {
     throw new PortalAccountConfigurationError(`Temporary ${role} portal account configuration is incomplete.`);
   }
 
-  return { id: `${role}-demo`, role, identifier, password, cardCode, displayName };
+  return { id: `${role}-demo`, role, identifier, password, cardCode, companyCode, displayName };
 };
 
 const toResolvedAccount = ({ password: _password, ...account }) => account;

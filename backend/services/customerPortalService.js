@@ -1,14 +1,16 @@
-import { createSapClient } from "../integrations/sap/sapClient.js";
-import { SapIntegrationError } from "../integrations/sap/sapErrors.js";
+import { createCisClient } from "../integrations/cis/cisClient.js";
+import { CisIntegrationError } from "../integrations/cis/cisErrors.js";
 import {
-  toBusinessPartnerProfile,
-  toInvoiceDetail,
-  toInvoiceSummary,
-  toOrderSummary,
-  toPaymentSummary,
-  toTransactionDetail,
-  toTransactionSummary,
-} from "../integrations/sap/sapMappers.js";
+  toCisBusinessPartnerProfile,
+  toCisDocumentSummary,
+  toCisPaymentSummary,
+} from "../integrations/cis/cisMappers.js";
+import {
+  exactAccountRecords,
+  findPortalRecord,
+  paginatePortalRecords,
+  requireCommercialAccount,
+} from "./portalCommercialUtils.js";
 
 export class CustomerPortalRecordNotFoundError extends Error {
   constructor() {
@@ -17,261 +19,130 @@ export class CustomerPortalRecordNotFoundError extends Error {
   }
 }
 
-const requireAuthorizedAccount = (account) => {
-  if (account?.role !== "customer" || typeof account.cardCode !== "string" || !account.cardCode.trim()) {
-    throw new SapIntegrationError("SAP_CONFIGURATION_INVALID", "Customer account mapping is unavailable.");
+export class CustomerPortalFeatureUnavailableError extends Error {
+  constructor() {
+    super("Customer portal feature is not available from CIS.");
+    this.name = "CustomerPortalFeatureUnavailableError";
   }
-  return account.cardCode;
-};
+}
 
-const assertArray = (payload) => {
-  if (!Array.isArray(payload)) {
-    throw new SapIntegrationError("SAP_MALFORMED_RESPONSE", "SAP returned an invalid list response.");
-  }
-  return payload;
-};
-
-const assertOwnedRecord = (record, authorizedCardCode) => {
-  if (!record || record.CardCode !== authorizedCardCode) {
-    throw new CustomerPortalRecordNotFoundError();
-  }
-  return record;
-};
-
-const filterDedicatedCustomerList = (records, authorizedCardCode) => records.filter(
-  (record) => record?.CardCode === undefined || record.CardCode === authorizedCardCode,
-);
-
-const parsePositiveInteger = (value, fallback, maximum) => {
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed) || parsed < 1) return fallback;
-  return Math.min(parsed, maximum);
-};
-
-const normalizeListOptions = ({ page, pageSize, q } = {}) => ({
-  page: parsePositiveInteger(page, 1, Number.MAX_SAFE_INTEGER),
-  pageSize: parsePositiveInteger(pageSize, 10, 50),
-  q: typeof q === "string" ? q.trim().slice(0, 100).toLowerCase() : "",
+const unavailableOrders = (options) => paginatePortalRecords([], options, {
+  supported: false,
+  reason: "The current CIS API does not expose Customer Sales Orders.",
 });
 
-const matchesSearch = (item, q) => !q || [item.number, item.status, item.date, item.dueDate]
-  .some((value) => value !== null && value !== undefined && String(value).toLowerCase().includes(q));
+const toInvoice = (record) => ({
+  ...toCisDocumentSummary(record),
+  paidAmount: null,
+  outstandingAmount: null,
+});
 
-const paginate = (items, options) => {
-  const normalized = normalizeListOptions(options);
-  const filtered = items.filter((item) => matchesSearch(item, normalized.q));
-  const total = filtered.length;
-  const totalPages = total === 0 ? 0 : Math.ceil(total / normalized.pageSize);
-  const offset = (normalized.page - 1) * normalized.pageSize;
-
-  return {
-    items: filtered.slice(offset, offset + normalized.pageSize),
-    pagination: {
-      page: normalized.page,
-      pageSize: normalized.pageSize,
-      total,
-      totalPages,
-    },
-  };
-};
-
-const isOpen = (item) => item.status === "Open";
-
-const currentCalendarDate = (value) => {
-  if (!(value instanceof Date) || !Number.isFinite(value.getTime())) {
-    throw new SapIntegrationError("SAP_CONFIGURATION_INVALID", "A valid current date is required.");
-  }
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
-const completeSum = (items, field) => {
-  if (items.some((item) => typeof item[field] !== "number" || !Number.isFinite(item[field]))) {
-    return { value: null, complete: false };
-  }
-  return { value: items.reduce((total, item) => total + item[field], 0), complete: true };
-};
-
-const overdueBalance = (invoices, today) => {
-  let total = 0;
-  for (const invoice of invoices) {
-    if (typeof invoice.outstandingAmount !== "number" || !Number.isFinite(invoice.outstandingAmount)) {
-      return { value: null, complete: false };
-    }
-    if (invoice.outstandingAmount <= 0) continue;
-    if (!invoice.dueDate) return { value: null, complete: false };
-    if (invoice.dueDate < today) total += invoice.outstandingAmount;
-  }
-  return { value: total, complete: true };
-};
-
-const buildMonthlyOrderValue = (orders) => {
-  const totals = new Map();
-  orders.forEach((order) => {
-    if (typeof order.amount !== "number" || !order.date) return;
-    const period = order.date.slice(0, 7);
-    totals.set(period, (totals.get(period) || 0) + order.amount);
-  });
-  return [...totals.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([period, amount]) => ({ period, amount }));
-};
-
-const buildOrderStatus = (orders) => {
-  const counts = new Map();
-  orders.forEach((order) => counts.set(order.status, (counts.get(order.status) || 0) + 1));
-  return [...counts.entries()].map(([status, count]) => ({ status, count }));
-};
-
-const newestOrders = (orders, limit) => [...orders]
-  .sort((left, right) => {
-    return (right.date || "").localeCompare(left.date || "");
-  })
-  .slice(0, limit);
-
-export const createCustomerPortalService = ({ sapClient = createSapClient(), now = () => new Date() } = {}) => {
-  const loadOrders = async (account) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const records = assertArray(await sapClient.get({
-      pathSegments: ["api", "orders", "by-customer", cardCode],
-      endpointLabel: "customer-orders",
-    }));
-    return filterDedicatedCustomerList(records, cardCode).map(toOrderSummary);
-  };
-
-  const loadInvoices = async (account, { unpaidOnly = false } = {}) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const records = assertArray(await sapClient.get({
-      pathSegments: ["api", "invoices", "by-customer", cardCode],
-      query: unpaidOnly ? { unpaidOnly: true } : undefined,
-      endpointLabel: "customer-invoices",
-    }));
-    return filterDedicatedCustomerList(records, cardCode).map(toInvoiceSummary);
-  };
-
-  const loadGenericDocuments = async (account, type, mapper) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const result = await sapClient.listAllExactDocumentRecords({ type, authorizedCardCode: cardCode });
-    if (!result || !Array.isArray(result.items)) {
-      throw new SapIntegrationError("SAP_MALFORMED_RESPONSE", "SAP returned an invalid document response.");
-    }
-    return result.items.map(mapper);
+export const createCustomerPortalService = ({ cisClient = createCisClient() } = {}) => {
+  const loadExact = async (account, resource, mapper) => {
+    const { cardCode, companyCode } = requireCommercialAccount(account, "customer");
+    const records = await cisClient.getResource({ companyCode, resource });
+    return exactAccountRecords(records, cardCode).map(mapper);
   };
 
   const getProfile = async (account) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const record = await sapClient.get({
-      pathSegments: ["api", "customers", cardCode],
-      endpointLabel: "customer-profile",
-    });
-    return toBusinessPartnerProfile(assertOwnedRecord(record, cardCode));
+    const { cardCode, companyCode } = requireCommercialAccount(account, "customer");
+    const records = exactAccountRecords(
+      await cisClient.getResource({ companyCode, resource: "customer" }),
+      cardCode,
+    );
+    if (records.length === 0) throw new CustomerPortalRecordNotFoundError();
+    if (records.length > 1) {
+      throw new CisIntegrationError("CIS_MALFORMED_RESPONSE", "CIS returned duplicate Customer master records.");
+    }
+    return toCisBusinessPartnerProfile(records[0]);
   };
 
-  const getOrders = async (account, options) => paginate(await loadOrders(account), options);
+  const loadInvoices = (account) => loadExact(account, "arinvoice", toInvoice);
+  const loadDeliveries = (account) => loadExact(account, "delivery", toCisDocumentSummary);
+  const loadPayments = (account) => loadExact(account, "incomingpayment", toCisPaymentSummary);
 
-  const getOrder = async (account, docEntry) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const record = await sapClient.get({
-      pathSegments: ["api", "orders", docEntry],
-      endpointLabel: "customer-order-detail",
-    });
-    return toTransactionDetail(assertOwnedRecord(record, cardCode));
-  };
+  const getOrders = async (_account, options) => unavailableOrders(options);
+  const getOrder = async () => { throw new CustomerPortalFeatureUnavailableError(); };
 
   const getInvoices = async (account, options) => {
     const invoices = await loadInvoices(account);
-    const response = paginate(invoices, options);
-    const outstanding = completeSum(invoices, "outstandingAmount");
-    const overdue = overdueBalance(invoices, currentCalendarDate(now()));
-    return {
-      ...response,
+    return paginatePortalRecords(invoices, options, {
+      supported: true,
+      scope: "current-open",
       summary: {
-        openCount: invoices.filter(isOpen).length,
-        outstandingAmount: outstanding.value,
-        outstandingAmountComplete: outstanding.complete,
-        overdueAmount: overdue.value,
-        overdueAmountComplete: overdue.complete,
+        openCount: invoices.length,
+        outstandingAmount: null,
+        outstandingAmountComplete: false,
+        overdueAmount: null,
+        overdueAmountComplete: false,
       },
-    };
-  };
-
-  const getInvoice = async (account, docEntry) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const record = await sapClient.get({
-      pathSegments: ["api", "invoices", docEntry],
-      endpointLabel: "customer-invoice-detail",
     });
-    return toInvoiceDetail(assertOwnedRecord(record, cardCode));
   };
 
-  const getDeliveries = async (account, options) => paginate(
-    await loadGenericDocuments(account, "delivery", toTransactionSummary),
+  const getInvoice = async (account, docEntry) => ({
+    ...findPortalRecord(await loadInvoices(account), docEntry, CustomerPortalRecordNotFoundError),
+    lines: [],
+    detailAvailable: false,
+  });
+
+  const getDeliveries = async (account, options) => paginatePortalRecords(
+    await loadDeliveries(account),
     options,
+    { supported: true, scope: "current-open" },
   );
 
-  const getDelivery = async (account, docEntry) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const record = await sapClient.get({
-      pathSegments: ["api", "documents", "delivery", docEntry],
-      endpointLabel: "customer-delivery-detail",
-    });
-    return toTransactionDetail(assertOwnedRecord(record, cardCode));
-  };
+  const getDelivery = async (account, docEntry) => ({
+    ...findPortalRecord(await loadDeliveries(account), docEntry, CustomerPortalRecordNotFoundError),
+    lines: [],
+    detailAvailable: false,
+  });
 
-  const getPayments = async (account, options) => paginate(
-    await loadGenericDocuments(account, "incoming-payment", toPaymentSummary),
+  const getPayments = async (account, options) => paginatePortalRecords(
+    await loadPayments(account),
     options,
+    { supported: true, scope: "not-cancelled" },
   );
 
-  const getPayment = async (account, docEntry) => {
-    const cardCode = requireAuthorizedAccount(account);
-    const record = await sapClient.get({
-      pathSegments: ["api", "documents", "incoming-payment", docEntry],
-      endpointLabel: "customer-payment-detail",
-    });
-    return toPaymentSummary(assertOwnedRecord(record, cardCode));
-  };
+  const getPayment = async (account, docEntry) => findPortalRecord(
+    await loadPayments(account),
+    docEntry,
+    CustomerPortalRecordNotFoundError,
+  );
 
   const getDashboard = async (account) => {
-    const [ordersResult, invoicesResult, deliveriesResult] = await Promise.allSettled([
-      loadOrders(account),
-      loadInvoices(account, { unpaidOnly: true }),
-      loadGenericDocuments(account, "delivery", toTransactionSummary),
+    const [invoiceResult, deliveryResult, paymentResult] = await Promise.allSettled([
+      loadInvoices(account),
+      loadDeliveries(account),
+      loadPayments(account),
     ]);
-    const results = [ordersResult, invoicesResult, deliveriesResult];
-    if (results.every((result) => result.status === "rejected")) throw ordersResult.reason;
+    const results = [invoiceResult, deliveryResult, paymentResult];
+    if (results.every((result) => result.status === "rejected")) throw invoiceResult.reason;
 
-    const orders = ordersResult.status === "fulfilled" ? ordersResult.value : null;
-    const invoices = invoicesResult.status === "fulfilled" ? invoicesResult.value : null;
-    const deliveries = deliveriesResult.status === "fulfilled" ? deliveriesResult.value : null;
-    const outstanding = invoices ? completeSum(invoices, "outstandingAmount") : { value: null, complete: false };
-    const overdue = invoices
-      ? overdueBalance(invoices, currentCalendarDate(now()))
-      : { value: null, complete: false };
+    const invoices = invoiceResult.status === "fulfilled" ? invoiceResult.value : null;
+    const deliveries = deliveryResult.status === "fulfilled" ? deliveryResult.value : null;
+    const payments = paymentResult.status === "fulfilled" ? paymentResult.value : null;
 
     return {
+      capabilities: { orders: false, transactionDetails: false, lineItems: false },
       availability: {
-        orders: orders !== null,
+        orders: false,
         invoices: invoices !== null,
         deliveries: deliveries !== null,
+        payments: payments !== null,
       },
       kpis: {
-        totalOrders: orders?.length ?? null,
-        openOrders: orders?.filter(isOpen).length ?? null,
-        openInvoices: invoices?.filter(isOpen).length ?? null,
-        outstandingInvoiceAmount: outstanding.value,
-        overdueInvoiceAmount: overdue.value,
+        totalOrders: null,
+        openOrders: null,
+        openInvoices: invoices?.length ?? null,
+        outstandingInvoiceAmount: null,
+        overdueInvoiceAmount: null,
         currentDeliveryDocuments: deliveries?.length ?? null,
+        incomingPayments: payments?.length ?? null,
       },
-      completeness: {
-        outstandingInvoiceAmount: outstanding.complete,
-        overdueInvoiceAmount: overdue.complete,
-      },
-      recentOrders: orders ? newestOrders(orders, 5) : [],
-      charts: {
-        monthlyOrderValue: orders ? buildMonthlyOrderValue(orders) : [],
-        orderStatus: orders ? buildOrderStatus(orders) : [],
-      },
+      completeness: { outstandingInvoiceAmount: false, overdueInvoiceAmount: false },
+      recentOrders: [],
+      recentInvoices: invoices ? [...invoices].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5) : [],
+      charts: { monthlyOrderValue: [], orderStatus: [] },
     };
   };
 

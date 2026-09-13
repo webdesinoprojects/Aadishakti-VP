@@ -12,20 +12,29 @@ const parseEnvironmentExample = (source) => Object.fromEntries(
     }),
 );
 
-test("portal and SAP secrets are blank in .env.example", async () => {
+test("portal, legacy SAP, and current CIS secrets are blank in .env.example", async () => {
   const source = await readFile(new URL("../.env.example", import.meta.url), "utf8");
   const example = parseEnvironmentExample(source);
   const valuesThatMustBeBlank = [
     "SAP_API_BASE_URL",
     "SAP_API_KEY",
+    "CIS_API_BASE_URL",
+    "CIS_AGRPL_USERNAME",
+    "CIS_AGRPL_PASSWORD",
+    "CIS_AM_USERNAME",
+    "CIS_AM_PASSWORD",
+    "CIS_AMRPL_USERNAME",
+    "CIS_AMRPL_PASSWORD",
     "PORTAL_SESSION_SECRET",
     "PORTAL_CUSTOMER_LOGIN_ID",
     "PORTAL_CUSTOMER_LOGIN_PASSWORD",
     "PORTAL_CUSTOMER_SAP_CARD_CODE",
+    "PORTAL_CUSTOMER_CIS_COMPANY_CODE",
     "PORTAL_CUSTOMER_DISPLAY_NAME",
     "PORTAL_VENDOR_LOGIN_ID",
     "PORTAL_VENDOR_LOGIN_PASSWORD",
     "PORTAL_VENDOR_SAP_CARD_CODE",
+    "PORTAL_VENDOR_CIS_COMPANY_CODE",
     "PORTAL_VENDOR_DISPLAY_NAME",
   ];
 

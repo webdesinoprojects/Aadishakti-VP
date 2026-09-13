@@ -1,8 +1,12 @@
 import express from "express";
 import { createPortalAuth } from "../middleware/portalAuth.js";
-import { toSafeSapClientError } from "../integrations/sap/sapErrors.js";
+import { toSafeCisClientError } from "../integrations/cis/cisErrors.js";
 import { createPortalAccountService } from "../services/portalAccountService.js";
-import { CustomerPortalRecordNotFoundError, createCustomerPortalService } from "../services/customerPortalService.js";
+import {
+  CustomerPortalFeatureUnavailableError,
+  CustomerPortalRecordNotFoundError,
+  createCustomerPortalService,
+} from "../services/customerPortalService.js";
 
 export const createPortalCustomerRouter = ({
   environment = process.env,
@@ -72,7 +76,13 @@ export const createPortalCustomerRouter = ({
     if (error instanceof CustomerPortalRecordNotFoundError) {
       return res.status(404).json({ code: "CUSTOMER_RECORD_NOT_FOUND", error: "The requested record was not found." });
     }
-    const safe = toSafeSapClientError(error);
+    if (error instanceof CustomerPortalFeatureUnavailableError) {
+      return res.status(501).json({
+        code: "CUSTOMER_FEATURE_UNAVAILABLE",
+        error: "This feature is not exposed by the current CIS API.",
+      });
+    }
+    const safe = toSafeCisClientError(error);
     return res.status(safe.status).json({ code: safe.code, error: safe.message });
   });
 
