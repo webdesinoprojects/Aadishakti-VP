@@ -19,6 +19,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || "0.0.0.0";
 const ADMIN_USER = process.env.ADMIN_USERNAME || process.env.ADMIN_USER || "admin@aadishakti";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const adminSessions = new Map();
@@ -1204,8 +1205,8 @@ app.post("/api/orders/:id/payment", async (req, res) => {
   res.json({ success: true, order });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
   console.log(`===============================================`);
-  console.log(`Aadishakti Backend Running on http://localhost:${PORT}`);
+  console.log(`Aadishakti Backend Running on http://${HOST}:${PORT}`);
   console.log(`===============================================`);
 });
