@@ -5,6 +5,10 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://aadishakti-api.187-77-188-199.sslip.io/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
