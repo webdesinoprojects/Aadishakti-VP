@@ -44,12 +44,12 @@ export default function PaymentsPage() {
                 <tr key={payment.id}>
                   <td style={{ fontWeight: 600 }}>{payment.number}</td>
                   <td>{formatSapDate(payment.date)}</td>
-                  <td>{formatAmount(payment.cashAmount)}</td>
-                  <td>{formatAmount(payment.transferAmount)}</td>
-                  <td>{formatAmount(payment.totalPaymentAmount)}</td>
+                  <td className="customer-amount-value">{formatAmount(payment.cashAmount)}</td>
+                  <td className="customer-amount-value">{formatAmount(payment.transferAmount)}</td>
+                  <td className="customer-amount-value customer-total-value">{formatAmount(payment.totalPaymentAmount)}</td>
                   <td>
                     <button className="customer-btn-outline" onClick={() => setSelected(payment.id)}>
-                      View Details
+                      View Summary
                     </button>
                   </td>
                 </tr>

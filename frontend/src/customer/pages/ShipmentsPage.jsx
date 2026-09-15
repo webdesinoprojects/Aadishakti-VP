@@ -45,11 +45,11 @@ export default function ShipmentsPage() {
                   <td style={{ fontWeight: 600 }}>{delivery.number}</td>
                   <td>{formatSapDate(delivery.date)}</td>
                   <td>{formatSapDate(delivery.dueDate)}</td>
-                  <td>{formatAmount(delivery.amount)}</td>
+                  <td className="customer-amount-value">{formatAmount(delivery.amount)}</td>
                   <td>Current open</td>
                   <td>
                     <button className="customer-btn-outline" onClick={() => setSelected(delivery.id)}>
-                      View Details
+                      View Summary
                     </button>
                   </td>
                 </tr>

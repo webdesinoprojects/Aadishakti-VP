@@ -25,7 +25,7 @@ export default function GRNPage() {
                   <td style={{ fontWeight: 600 }}>{grpo.number}</td>
                   <td>{formatVendorDate(grpo.date)}</td>
                   <td>{formatVendorDate(grpo.dueDate)}</td>
-                  <td>{formatVendorAmount(grpo.amount)}</td>
+                  <td className="vendor-amount-value">{formatVendorAmount(grpo.amount)}</td>
                   <td>Current open</td>
                   <td><button className="vendor-btn-outline" onClick={() => setSelected(grpo.id)}>View Summary</button></td>
                 </tr>

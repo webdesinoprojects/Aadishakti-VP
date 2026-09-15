@@ -26,8 +26,20 @@ export default function InvoicesPage() {
         subtitle="Read-only current/open headers exposed by CIS. Full history, line items, and PDF files are not supplied."
       />
       <div style={{ display: 'flex', gap: '8px', marginBottom: '18px' }}>
-        <button className="customer-btn-outline" onClick={() => changeKind('invoice')} disabled={!creditNotes}>AR Invoices</button>
-        <button className="customer-btn-outline" onClick={() => changeKind('credit-note')} disabled={creditNotes}>AR Credit Notes</button>
+        <button
+          className={`customer-btn-outline${!creditNotes ? ' is-active' : ''}`}
+          onClick={() => changeKind('invoice')}
+          aria-pressed={!creditNotes}
+        >
+          AR Invoices
+        </button>
+        <button
+          className={`customer-btn-outline${creditNotes ? ' is-active' : ''}`}
+          onClick={() => changeKind('credit-note')}
+          aria-pressed={creditNotes}
+        >
+          AR Credit Notes
+        </button>
       </div>
       <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>
         {UNKNOWN_TRANSACTION_CURRENCY_NOTE}
@@ -53,7 +65,7 @@ export default function InvoicesPage() {
                   <td style={{ fontWeight: 600 }}>{document.number}</td>
                   <td>{formatSapDate(document.date)}</td>
                   <td>{formatSapDate(document.dueDate)}</td>
-                  <td>{formatAmount(document.amount)}</td>
+                  <td className="customer-amount-value">{formatAmount(document.amount)}</td>
                   <td>Current open</td>
                   <td>
                     <button className="customer-btn-outline" onClick={() => setSelected(document.id)}>

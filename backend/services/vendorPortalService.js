@@ -19,7 +19,10 @@ export class VendorPortalRecordNotFoundError extends Error {
   }
 }
 
-export const createVendorPortalService = ({ cisClient = createCisClient() } = {}) => {
+export const createVendorPortalService = ({
+  cisClient = createCisClient(),
+  today = () => new Date().toISOString().slice(0, 10),
+} = {}) => {
   const loadExact = async (account, resource, mapper) => {
     const { cardCode, companyCode } = requireCommercialAccount(account, "vendor");
     const records = await cisClient.getResource({ companyCode, resource });
@@ -84,6 +87,9 @@ export const createVendorPortalService = ({ cisClient = createCisClient() } = {}
       kpis: {
         openPurchaseOrders: purchaseOrders?.length ?? null,
         openApInvoices: invoices?.length ?? null,
+        overdueOpenApInvoices: invoices
+          ? invoices.filter((invoice) => invoice.dueDate < today()).length
+          : null,
         openGrpos: grpos?.length ?? null,
         outgoingPayments: payments?.length ?? null,
       },

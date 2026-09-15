@@ -3,8 +3,11 @@ import { useCustomerCreditNote, useCustomerDelivery, useCustomerInvoice, useCust
 import { formatAmount, formatSapDate, formatValue, UNKNOWN_TRANSACTION_CURRENCY_NOTE } from '../utils/customerFormatters';
 import CustomerDataState from './CustomerDataState';
 
-function DetailRow({ label, children }) {
-  return <tr><td style={{ fontWeight: 600 }}>{label}</td><td>{children}</td></tr>;
+function DetailRow({ label, children, amount = false, total = false }) {
+  const valueClass = amount
+    ? `customer-amount-value${total ? ' customer-total-value' : ''}`
+    : undefined;
+  return <tr><td className={total ? 'customer-total-label' : undefined} style={{ fontWeight: 600 }}>{label}</td><td className={valueClass}>{children}</td></tr>;
 }
 
 function DetailRows({ record, type }) {
@@ -15,9 +18,9 @@ function DetailRows({ record, type }) {
         <DetailRow label="Document Number">{formatValue(record.number)}</DetailRow>
         <DetailRow label="Document Date">{formatSapDate(record.date)}</DetailRow>
         {type !== 'payment' && <DetailRow label="Due Date">{formatSapDate(record.dueDate)}</DetailRow>}
-        {type === 'payment' && <DetailRow label="Cash Amount">{formatAmount(record.cashAmount)}</DetailRow>}
-        {type === 'payment' && <DetailRow label="Transfer Amount">{formatAmount(record.transferAmount)}</DetailRow>}
-        <DetailRow label="Total">{formatAmount(total)}</DetailRow>
+        {type === 'payment' && <DetailRow label="Cash Amount" amount>{formatAmount(record.cashAmount)}</DetailRow>}
+        {type === 'payment' && <DetailRow label="Transfer Amount" amount>{formatAmount(record.transferAmount)}</DetailRow>}
+        <DetailRow label="Total" amount total>{formatAmount(total)}</DetailRow>
         {type !== 'payment' && <DetailRow label="CIS Scope">Current open record</DetailRow>}
       </tbody>
     </table>

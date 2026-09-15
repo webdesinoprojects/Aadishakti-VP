@@ -112,6 +112,27 @@ test("Vendor dashboard supports partial CIS failures without fabricated financia
   assert.equal(dashboard.availability.invoices, false);
   assert.equal(dashboard.kpis.openPurchaseOrders, 1);
   assert.equal(dashboard.kpis.openApInvoices, null);
+  assert.equal(dashboard.kpis.overdueOpenApInvoices, null);
   assert.equal(dashboard.kpis.outgoingPayments, 1);
   assert.equal("totalReceivables" in dashboard.kpis, false);
+});
+
+test("Vendor dashboard counts overdue open invoices from documented CIS due dates", async () => {
+  const service = createVendorPortalService({
+    cisClient: client({
+      purchaseorder: [],
+      apinvoice: [
+        document({ docEntry: "11", docDueDate: "2026-08-31T00:00:00.0000000" }),
+        document({ docEntry: "12", docDueDate: "2026-09-15T00:00:00.0000000" }),
+        document({ docEntry: "13", docDueDate: "2026-09-16T00:00:00.0000000" }),
+      ],
+      grpo: [],
+      outgoingpayment: [],
+    }),
+    today: () => "2026-09-15",
+  });
+
+  const dashboard = await service.getDashboard(vendor);
+  assert.equal(dashboard.kpis.openApInvoices, 3);
+  assert.equal(dashboard.kpis.overdueOpenApInvoices, 1);
 });

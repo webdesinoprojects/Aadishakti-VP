@@ -26,7 +26,7 @@ export default function PurchaseOrdersPage() {
                   <td style={{ fontWeight: 600 }}>{order.number}</td>
                   <td>{formatVendorDate(order.date)}</td>
                   <td>{formatVendorDate(order.dueDate)}</td>
-                  <td>{formatVendorAmount(order.amount)}</td>
+                  <td className="vendor-amount-value">{formatVendorAmount(order.amount)}</td>
                   <td>Current open</td>
                   <td><button className="vendor-btn-outline" onClick={() => setSelected(order.id)}>View Summary</button></td>
                 </tr>

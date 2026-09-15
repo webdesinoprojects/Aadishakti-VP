@@ -19,6 +19,17 @@ const titleFor = (type) => ({
   payment: 'Outgoing Payment Summary',
 }[type] || 'Document Summary');
 
+function SummaryRow({ label, children, amount = false, total = false }) {
+  const labelClass = `vendor-summary-label${total ? ' vendor-total-label' : ''}`;
+  const valueClass = `vendor-summary-value${amount ? ' vendor-amount-value' : ''}${total ? ' vendor-total-value' : ''}`;
+  return (
+    <div className={`vendor-summary-row${total ? ' is-total' : ''}`}>
+      <span className={labelClass}>{label}</span>
+      <span className={valueClass}>{children}</span>
+    </div>
+  );
+}
+
 export default function VendorTransactionDrawer({ type, docEntry, onClose }) {
   const purchaseOrder = useVendorPurchaseOrder(type === 'purchaseOrder' ? docEntry : null);
   const invoice = useVendorInvoice(type === 'invoice' ? docEntry : null);
@@ -42,27 +53,29 @@ export default function VendorTransactionDrawer({ type, docEntry, onClose }) {
     <div className="vendor-drawer-overlay open" onClick={onClose}>
       <div className="vendor-drawer open" onClick={(event) => event.stopPropagation()}>
         <button className="vendor-drawer-close" onClick={onClose} aria-label="Close summary"><X size={20} /></button>
-        <div className="vendor-drawer-content">
-          <div className="vendor-drawer-header">
-            <h2>{titleFor(type)}</h2>
-            <span className="vendor-drawer-subtitle">CIS exposes header summaries only.</span>
+        <div className="vendor-drawer-header">
+          <div>
+            <h2 className="vendor-drawer-title">{titleFor(type)}</h2>
+            <p className="vendor-drawer-subtitle">CIS exposes header summaries only.</p>
           </div>
-          <div className="vendor-drawer-body">
-            <VendorDataState loading={state.loading} error={state.error} />
-            {record && (
-              <>
-                <div className="vendor-rfq-detail-card">
-                  <div className="vendor-rfq-detail-row"><span className="vendor-rfq-detail-label">Document Number</span><span className="vendor-rfq-detail-value">{formatVendorValue(record.number)}</span></div>
-                  <div className="vendor-rfq-detail-row"><span className="vendor-rfq-detail-label">Document Date</span><span className="vendor-rfq-detail-value">{formatVendorDate(record.date)}</span></div>
-                  {type !== 'payment' && <div className="vendor-rfq-detail-row"><span className="vendor-rfq-detail-label">Due Date</span><span className="vendor-rfq-detail-value">{formatVendorDate(record.dueDate)}</span></div>}
-                  {type === 'payment' && <div className="vendor-rfq-detail-row"><span className="vendor-rfq-detail-label">Cash Amount</span><span className="vendor-rfq-detail-value">{formatVendorAmount(record.cashAmount)}</span></div>}
-                  {type === 'payment' && <div className="vendor-rfq-detail-row"><span className="vendor-rfq-detail-label">Transfer Amount</span><span className="vendor-rfq-detail-value">{formatVendorAmount(record.transferAmount)}</span></div>}
-                  <div className="vendor-rfq-detail-row"><span className="vendor-rfq-detail-label">Total</span><span className="vendor-rfq-detail-value">{formatVendorAmount(total)}</span></div>
-                </div>
-                <p style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: 1.6 }}>{UNKNOWN_CURRENCY_NOTE} Detail lines, files, and document associations are not provided.</p>
-              </>
-            )}
-          </div>
+        </div>
+        <div className="vendor-drawer-body">
+          <VendorDataState loading={state.loading} error={state.error} />
+          {record && (
+            <>
+              <div className="vendor-summary-card">
+                <SummaryRow label="Document Number">{formatVendorValue(record.number)}</SummaryRow>
+                <SummaryRow label="Document Date">{formatVendorDate(record.date)}</SummaryRow>
+                {type !== 'payment' && <SummaryRow label="Due Date">{formatVendorDate(record.dueDate)}</SummaryRow>}
+                {type === 'payment' && <SummaryRow label="Cash Amount" amount>{formatVendorAmount(record.cashAmount)}</SummaryRow>}
+                {type === 'payment' && <SummaryRow label="Transfer Amount" amount>{formatVendorAmount(record.transferAmount)}</SummaryRow>}
+                <SummaryRow label="Total" amount total>{formatVendorAmount(total)}</SummaryRow>
+              </div>
+              <p className="vendor-summary-note">
+                {UNKNOWN_CURRENCY_NOTE} Detail lines, files, and document associations are not provided.
+              </p>
+            </>
+          )}
         </div>
       </div>
     </div>

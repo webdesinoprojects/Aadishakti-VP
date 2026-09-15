@@ -26,9 +26,9 @@ export default function InvoicesPage() {
     <div className="vendor-page">
       <VendorPageHeader title={labels.title} subtitle="Read-only current/open headers supplied by CIS. Full history, lines, associations, and files are unavailable." />
       <div style={{ display: 'flex', gap: '8px', marginBottom: '18px' }}>
-        <button className="vendor-btn-outline" onClick={() => changeKind('invoice')} disabled={kind === 'invoice'}>AP Invoices</button>
-        <button className="vendor-btn-outline" onClick={() => changeKind('credit-note')} disabled={kind === 'credit-note'}>AP Credit Notes</button>
-        <button className="vendor-btn-outline" onClick={() => changeKind('debit-note')} disabled={kind === 'debit-note'}>AP Debit Notes</button>
+        <button className={`vendor-btn-outline${kind === 'invoice' ? ' is-active' : ''}`} onClick={() => changeKind('invoice')} aria-pressed={kind === 'invoice'}>AP Invoices</button>
+        <button className={`vendor-btn-outline${kind === 'credit-note' ? ' is-active' : ''}`} onClick={() => changeKind('credit-note')} aria-pressed={kind === 'credit-note'}>AP Credit Notes</button>
+        <button className={`vendor-btn-outline${kind === 'debit-note' ? ' is-active' : ''}`} onClick={() => changeKind('debit-note')} aria-pressed={kind === 'debit-note'}>AP Debit Notes</button>
       </div>
       <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>{UNKNOWN_CURRENCY_NOTE}</p>
       <VendorDataState loading={loading} error={error} />
@@ -42,7 +42,7 @@ export default function InvoicesPage() {
                   <td style={{ fontWeight: 600 }}>{document.number}</td>
                   <td>{formatVendorDate(document.date)}</td>
                   <td>{formatVendorDate(document.dueDate)}</td>
-                  <td>{formatVendorAmount(document.amount)}</td>
+                  <td className="vendor-amount-value">{formatVendorAmount(document.amount)}</td>
                   <td>Current open</td>
                   <td><button className="vendor-btn-outline" onClick={() => setSelected(document.id)}>View Summary</button></td>
                 </tr>

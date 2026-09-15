@@ -1,4 +1,4 @@
-import { FileCheck2, Receipt, ShoppingCart, Wallet } from 'lucide-react';
+import { CircleDollarSign, ClockAlert, FileCheck2, Receipt, ShoppingCart, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import VendorDataState from '../components/VendorDataState';
 import { useVendorDashboard, useVendorProfile } from '../hooks/useVendorApi';
@@ -6,7 +6,7 @@ import { formatVendorAmount, formatVendorDate, UNAVAILABLE_VALUE, UNKNOWN_CURREN
 
 const count = (value) => typeof value === 'number' ? value : UNAVAILABLE_VALUE;
 
-function Kpi({ label, value, note, icon: Icon, to }) {
+function Kpi({ label, value, note, icon: Icon, to, linkLabel = 'View records' }) {
   return (
     <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
       <Icon size={100} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-14px', color: 'var(--red-core)', opacity: 0.06 }} />
@@ -14,7 +14,7 @@ function Kpi({ label, value, note, icon: Icon, to }) {
         <div className="vendor-kpi-value">{value}</div>
         <div className="vendor-kpi-label">{label}</div>
         <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '8px' }}>{note}</div>
-        <Link to={to} className="vendor-kpi-link">View records</Link>
+        <Link to={to} className="vendor-kpi-link">{linkLabel}</Link>
       </div>
     </div>
   );
@@ -52,11 +52,30 @@ export default function VendorDashboard() {
       )}
 
       <section className="vendor-kpi-grid">
+        <Kpi
+          label="Current Account Balance"
+          value={formatVendorAmount(profile.data?.accountBalance, profile.data?.currency)}
+          note="Vendor master balance supplied by CIS"
+          icon={CircleDollarSign}
+          to="/vendor/profile"
+          linkLabel="View profile"
+        />
+        <Kpi
+          label="Overdue Open AP Invoices"
+          value={count(data.kpis.overdueOpenApInvoices)}
+          note="Count based on CIS invoice due dates"
+          icon={ClockAlert}
+          to="/vendor/invoices"
+        />
         <Kpi label="Current Open Purchase Orders" value={count(data.kpis.openPurchaseOrders)} note="Not full history" icon={ShoppingCart} to="/vendor/orders" />
         <Kpi label="Current Open AP Invoices" value={count(data.kpis.openApInvoices)} note="Not full history" icon={Receipt} to="/vendor/invoices" />
         <Kpi label="Current Open GRPOs" value={count(data.kpis.openGrpos)} note="Header summaries only" icon={FileCheck2} to="/vendor/grn" />
         <Kpi label="Outgoing Payments" value={count(data.kpis.outgoingPayments)} note="Not-cancelled records" icon={Wallet} to="/vendor/payments" />
       </section>
+
+      <p className="vendor-dashboard-finance-note">
+        CIS does not supply paid-to-date or remaining invoice amounts, so no outstanding invoice amount is estimated.
+      </p>
 
       <section className="vendor-dashboard-content" style={{ gridTemplateColumns: '1fr' }}>
         <div className="vendor-panel" style={{ overflowX: 'auto' }}>
@@ -70,7 +89,7 @@ export default function VendorDashboard() {
                   <td style={{ fontWeight: 600 }}>{order.number}</td>
                   <td>{formatVendorDate(order.date)}</td>
                   <td>{formatVendorDate(order.dueDate)}</td>
-                  <td>{formatVendorAmount(order.amount)}</td>
+                  <td className="vendor-amount-value">{formatVendorAmount(order.amount)}</td>
                 </tr>
               ))}
               {data.recentPurchaseOrders.length === 0 && (

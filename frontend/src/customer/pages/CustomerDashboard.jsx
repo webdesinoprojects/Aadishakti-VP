@@ -78,7 +78,7 @@ export default function CustomerDashboard() {
                 <td style={{ fontWeight: 600 }}>{invoice.number}</td>
                 <td>{formatSapDate(invoice.date)}</td>
                 <td>{formatSapDate(invoice.dueDate)}</td>
-                <td>{formatAmount(invoice.amount)}</td>
+                <td className="customer-amount-value">{formatAmount(invoice.amount)}</td>
               </tr>
             ))}
             {data.recentInvoices.length === 0 && (

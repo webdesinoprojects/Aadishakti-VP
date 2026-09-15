@@ -165,6 +165,26 @@
   background: #f8fafc;
   border-color: #cbd5e1;
 }
+.customer-btn-outline.is-active,
+.customer-btn-outline.is-active:hover {
+  background: rgba(204, 34, 0, 0.1);
+  border-color: rgba(204, 34, 0, 0.45);
+  color: var(--red-core);
+  cursor: default;
+}
+
+.customer-amount-value {
+  color: var(--red-core);
+  font-weight: 650;
+}
+
+.customer-total-value {
+  font-weight: 750;
+}
+
+.customer-total-label {
+  color: var(--red-core);
+}
 
 /* Tracking Stepper */
 .tracking-stepper {
