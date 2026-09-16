@@ -11,6 +11,24 @@ import cookieParser from "cookie-parser";
 import portalAuthRoutes from "./routes/portalAuth.js";
 import portalCustomerRoutes from "./routes/portalCustomer.js";
 import portalVendorRoutes from "./routes/portalVendor.js";
+import { env, validateRuntimeConfig } from "./config/env.js";
+import adminAuthRoutes from "./features/admin/auth/adminAuthRoutes.js";
+import auditRoutes from "./features/audit/auditRoutes.js";
+import { requireAdmin as requireAdminJwt } from "./middleware/adminAuth.js";
+import { requestContext } from "./middleware/requestContext.js";
+import { securityHeaders } from "./middleware/securityHeaders.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import { adminPageRoutes, publicPageRoutes } from "./features/pages/pageRoutes.js";
+import mediaRoutes from "./features/media/mediaRoutes.js";
+import { adminCmsRoutes, publicCmsRoutes } from "./features/cms/cmsRoutes.js";
+import {
+  adminCrmRoutes,
+  crmLookupRoutes,
+  enquiryWorkflowRoutes,
+  publicCrmRoutes,
+} from "./features/crm/crmRoutes.js";
+import adminUserRoutes from "./features/admin/users/adminUserRoutes.js";
+import dashboardRoutes from "./features/admin/dashboard/dashboardRoutes.js";
 
 dotenv.config();
 
@@ -18,8 +36,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || "0.0.0.0";
+validateRuntimeConfig();
+app.set("trust proxy", env.trustProxy);
+const PORT = env.port;
+const HOST = env.host;
 const ADMIN_USER = process.env.ADMIN_USERNAME || process.env.ADMIN_USER || "admin@aadishakti";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const adminSessions = new Map();
@@ -36,18 +56,35 @@ const allowedOrigins = (
 const corsOptions = {
   origin: allowedOrigins,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
+app.use(requestContext);
+app.use(securityHeaders);
 
 // Portal authentication and role boundaries. SAP-backed data endpoints are added in Phases 1B and 1C.
 app.use("/api/portal/auth", portalAuthRoutes);
 app.use("/api/portal/customer", portalCustomerRoutes);
 app.use("/api/portal/vendor", portalVendorRoutes);
+// Modular admin platform routes take precedence over the legacy aliases below.
+app.use("/api/auth", adminAuthRoutes);
+app.use("/api/admin", adminAuthRoutes);
+app.use("/api/admin/audit-logs", auditRoutes);
+app.use("/api/admin/dashboard", dashboardRoutes);
+app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin/cms/pages", adminPageRoutes);
+app.use("/api/admin/cms", adminCmsRoutes);
+app.use("/api/admin/crm", adminCrmRoutes);
+app.use("/api/admin/media", mediaRoutes);
+app.use("/api/public/pages", publicPageRoutes);
+app.use("/api/cms", publicCmsRoutes);
+app.use("/api/enquiries", enquiryWorkflowRoutes);
+app.use("/api", crmLookupRoutes);
+app.use("/api", publicCrmRoutes);
 
 // Serve uploads as static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -142,15 +179,7 @@ const writeCms = async (payload) => {
   return next;
 };
 
-const requireAdmin = (req, res, next) => {
-  const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-  if (!token || !adminSessions.has(token)) {
-    return res.status(401).json({ error: "Unauthorized admin access." });
-  }
-  req.admin = adminSessions.get(token);
-  next();
-};
+const requireAdmin = requireAdminJwt;
 
 // Multer Storage Configuration for Resume Uploads
 const storage = multer.diskStorage({
@@ -1204,6 +1233,8 @@ app.post("/api/orders/:id/payment", async (req, res) => {
   await saveOrders(orders);
   res.json({ success: true, order });
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, HOST, () => {
   console.log(`===============================================`);
