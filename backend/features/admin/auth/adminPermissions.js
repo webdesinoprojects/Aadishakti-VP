@@ -8,6 +8,8 @@ export const ADMIN_PERMISSIONS = Object.freeze({
   CRM_WRITE: "crm:write",
   PORTAL_READ: "portal:read",
   PORTAL_WRITE: "portal:write",
+  OPERATIONS_READ: "operations:read",
+  OPERATIONS_WRITE: "operations:write",
   SETTINGS_READ: "settings:read",
   SETTINGS_WRITE: "settings:write",
   AUDIT_READ: "audit:read",
@@ -28,6 +30,8 @@ export const ROLE_PERMISSIONS = Object.freeze({
     ADMIN_PERMISSIONS.CRM_WRITE,
     ADMIN_PERMISSIONS.PORTAL_READ,
     ADMIN_PERMISSIONS.PORTAL_WRITE,
+    ADMIN_PERMISSIONS.OPERATIONS_READ,
+    ADMIN_PERMISSIONS.OPERATIONS_WRITE,
   ],
   viewer: [
     ADMIN_PERMISSIONS.DASHBOARD_READ,
@@ -35,6 +39,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     ADMIN_PERMISSIONS.MEDIA_READ,
     ADMIN_PERMISSIONS.CRM_READ,
     ADMIN_PERMISSIONS.PORTAL_READ,
+    ADMIN_PERMISSIONS.OPERATIONS_READ,
     ADMIN_PERMISSIONS.SETTINGS_READ,
     ADMIN_PERMISSIONS.AUDIT_READ,
   ],
@@ -42,4 +47,3 @@ export const ROLE_PERMISSIONS = Object.freeze({
 
 export const can = (permissions, requiredPermission) =>
   permissions.includes("*") || permissions.includes(requiredPermission);
-

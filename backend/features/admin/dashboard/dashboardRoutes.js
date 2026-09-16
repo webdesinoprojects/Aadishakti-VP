@@ -16,7 +16,7 @@ const count = async (table, applyFilters) => {
 };
 
 router.get("/summary", asyncHandler(async (_req, res) => {
-  const [enquiries, newEnquiries, applications, news, jobs, media, pages] = await Promise.all([
+  const [enquiries, newEnquiries, applications, news, jobs, media, pages, registrations, profileUpdates, reconciliations] = await Promise.all([
     count("enquiries"),
     count("enquiries", (query) => query.eq("status", "new")),
     count("job_applications"),
@@ -24,8 +24,22 @@ router.get("/summary", asyncHandler(async (_req, res) => {
     count("job_postings", (query) => query.eq("status", "published")),
     count("media_assets"),
     count("cms_pages", (query) => query.eq("status", "published")),
+    count("partner_registrations", (query) => query.eq("status", "pending")),
+    count("profile_update_requests", (query) => query.eq("status", "pending")),
+    count("reconciliations", (query) => query.eq("status", "pending_verification")),
   ]);
-  res.json({ data: { enquiries, newEnquiries, applications, publishedNews: news, openJobs: jobs, mediaAssets: media, publishedPages: pages } });
+  res.json({ data: {
+    enquiries,
+    newEnquiries,
+    applications,
+    publishedNews: news,
+    openJobs: jobs,
+    mediaAssets: media,
+    publishedPages: pages,
+    pendingRegistrations: registrations,
+    pendingProfileUpdates: profileUpdates,
+    pendingReconciliations: reconciliations,
+  } });
 }));
 
 export default router;

@@ -19,7 +19,7 @@ import { requestContext } from "./middleware/requestContext.js";
 import { securityHeaders } from "./middleware/securityHeaders.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { adminPageRoutes, publicPageRoutes } from "./features/pages/pageRoutes.js";
-import mediaRoutes from "./features/media/mediaRoutes.js";
+import mediaRoutes, { mediaCompatibilityRoutes } from "./features/media/mediaRoutes.js";
 import { adminCmsRoutes, publicCmsRoutes } from "./features/cms/cmsRoutes.js";
 import {
   adminCrmRoutes,
@@ -29,6 +29,13 @@ import {
 } from "./features/crm/crmRoutes.js";
 import adminUserRoutes from "./features/admin/users/adminUserRoutes.js";
 import dashboardRoutes from "./features/admin/dashboard/dashboardRoutes.js";
+import {
+  adminOperationsRoutes,
+  logisticsCompatibilityRoutes,
+  portalOperationsRoutes,
+  publicRegistrationRoutes,
+  publicTrackingRoutes,
+} from "./features/operations/operationsRoutes.js";
 
 dotenv.config();
 
@@ -79,12 +86,18 @@ app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/cms/pages", adminPageRoutes);
 app.use("/api/admin/cms", adminCmsRoutes);
 app.use("/api/admin/crm", adminCrmRoutes);
+app.use("/api/admin/operations", adminOperationsRoutes);
 app.use("/api/admin/media", mediaRoutes);
+app.use("/api/admin", mediaCompatibilityRoutes);
 app.use("/api/public/pages", publicPageRoutes);
 app.use("/api/cms", publicCmsRoutes);
 app.use("/api/enquiries", enquiryWorkflowRoutes);
 app.use("/api", crmLookupRoutes);
 app.use("/api", publicCrmRoutes);
+app.use("/api/registrations", publicRegistrationRoutes);
+app.use("/api/portal/operations", portalOperationsRoutes);
+app.use("/api/orders", logisticsCompatibilityRoutes);
+app.use("/api/track", publicTrackingRoutes);
 
 // Serve uploads as static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

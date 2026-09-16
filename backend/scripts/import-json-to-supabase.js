@@ -17,10 +17,10 @@ const check = (error, operation) => { if (error) throw new Error(`${operation}: 
 
 if (!env.supabase.enabled) throw new Error("Set SUPABASE_ENABLED=true before importing data.");
 
-const [cms, products, news, careers, team, enquiries, applications] = await Promise.all([
+const [cms, products, news, careers, team, enquiries, applications, orders] = await Promise.all([
   readJson("cms.json", {}), readJson("products.json", []), readJson("news.json", []),
   readJson("careers.json", []), readJson("team.json", []), readJson("enquiries.json", []),
-  readJson("applications.json", []),
+  readJson("applications.json", []), readJson("orders.json", []),
 ]);
 
 const singletonKeys = ["home", "global", "pageHeroImages", "nav", "importPage", "media"];
@@ -92,6 +92,19 @@ for (const categoryItem of cms.gallery || []) {
   check(error, `Import gallery item ${categoryItem.id}`);
 }
 
+const orderRows = orders.map((item) => ({
+  id: String(item.id), enquiry_reference: item.enquiryId || null, vendor_id: item.vendorId || null,
+  vendor_name: item.vendorName || "", customer_name: item.customerName || "", product: item.product || "",
+  amount: String(item.amount || ""), status: item.status || "Order Confirmed",
+  tracking: Array.isArray(item.tracking) ? item.tracking : [], chat_history: Array.isArray(item.chatHistory) ? item.chatHistory : [],
+  pod_status: item.podStatus || "Awaited", pod_image_url: item.podImage || null,
+  payment_proof_url: item.paymentProof || null, created_at: item.createdAt || new Date().toISOString(),
+}));
+if (orderRows.length) {
+  const { error } = await client.from("logistics_orders").upsert(orderRows, { onConflict: "id" });
+  check(error, "Import logistics orders");
+}
+
 if (process.argv.includes("--include-crm")) {
   const enquiryRows = enquiries.map((item) => ({
     legacy_id: String(item.id), full_name: item.fullName, work_email: item.workEmail, phone: item.phone,
@@ -120,4 +133,3 @@ if (process.argv.includes("--include-crm")) {
 }
 
 console.log("Supabase import completed. Add --include-crm to include legacy enquiries and applications.");
-

@@ -43,6 +43,10 @@ The ImageKit private key is backend-only. The browser receives short-lived uploa
 | Model | Source |
 | --- | --- |
 | `audit_logs` | Approved audit requirement; actor, action, resource, request ID, IP and non-secret metadata. |
+| `partner_registrations` | Vendor Registration and Admin New Registrations UI: company, tax identifiers, category, compliance documents, review status and assigned partner ID. |
+| `profile_update_requests` | Admin Profile Updates UI: partner reference, current/requested field snapshots and review status. Approval records the decision but does not write to read-only CIS. |
+| `reconciliations` | Customer/Vendor reconciliation routes and Admin Quarterly Reconciliations UI: partner, role, quarter, statement document and verification lock. |
+| `logistics_orders` | Existing `orders.json` and Logistics Admin UI: parties, product, amount, tracking milestones/proofs, chat, POD and payment proof. |
 
 Customer/vendor commercial records remain CIS-owned and read-only. They are not copied into these CMS tables.
 
@@ -53,4 +57,3 @@ Customer/vendor commercial records remain CIS-owned and read-only. They are not 
 - Public and Admin clients call the Express API; only the backend holds the Supabase secret key.
 - Every Admin write records an audit event.
 - Schema changes are versioned SQL migrations under `supabase/migrations`.
-

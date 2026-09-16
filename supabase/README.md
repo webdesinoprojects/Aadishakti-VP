@@ -5,6 +5,7 @@ Run SQL files from `supabase/migrations` in ascending numeric order. Never renam
 Current order:
 
 1. `001_admin_cms_foundation.sql` — Admin profiles, CMS, media metadata, galleries, CRM submissions, audit logs, indexes, triggers, grants, and RLS boundaries.
+2. `002_admin_operations.sql` — Partner registration reviews, profile-update approvals, reconciliation documents, and logistics records.
 
 Naming convention for every future migration:
 
@@ -22,4 +23,3 @@ After migration `001`:
 5. If legacy CRM records are also required, run `npm run db:import-json --prefix backend -- --include-crm`.
 
 The import commands are repeat-safe for records with stable source keys. Legacy local attachments are not uploaded automatically; new attachments use ImageKit.
-
