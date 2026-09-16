@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Search, MapPin, CheckCircle, RefreshCw } from 'lucide-react';
+import { Search, MapPin, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
 import TopBar from '../../components/TopBar';
+import { logisticsAPI } from '../../utils/api';
 
 export default function LogisticsManager() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState(null);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
 
   const loadOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/orders');
-      const data = await res.json();
-      setOrders(data || []);
+      const res = await logisticsAPI.list();
+      setOrders(res.data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -28,22 +26,6 @@ export default function LogisticsManager() {
   useEffect(() => {
     loadOrders();
   }, []);
-
-  const handleReviewPOD = async (action) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/orders/${selectedOrder.id}/review-pod`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action })
-      });
-      if (res.ok) {
-        loadOrders();
-        setSelectedOrder(prev => ({ ...prev, podStatus: action === 'accept' ? 'Accepted' : 'Rejected' }));
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
 
   let filtered = orders;
   if (filter !== 'All') {
@@ -59,8 +41,8 @@ export default function LogisticsManager() {
     <>
       <TopBar breadcrumb="Operations / Logistics Tracker" />
       
-      <div style={{ padding: "32px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+      <div className="admin-page">
+        <div className="admin-page-heading" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
           <div>
             <h1 style={{ fontSize: "28px", fontWeight: 800, marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}><MapPin /> Logistics & Tracking</h1>
             <p style={{ color: "var(--text-secondary)" }}>Track active orders, monitor vendor shipments, and review Proof of Deliveries.</p>
@@ -70,7 +52,7 @@ export default function LogisticsManager() {
           </button>
         </div>
 
-        <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+        <div className="admin-filter-row" style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
           <div style={{ position: 'relative', flex: 1, maxWidth: "400px" }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
@@ -95,7 +77,7 @@ export default function LogisticsManager() {
         <div style={{ display: 'flex', gap: '30px' }}>
           
           <div style={{ flex: 1 }}>
-            <div style={{ background: "#fff", borderRadius: "8px", border: "1px solid var(--border-light)", overflow: "hidden" }}>
+            <div className="responsive-table-shell" style={{ background: "#fff", borderRadius: "8px", border: "1px solid var(--border-light)" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
                 <thead>
                   <tr style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-light)", textAlign: "left" }}>
@@ -114,7 +96,7 @@ export default function LogisticsManager() {
                       style={{ 
                         borderBottom: "1px solid var(--border-light)", 
                         cursor: "pointer",
-                        background: selectedOrder?.id === order.id ? "rgba(204,34,0,0.05)" : "transparent"
+                        background: "transparent"
                       }}
                       className="table-row-hover"
                     >

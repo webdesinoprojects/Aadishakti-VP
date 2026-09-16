@@ -1,39 +1,25 @@
 import { useState, useEffect } from 'react';
 import TopBar from '../../components/TopBar';
 import { CheckCircle, XCircle, ArrowRight, X } from 'lucide-react';
-import { buildApiUrl } from '../../../config/api';
+import { operationsAPI } from '../../utils/api';
 
 export default function VendorApprovalsManager() {
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [requests, setRequests] = useState([
-    {
-      id: 'REQ-9921',
-      vendorId: 'V-8821',
-      status: 'Pending',
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      oldData: { gst: '27AADCB2230M1Z2', bankAccountNo: '000012345678', ifsc: 'HDFC0001234' },
-      newData: { gst: '27AADCB2230M1Z2', bankAccountNo: '000098765432', ifsc: 'ICIC0005678' }
-    },
-    {
-      id: 'REQ-9922',
-      vendorId: 'V-1044',
-      status: 'Pending',
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      oldData: { gst: '24BBBBB1234A1Z5', bankAccountNo: '555544443333', ifsc: 'SBIN0001111' },
-      newData: { gst: '24BBBBB1234A1Z9', bankAccountNo: '555544443333', ifsc: 'SBIN0001111' }
-    },
-    {
-      id: 'REQ-9910',
-      vendorId: 'V-5501',
-      status: 'Approved',
-      createdAt: new Date(Date.now() - 500000000).toISOString(),
-      oldData: { gst: '07AAAAA0000A1Z5', bankAccountNo: '111122223333', ifsc: 'UTIB0000001' },
-      newData: { gst: '07AAAAA0000A1Z5', bankAccountNo: '111122223333', ifsc: 'UTIB0000001' }
-    }
-  ]);
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    operationsAPI.getProfileUpdates({})
+      .then((response) => setRequests(response.data || []))
+      .catch((error) => console.error('Failed to load profile updates', error));
+  }, []);
 
   const handleAction = async (id, action) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: action === 'approve' ? 'Approved' : 'Rejected' } : r));
+    try {
+      const response = await operationsAPI.reviewProfileUpdate(id, { action });
+      setRequests(prev => prev.map(request => request.id === id ? response.data : request));
+    } catch (error) {
+      console.error('Failed to review profile update', error);
+    }
   };
 
   const pendingRequests = requests.filter(r => r.status === 'Pending');
@@ -65,7 +51,7 @@ export default function VendorApprovalsManager() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
                   <div>
                     <h4 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>Vendor: {req.vendorId}</h4>
-                    <div style={{ fontSize: '13px', color: '#64748b' }}>Request ID: {req.id} • Submitted: {new Date(req.createdAt).toLocaleString()}</div>
+                    <div style={{ fontSize: '13px', color: '#64748b' }}>Request ID: {req.requestReference} • Submitted: {new Date(req.createdAt).toLocaleString()}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <button 
@@ -81,7 +67,7 @@ export default function VendorApprovalsManager() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px 1fr', gap: '20px', alignItems: 'center', background: '#f8fafc', padding: '20px', borderRadius: '6px' }}>
+                <div className="admin-comparison-grid" style={{ background: '#f8fafc', padding: '20px', borderRadius: '6px' }}>
                   <div>
                     <h5 style={{ margin: '0 0 12px 0', fontSize: '12px', textTransform: 'uppercase', color: '#64748b' }}>Current Data</h5>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
@@ -116,7 +102,7 @@ export default function VendorApprovalsManager() {
       
       <div>
         <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#64748b' }}>History</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+        <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
               <th style={{ padding: '12px' }}>Request ID</th>
@@ -134,7 +120,7 @@ export default function VendorApprovalsManager() {
                 onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
                 onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
               >
-                <td style={{ padding: '12px' }}>{req.id}</td>
+                <td style={{ padding: '12px' }}>{req.requestReference}</td>
                 <td style={{ padding: '12px' }}>{req.vendorId}</td>
                 <td style={{ padding: '12px' }}>{new Date(req.createdAt).toLocaleDateString()}</td>
                 <td style={{ padding: '12px', color: req.status === 'Approved' ? '#22c55e' : '#dc2626', fontWeight: '600' }}>{req.status}</td>
@@ -152,7 +138,7 @@ export default function VendorApprovalsManager() {
           onClick={() => setSelectedRequest(null)}
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }} 
         />
-        <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '400px', background: '#fff', zIndex: 1001, boxShadow: '-5px 0 15px rgba(0,0,0,0.1)', padding: '24px', overflowY: 'auto', transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
+        <div className="admin-drawer" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '400px', background: '#fff', zIndex: 1001, boxShadow: '-5px 0 15px rgba(0,0,0,0.1)', padding: '24px', overflowY: 'auto', transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <h2 style={{ fontSize: '20px', fontWeight: '700', margin: 0 }}>Request Details</h2>
             <button onClick={() => setSelectedRequest(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
@@ -160,7 +146,7 @@ export default function VendorApprovalsManager() {
           
           <div style={{ marginBottom: '24px' }}>
             <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>Request ID</div>
-            <div style={{ fontSize: '16px', fontWeight: '600' }}>{selectedRequest.id}</div>
+            <div style={{ fontSize: '16px', fontWeight: '600' }}>{selectedRequest.requestReference}</div>
           </div>
           <div style={{ marginBottom: '24px' }}>
             <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>Vendor ID</div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Save, Eye, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import TopBar from '../../components/TopBar';
 import ImageUploader from '../../components/ImageUploader';
@@ -16,7 +16,7 @@ const HeroEditor = () => {
   const { success, error } = useToast();
 
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const response = await cmsAPI.getHero();
       console.log('Loaded hero data:', response.data);
@@ -34,12 +34,11 @@ const HeroEditor = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -191,7 +190,7 @@ const HeroEditor = () => {
                     </div>
 
                     {/* Title Parts */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                    <div className="admin-form-grid admin-form-grid-three" style={{ gap: '12px' }}>
                       <div className="form-group">
                         <label className="form-label">Title Part A</label>
                         <input

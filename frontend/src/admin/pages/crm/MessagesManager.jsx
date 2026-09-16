@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, Download, Trash2, Mail, RefreshCw, X } from 'lucide-react';
+import { Search, Trash2, Mail, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import TopBar from '../../components/TopBar';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -72,10 +72,10 @@ export default function MessagesManager() {
     if (!selectedVendorId) return;
     const vendor = vendors.find(v => v.id === selectedVendorId);
     try {
-      const res = await crmAPI.assignVendor(selectedMessage.id, { vendorId: vendor.id, vendorName: vendor.name });
+      await crmAPI.assignVendor(selectedMessage.id, { vendorId: vendor.id, vendorName: vendor.name });
       setMessages(prev => prev.map(m => m.id === selectedMessage.id ? { ...m, assignedVendorId: vendor.id, assignedVendorName: vendor.name } : m));
       success('Enquiry assigned to ' + vendor.name);
-    } catch (err) {
+    } catch {
       error('Failed to assign vendor');
     }
   };
@@ -87,7 +87,7 @@ export default function MessagesManager() {
       const newHistory = res.data?.chatHistory || [];
       setMessages(prev => prev.map(m => m.id === selectedMessage.id ? { ...m, chatHistory: newHistory } : m));
       setChatInput('');
-    } catch (err) {
+    } catch {
       error('Failed to send message');
     }
   };
@@ -152,7 +152,7 @@ export default function MessagesManager() {
             </div>
           );
         }
-      } catch (e) {
+      } catch {
         // Fallback to plain text
       }
     }
@@ -164,10 +164,10 @@ export default function MessagesManager() {
     <>
       <TopBar breadcrumb="CRM / Contact Inbox" />
       
-      <div style={{ display: "flex", height: "calc(100vh - 70px)", background: "#FFFFFF" }}>
+      <div className="admin-inbox-layout" style={{ display: "flex", height: "calc(100vh - 70px)", background: "#FFFFFF" }}>
         
         {/* LEFT COLUMN: Message List */}
-        <div style={{ width: "380px", borderRight: "1px solid var(--border-light)", display: "flex", flexDirection: "column" }}>
+        <div className="admin-inbox-list" style={{ width: "380px", borderRight: "1px solid var(--border-light)", display: "flex", flexDirection: "column" }}>
           
           <div style={{ padding: "20px", borderBottom: "1px solid var(--border-light)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
@@ -258,12 +258,12 @@ export default function MessagesManager() {
         </div>
 
         {/* RIGHT COLUMN: Message Details */}
-        <div style={{ flex: 1, overflowY: "auto", background: "#FFFFFF", display: "flex", flexDirection: "column" }}>
+        <div className="admin-inbox-detail" style={{ flex: 1, overflowY: "auto", background: "#FFFFFF", display: "flex", flexDirection: "column" }}>
           {selectedMessage ? (
-            <div style={{ maxWidth: "800px", margin: "0 auto", width: "100%", padding: "40px" }}>
+            <div className="admin-inbox-detail-content" style={{ maxWidth: "800px", margin: "0 auto", width: "100%", padding: "40px" }}>
               
               {/* Header Actions */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px", borderBottom: "1px solid var(--border-light)", paddingBottom: "24px" }}>
+              <div className="admin-inbox-detail-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px", borderBottom: "1px solid var(--border-light)", paddingBottom: "24px" }}>
                 <div>
                   <h1 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "8px" }}>{selectedMessage.inquiryType}</h1>
                   <div style={{ display: "flex", gap: "16px", color: "var(--text-muted)", fontSize: "13px" }}>
@@ -297,7 +297,7 @@ export default function MessagesManager() {
 
               {/* Sender Info Card */}
               <div style={{ background: "var(--bg-secondary)", padding: "20px", borderRadius: "8px", marginBottom: "32px", border: "1px solid var(--border-light)" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                <div className="admin-form-grid" style={{ gap: "20px" }}>
                   <div>
                     <div style={{ fontSize: "11px", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700, marginBottom: "4px" }}>Sender Name</div>
                     <div style={{ fontWeight: 600 }}>{selectedMessage.fullName}</div>

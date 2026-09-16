@@ -15,7 +15,7 @@ export default function TeamManager() {
   useEffect(() => { (async () => {
     try { const res = await cmsAPI.getTeam(); setMembers(res.data || []); }
     catch { error('Failed to load team'); }
-  })(); }, []);
+  })(); }, [error]);
 
   const add = async () => {
     if (!form.name.trim()) return error('Name required');
@@ -44,7 +44,7 @@ export default function TeamManager() {
         <div className="card" style={{ marginBottom: 20 }}>
           <h1 className="card-title">Our Team</h1>
           <div className="form-group"><label className="form-label">Photo</label><ImageUploader currentImage={form.image} onUpload={(url) => setForm({ ...form, image: url })} onRemove={() => setForm({ ...form, image: '' })} circular /></div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="admin-form-grid" style={{ gap: 12 }}>
             <div className="form-group"><label className="form-label">Name</label><input className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
             <div className="form-group"><label className="form-label">Role</label><input className="form-input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} /></div>
           </div>

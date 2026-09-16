@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import TopBar from '../../components/TopBar';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -13,7 +13,7 @@ export default function GalleryManager() {
   const [deleteItem, setDeleteItem] = useState(null);
   const { success, error } = useToast();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       const res = await cmsAPI.getGallery();
       setItems(res.data || []);
@@ -22,10 +22,9 @@ export default function GalleryManager() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const add = async () => {
     if (!form.image) return error('Upload an image first');
@@ -58,7 +57,7 @@ export default function GalleryManager() {
         <div className="card" style={{ marginBottom: 20 }}>
           <div className="card-header"><h1 className="card-title">Gallery Manager</h1></div>
           <div className="form-group"><label className="form-label">Image</label><ImageUploader currentImage={form.image} onUpload={(url) => setForm({ ...form, image: url })} onRemove={() => setForm({ ...form, image: '' })} /></div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="admin-form-grid" style={{ gap: 12 }}>
             <div className="form-group"><label className="form-label">Category</label><select className="form-select" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}><option value="plants">Manufacturing Plants</option><option value="office">Corporate HQ</option><option value="events">Events & Exhibitions</option><option value="celebration">Celebrations</option></select></div>
             <div className="form-group"><label className="form-label">Title</label><input className="form-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
           </div>

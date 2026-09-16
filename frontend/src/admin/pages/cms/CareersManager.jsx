@@ -6,32 +6,7 @@ import { cmsAPI } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
 
 export default function CareersManager() {
-  const [items, setItems] = useState([
-    {
-      id: "lead-smelting-operator",
-      category: "factory",
-      title: "Lead Smelting Plant Operator",
-      location: "MUNDRA PLANT, GUJARAT",
-      dept: "Operations",
-      exp: "3–5 Years in Smelting",
-      desc: "Supervise furnace operations, manage molten metal pouring, monitor draft systems, and maintain strict industrial safety standards.",
-      whyWorkHere: "Working at our Mundra plant gives you hands-on experience with world-class rotary furnaces. We prioritize safety and continuous skill development.",
-      img: "/gallery/plants/Mundra/Rotary_1.jpeg",
-      status: "Open"
-    },
-    {
-      id: "senior-industrial-accountant",
-      category: "office",
-      title: "Senior Industrial Accountant",
-      location: "NEW DELHI CORPORATE OFFICE",
-      dept: "Finance",
-      exp: "4–6 Years in Manufacturing Accounts",
-      desc: "Manage GST documentation, customs clearance reports for scrap vessels, vendor reconciliations, and routine ledger audits.",
-      whyWorkHere: "Join a dynamic finance team at our New Delhi headquarters with exposure to international trade and bulk commodity accounting.",
-      img: "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.15.jpeg",
-      status: "Open"
-    }
-  ]);
+  const [items, setItems] = useState([]);
   
   const defaultForm = { title: '', category: 'factory', location: '', dept: '', exp: '', desc: '', whyWorkHere: '', img: '', status: 'Open' };
   const [form, setForm] = useState(defaultForm);
@@ -44,12 +19,12 @@ export default function CareersManager() {
     (async () => {
       try { 
         const res = await cmsAPI.getCareers(); 
-        if (res.data && res.data.length > 0) setItems(res.data);
+        setItems(res.data || []);
       } catch { 
-        console.warn('Failed to load jobs from API, using dummy data.');
+        error('Failed to load jobs');
       }
     })(); 
-  }, []);
+  }, [error]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -57,15 +32,12 @@ export default function CareersManager() {
     
     try {
       if (editingId) {
-        // Mock update
-        // await cmsAPI.updateCareer(editingId, form);
-        setItems(prev => prev.map(item => item.id === editingId ? { ...form, id: editingId } : item));
+        const res = await cmsAPI.updateCareer(editingId, form);
+        setItems(prev => prev.map(item => item.id === editingId ? res.data : item));
         success('Job updated successfully');
       } else {
-        // Mock create
-        // const res = await cmsAPI.createCareer(form);
-        const newItem = { ...form, id: form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now() };
-        setItems(prev => [newItem, ...prev]);
+        const res = await cmsAPI.createCareer(form);
+        setItems(prev => [res.data, ...prev]);
         success('Job added successfully');
       }
       closeSidebar();
@@ -77,17 +49,22 @@ export default function CareersManager() {
   const remove = async () => {
     if (!deleteItem) return;
     try {
-      // await cmsAPI.deleteCareer(deleteItem.id);
+      await cmsAPI.deleteCareer(deleteItem.id);
       setItems((prev) => prev.filter((x) => x.id !== deleteItem.id));
       setDeleteItem(null);
       success('Job deleted');
     } catch { error('Failed to delete job'); }
   };
 
-  const toggleStatus = (item) => {
+  const toggleStatus = async (item) => {
     const newStatus = item.status === 'Open' ? 'Archived' : 'Open';
-    setItems(prev => prev.map(x => x.id === item.id ? { ...x, status: newStatus } : x));
-    success(`Job marked as ${newStatus}`);
+    try {
+      const res = await cmsAPI.updateCareer(item.id, { status: newStatus });
+      setItems(prev => prev.map(x => x.id === item.id ? res.data : x));
+      success(`Job marked as ${newStatus}`);
+    } catch {
+      error('Failed to update job status');
+    }
   };
 
   const openEdit = (item) => {
@@ -122,7 +99,7 @@ export default function CareersManager() {
           </button>
         </div>
 
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="card responsive-table-shell" style={{ padding: 0 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
@@ -186,7 +163,7 @@ export default function CareersManager() {
       {showSidebar && (
         <>
           <div onClick={closeSidebar} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }} />
-          <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '500px', background: '#fff', zIndex: 1001, boxShadow: '-5px 0 15px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' }}>
+          <div className="admin-drawer" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '500px', background: '#fff', zIndex: 1001, boxShadow: '-5px 0 15px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' }}>
             
             <div style={{ padding: '24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h2 style={{ fontSize: '20px', fontWeight: '700', margin: 0 }}>{editingId ? 'Edit Job' : 'Add New Job'}</h2>
@@ -200,7 +177,7 @@ export default function CareersManager() {
                   <input required className="form-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="admin-form-grid">
                   <div className="form-group">
                     <label className="form-label">Category</label>
                     <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
@@ -222,7 +199,7 @@ export default function CareersManager() {
                   <input required className="form-input" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="admin-form-grid">
                   <div className="form-group">
                     <label className="form-label">Department</label>
                     <input className="form-input" value={form.dept} onChange={(e) => setForm({ ...form, dept: e.target.value })} />

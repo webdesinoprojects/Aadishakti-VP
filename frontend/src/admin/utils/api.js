@@ -127,5 +127,25 @@ export const crmAPI = {
   downloadCV: (id) => `${API_BASE_URL}/api/admin/crm/applications/${id}/cv`,
 };
 
+export const operationsAPI = {
+  getRegistrations: (params) => api.get('/api/admin/operations/registrations', { params }),
+  reviewRegistration: (id, data) => api.patch(`/api/admin/operations/registrations/${id}/review`, data),
+  getProfileUpdates: (params) => api.get('/api/admin/operations/profile-updates', { params }),
+  reviewProfileUpdate: (id, data) => api.patch(`/api/admin/operations/profile-updates/${id}/review`, data),
+  getReconciliations: (params) => api.get('/api/admin/operations/reconciliations', { params }),
+  reviewReconciliation: (id, data) => api.patch(`/api/admin/operations/reconciliations/${id}/review`, data),
+};
+
+export const logisticsAPI = {
+  list: () => api.get('/api/orders'),
+  create: (data) => api.post('/api/orders/create', data),
+  reviewPod: (id, action) => api.post(`/api/orders/${id}/review-pod`, { action }),
+  addChatMessage: (id, data) => api.post(`/api/orders/${id}/chat`, data),
+};
+
+export const dashboardAPI = {
+  summary: () => api.get('/api/admin/dashboard/summary'),
+};
+
 export default api;
 

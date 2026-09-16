@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Box, CheckCircle, ArrowLeft, Image as ImageIcon, Send } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Image as ImageIcon, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import TopBar from '../../components/TopBar';
 import ImageLightbox from '../../../components/ImageLightbox';
+import { logisticsAPI } from '../../utils/api';
 
 export default function LogisticsOrderDetail() {
   const { id } = useParams();
@@ -13,31 +14,26 @@ export default function LogisticsOrderDetail() {
   const [lightboxImages, setLightboxImages] = useState([]);
   const [chatInput, setChatInput] = useState('');
 
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/orders');
-      const data = await res.json();
-      const found = data.find(o => o.id === id);
+      const res = await logisticsAPI.list();
+      const found = (res.data || []).find(o => o.id === id);
       setOrder(found);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchOrder();
-  }, [id]);
+  }, [fetchOrder]);
 
   const handleReviewPOD = async (action) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/orders/${order.id}/review-pod`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action })
-      });
-      if (res.ok) fetchOrder();
+      const res = await logisticsAPI.reviewPod(order.id, action);
+      setOrder(res.data.order);
     } catch (err) {
       alert(err.message);
     }
@@ -46,15 +42,9 @@ export default function LogisticsOrderDetail() {
   const handleSendChat = async () => {
     if (!chatInput.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/orders/${order.id}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sender: 'Admin', message: chatInput })
-      });
-      if (res.ok) {
-        setChatInput('');
-        fetchOrder();
-      }
+      const res = await logisticsAPI.addChatMessage(order.id, { sender: 'Admin', message: chatInput });
+      setOrder(res.data.order);
+      setChatInput('');
     } catch (err) {
       alert(err.message);
     }
@@ -67,7 +57,7 @@ export default function LogisticsOrderDetail() {
     <>
       <TopBar breadcrumb="Operations / Logistics Tracker / Order Details" />
       
-      <div style={{ padding: "32px", maxWidth: "1200px" }}>
+      <div className="admin-page" style={{ maxWidth: "1200px" }}>
         
         <button 
           onClick={() => navigate('/admin/logistics')}
@@ -89,7 +79,7 @@ export default function LogisticsOrderDetail() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+        <div className="admin-form-grid" style={{ gap: '40px' }}>
           
           {/* Left Column: Tracking Pipeline */}
           <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid var(--border-light)", padding: "32px" }}>

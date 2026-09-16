@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, FileText, Newspaper, Briefcase, Plus, Image, Package } from 'lucide-react';
 import TopBar from '../components/TopBar';
-import { crmAPI, cmsAPI } from '../utils/api';
+import { crmAPI, dashboardAPI } from '../utils/api';
 import { format } from 'date-fns';
 
 const Dashboard = () => {
@@ -14,18 +14,18 @@ const Dashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      const [enquiriesRes, applicationsRes, newsRes, careersRes] = await Promise.all([
+      const [summaryRes, enquiriesRes] = await Promise.all([
+        dashboardAPI.summary(),
         crmAPI.getEnquiries({}),
-        crmAPI.getApplications({}),
-        cmsAPI.getNews(),
-        cmsAPI.getCareers(),
       ]);
 
+      const summary = summaryRes.data?.data || {};
+
       setStats({
-        enquiries: enquiriesRes.data?.length || 0,
-        applications: applicationsRes.data?.length || 0,
-        news: newsRes.data?.length || 0,
-        jobs: careersRes.data?.length || 0,
+        enquiries: summary.enquiries || 0,
+        applications: summary.applications || 0,
+        news: summary.publishedNews || 0,
+        jobs: summary.openJobs || 0,
       });
 
       setRecentEnquiries((enquiriesRes.data || []).slice(0, 5));
@@ -37,7 +37,6 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDashboardData();
   }, []);
 
@@ -62,14 +61,14 @@ const Dashboard = () => {
           <p style={{ color: 'var(--admin-text-muted)', fontSize: '14px' }}>{format(new Date(), 'EEEE, d MMMM yyyy')}</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+        <div className="admin-kpi-grid">
           <KPICard icon={<Mail size={32} />} iconColor="var(--admin-red)" label="Total Enquiries" value={stats.enquiries} trend={`${stats.enquiries} total`} />
           <KPICard icon={<FileText size={32} />} iconColor="var(--admin-blue)" label="Job Applications" value={stats.applications} trend={`${stats.applications} total`} />
           <KPICard icon={<Newspaper size={32} />} iconColor="var(--admin-amber)" label="Active Announcements" value={stats.news} trend="Published" />
           <KPICard icon={<Briefcase size={32} />} iconColor="var(--admin-green)" label="Open Positions" value={stats.jobs} trend="Active jobs" />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
+        <div className="admin-dashboard-grid">
           <div className="card">
             <div className="card-header"><h2 className="card-title">Recent Enquiries</h2><p className="card-subtitle">Latest customer inquiries</p></div>
             {loading ? (
@@ -83,7 +82,7 @@ const Dashboard = () => {
                     {recentEnquiries.map((enq) => (<tr key={enq.id}><td>{enq.fullName}</td><td>{enq.companyName}</td><td>{enq.inquiryType}</td><td className="text-mono">{format(new Date(enq.submittedAt), 'MMM d')}</td><td>{getStatusBadge(enq.status || 'New')}</td></tr>))}
                   </tbody></table>
                 </div>
-                <div style={{ marginTop: '16px', textAlign: 'center' }}><Link to="/admin/crm/enquiries" className="btn btn-secondary">View All Enquiries</Link></div>
+                <div style={{ marginTop: '16px', textAlign: 'center' }}><Link to="/admin/messages" className="btn btn-secondary">View All Enquiries</Link></div>
               </>
             )}
           </div>

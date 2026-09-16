@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Sidebar from './components/Sidebar';
@@ -42,6 +42,18 @@ const ProtectedRoute = ({ children }) => {
 
 const AdminLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 768px)');
+    const collapseForMobile = (event) => {
+      if (event.matches) setCollapsed(true);
+    };
+
+    collapseForMobile(mobileQuery);
+    mobileQuery.addEventListener('change', collapseForMobile);
+    return () => mobileQuery.removeEventListener('change', collapseForMobile);
+  }, []);
+
   return (
     <div className="admin-layout">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -50,24 +62,11 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-const MobileWarning = () => (
-  <div className="mobile-warning">
-    <div className="mobile-warning-content">
-      <h1>Desktop Required</h1>
-      <p>For the best admin experience, please use a desktop or laptop computer.</p>
-      <p style={{ marginTop: '16px', fontSize: '13px' }}>
-        The admin panel is optimized for larger screens and is not available on mobile devices.
-      </p>
-    </div>
-  </div>
-);
-
 function AdminApp() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <MobileWarning />
-        <div className="desktop-only" style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '100vh' }}>
           <Routes>
             <Route path="/admin/login" element={<Login />} />
             <Route

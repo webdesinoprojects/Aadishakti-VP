@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import DragDropUpload from '../../components/DragDropUpload';
+import { buildApiUrl } from '../../config/api';
 
 export default function VendorRegister() {
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
     gstNumber: '',
@@ -28,9 +30,29 @@ export default function VendorRegister() {
     setStep(2);
   };
 
-  const submitApplication = (e) => {
+  const submitApplication = async (e) => {
     e.preventDefault();
-    setStep(3);
+    setSubmitting(true);
+    try {
+      const payload = new FormData();
+      payload.append('companyName', formData.companyName);
+      payload.append('gstNumber', formData.gstNumber);
+      payload.append('panNumber', formData.panNumber);
+      payload.append('category', formData.category);
+      if (formData.msmeDoc) payload.append('msmeDoc', formData.msmeDoc);
+      if (formData.bankDoc) payload.append('bankDoc', formData.bankDoc);
+      if (formData.qualityDoc) payload.append('qualityDoc', formData.qualityDoc);
+      const response = await fetch(buildApiUrl('/api/registrations/vendor'), { method: 'POST', body: payload });
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || 'Registration could not be submitted.');
+      }
+      setStep(3);
+    } catch (error) {
+      window.alert(error.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const getStepStyle = (targetStep) => {
@@ -138,7 +160,7 @@ export default function VendorRegister() {
 
             <div style={{ display: 'flex', gap: '15px' }}>
               <button type="button" onClick={() => setStep(1)} style={{ padding: '14px', flex: 1, textAlign: 'center', background: 'none', border: '1px solid var(--border-light)', color: 'var(--text-primary)', fontWeight: '600', fontSize: '13px', cursor: 'pointer', borderRadius: '4px' }}>Back</button>
-              <button type="submit" style={{ padding: '14px', flex: 1, background: 'var(--red-core)', color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase', borderRadius: '4px' }}>Submit Application</button>
+              <button type="submit" disabled={submitting} style={{ padding: '14px', flex: 1, background: 'var(--red-core)', color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', letterSpacing: '0.1em', cursor: 'pointer', textTransform: 'uppercase', borderRadius: '4px' }}>{submitting ? 'Submitting...' : 'Submit Application'}</button>
             </div>
           </form>
         )}

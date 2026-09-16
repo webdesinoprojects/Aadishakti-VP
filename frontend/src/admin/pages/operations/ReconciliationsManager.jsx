@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'react';
 import TopBar from '../../components/TopBar';
-import { CheckCircle, AlertCircle, FileText, Download } from 'lucide-react';
-import { buildApiUrl } from '../../../config/api';
+import { CheckCircle, FileText, Download } from 'lucide-react';
+import { operationsAPI } from '../../utils/api';
 
 export default function ReconciliationsManager() {
-  const [soas, setSoas] = useState([
-    { id: 1, userId: 'V-8821', role: 'Vendor', quarter: 'Q1 2026', fileName: 'soa_v1.pdf', originalName: 'SOA_V8821.pdf', status: 'Pending Verification', createdAt: new Date(Date.now() - 86400000).toISOString() },
-    { id: 2, userId: 'C-3029', role: 'Customer', quarter: 'Q1 2026', fileName: 'soa_c1.pdf', originalName: 'Statement_C3029.pdf', status: 'Verified', createdAt: new Date(Date.now() - 500000000).toISOString() },
-    { id: 3, userId: 'V-1044', role: 'Vendor', quarter: 'Q4 2025', fileName: 'soa_v2.pdf', originalName: 'Vendor_SOA_Q4.pdf', status: 'Pending Verification', createdAt: new Date(Date.now() - 172800000).toISOString() }
-  ]);
+  const [soas, setSoas] = useState([]);
+
+  useEffect(() => {
+    operationsAPI.getReconciliations({})
+      .then((response) => setSoas(response.data || []))
+      .catch((error) => console.error('Failed to load reconciliations', error));
+  }, []);
 
   const handleVerify = async (id) => {
     if (!window.confirm('Are you sure you want to verify this SOA? It will be locked permanently.')) return;
-    setSoas(prev => prev.map(s => s.id === id ? { ...s, status: 'Verified' } : s));
+    try {
+      const response = await operationsAPI.reviewReconciliation(id, { action: 'verify' });
+      setSoas(prev => prev.map(statement => statement.id === id ? response.data : statement));
+    } catch (error) {
+      console.error('Failed to verify reconciliation', error);
+    }
   };
 
   const pendingSoas = soas.filter(s => s.status === 'Pending Verification');
@@ -47,7 +54,7 @@ export default function ReconciliationsManager() {
                   </div>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <a 
-                      href={buildApiUrl(`/uploads/soas/${soa.fileName}`)} 
+                      href={soa.documentUrl}
                       target="_blank" 
                       rel="noreferrer"
                       style={{ background: '#fff', color: '#0f172a', border: '1px solid #cbd5e1', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '13px', textDecoration: 'none' }}>
@@ -67,7 +74,7 @@ export default function ReconciliationsManager() {
 
         <div>
           <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '20px', color: '#64748b' }}>Verified History</h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', background: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+          <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', background: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left', background: '#f8fafc', color: '#64748b' }}>
                 <th style={{ padding: '16px' }}>Partner ID</th>
@@ -84,7 +91,7 @@ export default function ReconciliationsManager() {
                   <td style={{ padding: '16px' }}>{soa.role}</td>
                   <td style={{ padding: '16px' }}>{soa.quarter}</td>
                   <td style={{ padding: '16px' }}>
-                    <a href={buildApiUrl(`/uploads/soas/${soa.fileName}`)} target="_blank" rel="noreferrer" style={{ color: '#2563eb', textDecoration: 'none' }}>View File</a>
+                    <a href={soa.documentUrl} target="_blank" rel="noreferrer" style={{ color: '#2563eb', textDecoration: 'none' }}>View File</a>
                   </td>
                   <td style={{ padding: '16px', color: '#166534', fontWeight: '600' }}><CheckCircle size={14} style={{ display: 'inline', verticalAlign: 'text-bottom' }} /> Verified</td>
                 </tr>

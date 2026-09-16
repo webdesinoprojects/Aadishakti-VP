@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { X, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
 
 const ToastContext = createContext(null);
@@ -15,8 +15,11 @@ export const useToast = () => {
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const addToast = (message, type = 'info') => {
-    // eslint-disable-next-line react-hooks/purity
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
+
+  const addToast = useCallback((message, type = 'info') => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
     
@@ -24,19 +27,16 @@ export const ToastProvider = ({ children }) => {
     setTimeout(() => {
       removeToast(id);
     }, 4000);
-  };
+  }, [removeToast]);
 
-  const removeToast = (id) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
-
-  const success = (message) => addToast(message, 'success');
-  const error = (message) => addToast(message, 'error');
-  const warning = (message) => addToast(message, 'warning');
-  const info = (message) => addToast(message, 'info');
+  const success = useCallback((message) => addToast(message, 'success'), [addToast]);
+  const error = useCallback((message) => addToast(message, 'error'), [addToast]);
+  const warning = useCallback((message) => addToast(message, 'warning'), [addToast]);
+  const info = useCallback((message) => addToast(message, 'info'), [addToast]);
+  const value = useMemo(() => ({ success, error, warning, info }), [success, error, warning, info]);
 
   return (
-    <ToastContext.Provider value={{ success, error, warning, info }}>
+    <ToastContext.Provider value={value}>
       {children}
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </ToastContext.Provider>
