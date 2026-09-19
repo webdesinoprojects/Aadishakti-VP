@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { buildApiUrl } from '../../config/api';
+import vendorApi from '../../services/vendorApi';
 
 export default function VendorChatBubble() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,20 +36,11 @@ export default function VendorChatBubble() {
     setIsTyping(true);
 
     try {
-      const res = await fetch(buildApiUrl('/api/vendor/chat'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessages(prev => [...prev, { sender: 'ai', text: data.reply }]);
-      } else {
-        setMessages(prev => [...prev, { sender: 'ai', text: `Error: ${data.error}` }]);
-      }
+      const data = await vendorApi.askAssistant(text);
+      setMessages(prev => [...prev, { sender: 'ai', text: data.reply }]);
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { sender: 'ai', text: "Sorry, I couldn't connect to the server." }]);
+      setMessages(prev => [...prev, { sender: 'ai', text: err.response?.data?.error || "Sorry, I couldn't connect to the server." }]);
     } finally {
       setIsTyping(false);
     }

@@ -3,6 +3,18 @@ import TopBar from '../../components/TopBar';
 import { CheckCircle, XCircle, ArrowRight, X } from 'lucide-react';
 import { operationsAPI } from '../../utils/api';
 
+const fieldLabel = (key) => ({
+  email: 'Email Address', phone: 'Phone', mobile: 'Mobile', taxReference: 'Tax Reference',
+  gst: 'GST', bankAccountNo: 'Account No', ifsc: 'IFSC',
+}[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, (letter) => letter.toUpperCase()));
+
+const ProfileValues = ({ data = {}, compare = {} }) => {
+  const keys = [...new Set([...Object.keys(compare || {}), ...Object.keys(data || {})])];
+  return <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
+    {keys.map((key) => <div key={key} style={{ color: compare[key] !== undefined && compare[key] !== data[key] ? '#2563eb' : 'inherit' }}><strong>{fieldLabel(key)}:</strong> {data[key] || 'N/A'}</div>)}
+  </div>;
+};
+
 export default function VendorApprovalsManager() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [requests, setRequests] = useState([]);
@@ -50,7 +62,7 @@ export default function VendorApprovalsManager() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
                   <div>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>Vendor: {req.vendorId}</h4>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>Partner: {req.vendorId}</h4>
                     <div style={{ fontSize: '13px', color: '#64748b' }}>Request ID: {req.requestReference} • Submitted: {new Date(req.createdAt).toLocaleString()}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
@@ -70,28 +82,14 @@ export default function VendorApprovalsManager() {
                 <div className="admin-comparison-grid" style={{ background: '#f8fafc', padding: '20px', borderRadius: '6px' }}>
                   <div>
                     <h5 style={{ margin: '0 0 12px 0', fontSize: '12px', textTransform: 'uppercase', color: '#64748b' }}>Current Data</h5>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
-                      <div><strong>GST:</strong> {req.oldData.gst || 'N/A'}</div>
-                      <div><strong>Account No:</strong> {req.oldData.bankAccountNo || 'N/A'}</div>
-                      <div><strong>IFSC:</strong> {req.oldData.ifsc || 'N/A'}</div>
-                    </div>
+                    <ProfileValues data={req.oldData} />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'center', color: '#94a3b8' }}>
                     <ArrowRight size={24} />
                   </div>
                   <div>
                     <h5 style={{ margin: '0 0 12px 0', fontSize: '12px', textTransform: 'uppercase', color: '#2563eb' }}>Requested Changes</h5>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
-                      <div style={{ color: req.oldData.gst !== req.newData.gst ? '#2563eb' : 'inherit' }}>
-                        <strong>GST:</strong> {req.newData.gst || 'N/A'}
-                      </div>
-                      <div style={{ color: req.oldData.bankAccountNo !== req.newData.bankAccountNo ? '#2563eb' : 'inherit' }}>
-                        <strong>Account No:</strong> {req.newData.bankAccountNo || 'N/A'}
-                      </div>
-                      <div style={{ color: req.oldData.ifsc !== req.newData.ifsc ? '#2563eb' : 'inherit' }}>
-                        <strong>IFSC:</strong> {req.newData.ifsc || 'N/A'}
-                      </div>
-                    </div>
+                    <ProfileValues data={req.newData} compare={req.oldData} />
                   </div>
                 </div>
               </div>
@@ -106,7 +104,7 @@ export default function VendorApprovalsManager() {
           <thead>
             <tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
               <th style={{ padding: '12px' }}>Request ID</th>
-              <th style={{ padding: '12px' }}>Vendor</th>
+              <th style={{ padding: '12px' }}>Partner</th>
               <th style={{ padding: '12px' }}>Date</th>
               <th style={{ padding: '12px' }}>Status</th>
             </tr>
@@ -149,7 +147,7 @@ export default function VendorApprovalsManager() {
             <div style={{ fontSize: '16px', fontWeight: '600' }}>{selectedRequest.requestReference}</div>
           </div>
           <div style={{ marginBottom: '24px' }}>
-            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>Vendor ID</div>
+            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>Partner ID</div>
             <div style={{ fontSize: '16px', fontWeight: '600' }}>{selectedRequest.vendorId}</div>
           </div>
           <div style={{ marginBottom: '24px' }}>
@@ -162,18 +160,10 @@ export default function VendorApprovalsManager() {
           </div>
 
           <h3 style={{ fontSize: '14px', textTransform: 'uppercase', color: '#64748b', marginBottom: '16px', letterSpacing: '0.05em' }}>Current Data</h3>
-          <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div><strong>GST:</strong> {selectedRequest.oldData.gst || 'N/A'}</div>
-            <div><strong>Account No:</strong> {selectedRequest.oldData.bankAccountNo || 'N/A'}</div>
-            <div><strong>IFSC:</strong> {selectedRequest.oldData.ifsc || 'N/A'}</div>
-          </div>
+          <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}><ProfileValues data={selectedRequest.oldData} /></div>
 
           <h3 style={{ fontSize: '14px', textTransform: 'uppercase', color: '#2563eb', marginBottom: '16px', letterSpacing: '0.05em' }}>Requested Changes</h3>
-          <div style={{ background: '#eff6ff', padding: '16px', borderRadius: '8px', fontSize: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ color: selectedRequest.oldData.gst !== selectedRequest.newData.gst ? '#2563eb' : 'inherit' }}><strong>GST:</strong> {selectedRequest.newData.gst || 'N/A'}</div>
-            <div style={{ color: selectedRequest.oldData.bankAccountNo !== selectedRequest.newData.bankAccountNo ? '#2563eb' : 'inherit' }}><strong>Account No:</strong> {selectedRequest.newData.bankAccountNo || 'N/A'}</div>
-            <div style={{ color: selectedRequest.oldData.ifsc !== selectedRequest.newData.ifsc ? '#2563eb' : 'inherit' }}><strong>IFSC:</strong> {selectedRequest.newData.ifsc || 'N/A'}</div>
-          </div>
+          <div style={{ background: '#eff6ff', padding: '16px', borderRadius: '8px' }}><ProfileValues data={selectedRequest.newData} compare={selectedRequest.oldData} /></div>
 
           {selectedRequest.status === 'Pending' && (
             <div style={{ display: 'flex', gap: '12px', marginTop: '40px' }}>

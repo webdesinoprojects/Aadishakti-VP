@@ -34,6 +34,9 @@ const vendorApi = {
   submitPod: (id, formData) => formRequest(`${workflow}/logistics/${encodeURIComponent(id)}/pod`, formData),
   getSupport: () => portalApiClient.get(`${workflow}/support`).then(unwrap),
   createSupport: (data) => portalApiClient.post(`${workflow}/support`, data).then(unwrap),
+  askAssistant: (message) => portalApiClient.post(`${workflow}/assistant`, { message }).then(unwrap),
+  getProfileUpdates: () => portalApiClient.get('/api/portal/operations/profile-updates').then(unwrap),
+  submitProfileUpdate: (data) => portalApiClient.post('/api/portal/operations/profile-updates', data).then(unwrap),
   getReconciliations: () => portalApiClient.get('/api/portal/operations/reconciliations').then(unwrap),
   submitReconciliation: (formData) => formRequest('/api/portal/operations/reconciliations', formData),
 };

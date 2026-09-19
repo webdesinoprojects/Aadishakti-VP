@@ -11,6 +11,14 @@ export class PortalAccountConfigurationError extends Error {
   }
 }
 
+export class PortalPasswordChangeError extends Error {
+  constructor(statusCode, message) {
+    super(message);
+    this.name = "PortalPasswordChangeError";
+    this.statusCode = statusCode;
+  }
+}
+
 const secureEqual = (left, right) => {
   const leftBuffer = Buffer.from(String(left));
   const rightBuffer = Buffer.from(String(right));
@@ -92,5 +100,33 @@ export const createPortalAccountService = ({ environment = process.env } = {}) =
     return toResolvedAccount(account);
   };
 
-  return { getAccounts, getAccountById, authenticate };
+  const changePassword = async ({ accountId, currentPassword, newPassword }) => {
+    if (!databaseEnabled || !isSupabaseEnabled()) {
+      throw new PortalPasswordChangeError(503, "Password changes require database-backed portal accounts.");
+    }
+    const current = String(currentPassword || "");
+    const replacement = String(newPassword || "");
+    if (!current) throw new PortalPasswordChangeError(400, "Current password is required.");
+    if (replacement.length < 8 || replacement.length > 128) {
+      throw new PortalPasswordChangeError(400, "New password must contain between 8 and 128 characters.");
+    }
+    if (current === replacement) {
+      throw new PortalPasswordChangeError(400, "New password must be different from the current password.");
+    }
+    const row = await findPortalAccountById(accountId);
+    if (!row || row.status === "inactive") throw new PortalPasswordChangeError(401, "Portal account is unavailable.");
+    if (!await bcrypt.compare(current, row.password_hash)) {
+      throw new PortalPasswordChangeError(400, "Current password is incorrect.");
+    }
+    await updatePortalAccountRow(row.id, {
+      password_hash: await bcrypt.hash(replacement, 12),
+      must_change_password: false,
+      failed_login_attempts: 0,
+      locked_until: null,
+      status: "active",
+    });
+    return { success: true };
+  };
+
+  return { getAccounts, getAccountById, authenticate, changePassword };
 };

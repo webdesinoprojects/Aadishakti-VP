@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 import TopBar from '../../components/TopBar';
 import { CheckCircle, FileText, Download } from 'lucide-react';
 import { operationsAPI } from '../../utils/api';
+import ConfirmModal from '../../components/ConfirmModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function ReconciliationsManager() {
   const [soas, setSoas] = useState([]);
+  const [verificationTarget, setVerificationTarget] = useState(null);
+  const { success, error: showError } = useToast();
 
   useEffect(() => {
     operationsAPI.getReconciliations({})
@@ -13,12 +17,13 @@ export default function ReconciliationsManager() {
   }, []);
 
   const handleVerify = async (id) => {
-    if (!window.confirm('Are you sure you want to verify this SOA? It will be locked permanently.')) return;
     try {
       const response = await operationsAPI.reviewReconciliation(id, { action: 'verify' });
       setSoas(prev => prev.map(statement => statement.id === id ? response.data : statement));
-    } catch (error) {
-      console.error('Failed to verify reconciliation', error);
+      setVerificationTarget(null);
+      success('Statement verified and locked.');
+    } catch (requestError) {
+      showError(requestError.response?.data?.error || 'Failed to verify reconciliation.');
     }
   };
 
@@ -61,7 +66,7 @@ export default function ReconciliationsManager() {
                       <Download size={16} /> View Document
                     </a>
                     <button 
-                      onClick={() => handleVerify(soa.id)}
+                      onClick={() => setVerificationTarget(soa)}
                       style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '13px' }}>
                       <CheckCircle size={16} /> Verify & Lock
                     </button>
@@ -100,6 +105,15 @@ export default function ReconciliationsManager() {
           </table>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={Boolean(verificationTarget)}
+        onClose={() => setVerificationTarget(null)}
+        onConfirm={() => handleVerify(verificationTarget.id)}
+        title="Verify Statement of Account"
+        message="Verify this SOA and lock it permanently?"
+        confirmText="Verify & Lock"
+        type="primary"
+      />
     </>
   );
 }

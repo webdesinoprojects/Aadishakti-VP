@@ -2,6 +2,8 @@ import VendorDataState from '../components/VendorDataState';
 import VendorPageHeader from '../components/VendorPageHeader';
 import { useVendorProfile } from '../hooks/useVendorApi';
 import { formatVendorAmount, formatVendorValue } from '../utils/vendorFormatters';
+import PortalAccountWorkspace from '../../portal/PortalAccountWorkspace';
+import vendorApi from '../../services/vendorApi';
 
 function ReadOnlyField({ label, value }) {
   return (
@@ -35,9 +37,10 @@ export default function MyProfilePage() {
           <ReadOnlyField label="Current Account Balance" value={formatVendorAmount(data.accountBalance, data.currency)} />
         </div>
         <p style={{ marginTop: '28px', padding: '16px', background: '#f8fafc', color: 'var(--text-muted)', borderRadius: '6px' }}>
-          CIS is read-only. Profile updates, bank details, and password management require the later database-backed workflow.
+          CIS fields are read-only. Use the request form below for verified corrections; your portal password can be changed separately.
         </p>
       </div>
+      <PortalAccountWorkspace api={vendorApi} profile={data} role="vendor" />
     </div>
   );
 }

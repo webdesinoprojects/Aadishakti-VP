@@ -19,6 +19,7 @@ import PaymentsPage from './pages/PaymentsPage';
 import SustainabilityReportsPage from './pages/SustainabilityReportsPage';
 import SupportPage from './pages/SupportPage';
 import ReturnsPage from './pages/ReturnsPage';
+import CustomerChatBubble from './components/CustomerChatBubble';
 import { usePortalSession } from '../portal/usePortalSession';
 
 export default function CustomerApp() {
@@ -67,6 +68,7 @@ export default function CustomerApp() {
             <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />
           </Routes>
         </main>
+        <CustomerChatBubble />
       </div>
     </>
   );

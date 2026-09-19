@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import TopBar from '../../components/TopBar';
 import ImageLightbox from '../../../components/ImageLightbox';
 import { logisticsAPI } from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
 
 export default function LogisticsOrderDetail() {
   const { id } = useParams();
@@ -13,6 +14,7 @@ export default function LogisticsOrderDetail() {
   const [loading, setLoading] = useState(true);
   const [lightboxImages, setLightboxImages] = useState([]);
   const [chatInput, setChatInput] = useState('');
+  const { error: showError } = useToast();
 
   const fetchOrder = useCallback(async () => {
     try {
@@ -35,7 +37,7 @@ export default function LogisticsOrderDetail() {
       const res = await logisticsAPI.reviewPod(order.id, action);
       setOrder(res.data.order);
     } catch (err) {
-      alert(err.message);
+      showError(err.response?.data?.error || err.message || 'Unable to review proof of delivery.');
     }
   };
 
@@ -46,7 +48,7 @@ export default function LogisticsOrderDetail() {
       setOrder(res.data.order);
       setChatInput('');
     } catch (err) {
-      alert(err.message);
+      showError(err.response?.data?.error || err.message || 'Unable to send the message.');
     }
   };
 

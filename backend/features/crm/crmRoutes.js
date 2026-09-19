@@ -137,8 +137,7 @@ enquiryWorkflowRoutes.post(
   }),
 );
 
-crmLookupRoutes.use(useSupabaseOrContinue, requireAdmin, requirePermission(ADMIN_PERMISSIONS.CRM_READ));
-crmLookupRoutes.get("/vendors", (_req, res) => {
+crmLookupRoutes.get("/vendors", useSupabaseOrContinue, requireAdmin, requirePermission(ADMIN_PERMISSIONS.CRM_READ), (_req, res) => {
   // CIS does not expose an all-vendors directory in the currently supplied contract.
   // Return an honest empty result until a real directory source is approved.
   res.json([]);

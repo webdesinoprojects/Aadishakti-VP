@@ -13,6 +13,7 @@ import PaymentsPage from './pages/PaymentsPage';
 import DocumentsPage from './pages/DocumentsPage';
 import PerformancePage from './pages/PerformancePage';
 import LogisticsTrackerPage from './pages/LogisticsTrackerPage';
+import VendorChatBubble from './components/VendorChatBubble';
 import './vendor.css';
 import { usePortalSession } from '../portal/usePortalSession';
 
@@ -64,6 +65,7 @@ export default function VendorApp() {
               <Route path="*" element={<Navigate to="/vendor/dashboard" replace />} />
             </Routes>
           </main>
+          <VendorChatBubble />
         </div>
       </div>
     </ProtectedVendorRoute>

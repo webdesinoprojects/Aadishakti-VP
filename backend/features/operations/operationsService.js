@@ -87,6 +87,7 @@ export const reviewRegistration = async (id, input, adminId) => {
 const profileUpdateFromDb = (row) => ({
   id: row.id,
   requestReference: row.request_reference,
+  portalAccountId: row.portal_account_id,
   vendorId: row.partner_id,
   partnerId: row.partner_id,
   role: titleStatus(row.partner_role),
@@ -105,12 +106,35 @@ export const submitProfileUpdate = async (input, account) => {
     throw badRequest("Current and requested profile data must be objects.");
   }
   const row = await insertOperationRow("profile_update_requests", {
+    portal_account_id: account.id,
     partner_id: account.cardCode || account.sapCardCode || account.id,
     partner_role: account.role,
     old_data: oldData,
     new_data: newData,
   });
   return profileUpdateFromDb(row);
+};
+
+export const listPartnerProfileUpdates = async (account) => {
+  const partnerIds = [
+    account.id,
+    account.cardCode,
+    account.sapCardCode,
+    ...(account.mappings || []).map((mapping) => mapping.cardCode),
+  ].filter(Boolean);
+  const client = getSupabaseAdminClient();
+  const requests = [
+    client.from("profile_update_requests").select("*").eq("portal_account_id", account.id).order("created_at", { ascending: false }),
+  ];
+  if (partnerIds.length) {
+    requests.push(client.from("profile_update_requests").select("*").eq("partner_role", account.role).in("partner_id", partnerIds).order("created_at", { ascending: false }));
+  }
+  const results = await Promise.all(requests);
+  results.forEach(({ error }) => throwOnSupabaseError(error, "list partner profile updates"));
+  const unique = new Map(results.flatMap(({ data }) => data || []).map((row) => [row.id, row]));
+  return [...unique.values()]
+    .sort((left, right) => String(right.created_at).localeCompare(String(left.created_at)))
+    .map(profileUpdateFromDb);
 };
 
 export const listProfileUpdates = async (query = {}) =>

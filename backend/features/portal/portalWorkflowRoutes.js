@@ -4,6 +4,8 @@ import multer from "multer";
 import { createPortalAuth } from "../../middleware/portalAuth.js";
 import { asyncHandler } from "../../shared/asyncHandler.js";
 import { badRequest } from "../../shared/errors.js";
+import { createRateLimit } from "../../middleware/rateLimit.js";
+import { askPortalAssistant } from "./portalAssistantService.js";
 import {
   createSupportTicket,
   getVendorPerformance,
@@ -33,6 +35,13 @@ const documentUpload = multer({
     callback(allowed ? null : badRequest("Unsupported document type."), allowed);
   },
 });
+const assistantLimit = createRateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 30,
+  keyPrefix: "portal-assistant",
+  code: "ASSISTANT_RATE_LIMITED",
+  message: "Too many assistant requests. Please wait and try again.",
+});
 
 const buildRouter = (role) => {
   const router = express.Router();
@@ -47,6 +56,7 @@ const buildRouter = (role) => {
   router.get("/support", asyncHandler(async (req, res) => res.json(await listSupportTickets(req.portalAccount))));
   router.post("/support", asyncHandler(async (req, res) => res.status(201).json(await createSupportTicket(req.portalAccount, req.body || {}))));
   router.post("/support/:id/messages", asyncHandler(async (req, res) => res.status(201).json(await replyToSupportTicket(req.portalAccount, req.params.id, req.body || {}))));
+  router.post("/assistant", assistantLimit, asyncHandler(async (req, res) => res.json(await askPortalAssistant(req.portalAccount, req.body || {}))));
   return router;
 };
 

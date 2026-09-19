@@ -2,6 +2,8 @@ import CustomerDataState from '../components/CustomerDataState';
 import CustomerPageHeader from '../components/CustomerPageHeader';
 import { useCustomerProfile } from '../hooks/useCustomerApi';
 import { formatAmount, formatValue } from '../utils/customerFormatters';
+import PortalAccountWorkspace from '../../portal/PortalAccountWorkspace';
+import customerApi from '../../services/customerApi';
 
 function ReadOnlyField({ label, value }) {
   return (
@@ -46,9 +48,10 @@ export default function MyProfilePage() {
         </div>
 
         <div style={{ marginTop: '28px', padding: '16px', background: '#f8fafc', color: 'var(--text-muted)', borderRadius: '6px' }}>
-          Profile editing and password management are unavailable in this read-only CIS integration.
+          CIS fields are read-only. Use the request form below for verified corrections; your portal password can be changed separately.
         </div>
       </div>
+      <PortalAccountWorkspace api={customerApi} profile={data} role="customer" />
     </div>
   );
 }

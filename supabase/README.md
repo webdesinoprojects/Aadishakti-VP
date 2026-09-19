@@ -12,6 +12,8 @@ Current order:
 
 5. `005_logistics_portal_ownership.sql` - Explicit vendor/customer ownership for account-scoped tracking and proof workflows.
 
+6. `006_profile_update_account_ownership.sql` - Portal-account ownership for scoped profile-update submission and history.
+
 Naming convention for every future migration:
 
 ```text
