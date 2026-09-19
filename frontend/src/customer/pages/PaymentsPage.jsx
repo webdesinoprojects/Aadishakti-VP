@@ -9,6 +9,8 @@ import {
   formatSapDate,
   UNKNOWN_TRANSACTION_CURRENCY_NOTE,
 } from '../utils/customerFormatters';
+import PortalReceiptsWorkspace from '../../portal/PortalReceiptsWorkspace';
+import customerApi from '../../services/customerApi';
 
 export default function PaymentsPage() {
   const [page, setPage] = useState(1);
@@ -41,14 +43,14 @@ export default function PaymentsPage() {
             </thead>
             <tbody>
               {data.items.map((payment) => (
-                <tr key={payment.id}>
+                <tr key={`${payment.companyCode || 'single'}-${payment.id}`}>
                   <td style={{ fontWeight: 600 }}>{payment.number}</td>
                   <td>{formatSapDate(payment.date)}</td>
                   <td className="customer-amount-value">{formatAmount(payment.cashAmount)}</td>
                   <td className="customer-amount-value">{formatAmount(payment.transferAmount)}</td>
                   <td className="customer-amount-value customer-total-value">{formatAmount(payment.totalPaymentAmount)}</td>
                   <td>
-                    <button className="customer-btn-outline" onClick={() => setSelected(payment.id)}>
+                    <button className="customer-btn-outline" onClick={() => setSelected(payment)}>
                       View Summary
                     </button>
                   </td>
@@ -73,6 +75,7 @@ export default function PaymentsPage() {
         docEntry={selected}
         onClose={() => setSelected(null)}
       />
+      <PortalReceiptsWorkspace api={customerApi} role="customer" />
     </div>
   );
 }

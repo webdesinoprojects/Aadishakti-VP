@@ -18,6 +18,7 @@ import MyProfilePage from './pages/MyProfilePage';
 import PaymentsPage from './pages/PaymentsPage';
 import SustainabilityReportsPage from './pages/SustainabilityReportsPage';
 import SupportPage from './pages/SupportPage';
+import ReturnsPage from './pages/ReturnsPage';
 import { usePortalSession } from '../portal/usePortalSession';
 
 export default function CustomerApp() {
@@ -60,6 +61,7 @@ export default function CustomerApp() {
             <Route path="/customer/documents" element={<DocumentsPage />} />
             <Route path="/customer/payments" element={<PaymentsPage />} />
             <Route path="/customer/sustainability" element={<SustainabilityReportsPage />} />
+            <Route path="/customer/returns" element={<ReturnsPage />} />
             <Route path="/customer/support" element={<SupportPage />} />
             <Route path="/customer/profile" element={<MyProfilePage />} />
             <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />

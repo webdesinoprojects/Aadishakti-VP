@@ -1,5 +1,6 @@
-import UnavailableFeature from '../../portal/UnavailableFeature';
+import CustomerPageHeader from '../components/CustomerPageHeader';
+import CustomerRequestsWorkspace from '../components/CustomerRequestsWorkspace';
 
 export default function SustainabilityReportsPage() {
-  return <UnavailableFeature title="Sustainability Reports & COA" description="CIS does not provide sustainability reports, certificates of analysis, or downloadable report files." />;
+  return <div style={{ padding: '40px' }}><CustomerPageHeader title="Sustainability Reports & COA" subtitle="Request Aadishakti-issued reports and certificates and track fulfilment." /><CustomerRequestsWorkspace defaultType="sustainability_report" requestTypes={[{ value: 'sustainability_report', label: 'Sustainability Report' }, { value: 'coa', label: 'Certificate of Analysis' }, { value: 'document', label: 'Other Document' }]} /></div>;
 }

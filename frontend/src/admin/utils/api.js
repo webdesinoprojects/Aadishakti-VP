@@ -136,6 +136,30 @@ export const operationsAPI = {
   reviewReconciliation: (id, data) => api.patch(`/api/admin/operations/reconciliations/${id}/review`, data),
 };
 
+export const portalAccountsAPI = {
+  list: (params) => api.get('/api/admin/portal/accounts', { params }),
+  create: (data) => api.post('/api/admin/portal/accounts', data),
+  update: (id, data) => api.patch(`/api/admin/portal/accounts/${id}`, data),
+  resetPassword: (id, data = {}) => api.post(`/api/admin/portal/accounts/${id}/reset-password`, data),
+};
+
+export const portalWorkflowsAPI = {
+  documents: () => api.get('/api/admin/portal/workflows/documents'),
+  reviewDocument: (id, data) => api.patch(`/api/admin/portal/workflows/documents/${id}`, data),
+  receipts: () => api.get('/api/admin/portal/workflows/receipts'),
+  reviewReceipt: (id, data) => api.patch(`/api/admin/portal/workflows/receipts/${id}`, data),
+  customerRequests: () => api.get('/api/admin/portal/workflows/customer-requests'),
+  reviewCustomerRequest: (id, data) => api.patch(`/api/admin/portal/workflows/customer-requests/${id}`, data),
+  support: () => api.get('/api/admin/portal/workflows/support'),
+  replySupport: (id, data) => api.post(`/api/admin/portal/workflows/support/${id}/messages`, data),
+  rfqs: () => api.get('/api/admin/portal/workflows/rfqs'),
+  createRfq: (data) => api.post('/api/admin/portal/workflows/rfqs', data),
+  assignRfq: (id, data) => api.post(`/api/admin/portal/workflows/rfqs/${id}/assign`, data),
+  quotations: () => api.get('/api/admin/portal/workflows/quotations'),
+  reviewQuotation: (id, data) => api.patch(`/api/admin/portal/workflows/quotations/${id}`, data),
+  savePerformance: (data) => api.post('/api/admin/portal/workflows/performance', data),
+};
+
 export const logisticsAPI = {
   list: () => api.get('/api/orders'),
   create: (data) => api.post('/api/orders/create', data),

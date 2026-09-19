@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { badRequest, notFound } from "../../shared/errors.js";
+import { getSupabaseAdminClient, throwOnSupabaseError } from "../../infrastructure/supabase/supabaseClients.js";
 import { uploadMediaBuffer } from "../media/mediaService.js";
 import { findOperationRow, insertOperationRow, listOperationRows, updateOperationRow } from "./operationsRepository.js";
 
@@ -26,6 +27,7 @@ const registrationFromDb = (row) => ({
   documents: { msme: row.msme?.url || null, bank: row.bank?.url || null, quality: row.quality?.url || null },
   status: titleStatus(row.status),
   assignedId: row.assigned_partner_id,
+  portalAccountId: row.portal_account_id,
   reviewNote: row.review_note,
   reviewedAt: row.reviewed_at,
   createdAt: row.created_at,
@@ -73,6 +75,7 @@ export const reviewRegistration = async (id, input, adminId) => {
   const row = await updateOperationRow("partner_registrations", id, {
     status,
     assigned_partner_id: status === "approved" ? assignedId : null,
+    portal_account_id: status === "approved" ? (text(input.portalAccountId) || null) : null,
     review_note: text(input.reviewNote),
     reviewed_by: adminId,
     reviewed_at: new Date().toISOString(),
@@ -156,6 +159,14 @@ export const submitReconciliation = async (input, file, account) => {
 export const listReconciliations = async (query = {}) =>
   (await listOperationRows("reconciliations", { columns: reconciliationColumns, status: query.status })).map(reconciliationFromDb);
 
+export const listPartnerReconciliations = async (account) => {
+  const partnerIds = [account.id, account.cardCode, ...(account.mappings || []).map((mapping) => mapping.cardCode)].filter(Boolean);
+  const { data, error } = await getSupabaseAdminClient().from("reconciliations").select(reconciliationColumns)
+    .eq("partner_role", account.role).in("partner_id", partnerIds).order("created_at", { ascending: false });
+  throwOnSupabaseError(error, "list partner reconciliations");
+  return (data || []).map(reconciliationFromDb);
+};
+
 export const reviewReconciliation = async (id, input, adminId) => {
   const action = text(input.action || "verify").toLowerCase();
   if (!new Set(["verify", "verified", "reject", "rejected"]).has(action)) throw badRequest("Reconciliation action must verify or reject.");
@@ -173,6 +184,7 @@ export const reviewReconciliation = async (id, input, adminId) => {
 
 const logisticsFromDb = (row) => ({
   id: row.id, enquiryId: row.enquiry_reference, vendorId: row.vendor_id, vendorName: row.vendor_name,
+  vendorAccountId: row.vendor_account_id, customerAccountId: row.customer_account_id,
   customerName: row.customer_name, product: row.product, amount: row.amount, status: row.status,
   tracking: row.tracking, chatHistory: row.chat_history, podStatus: row.pod_status,
   podImage: row.pod_image_url, paymentProof: row.payment_proof_url, createdAt: row.created_at, updatedAt: row.updated_at,
@@ -191,6 +203,8 @@ export const createLogisticsOrder = async (input, adminId) => {
     id,
     enquiry_reference: text(input.enquiryId) || null,
     vendor_id: text(input.vendorId) || null,
+    vendor_account_id: text(input.vendorAccountId) || null,
+    customer_account_id: text(input.customerAccountId) || null,
     vendor_name: text(input.vendorName),
     customer_name: text(input.customerName),
     product: text(input.product),

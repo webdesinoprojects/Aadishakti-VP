@@ -29,6 +29,9 @@ import {
 } from "./features/crm/crmRoutes.js";
 import adminUserRoutes from "./features/admin/users/adminUserRoutes.js";
 import dashboardRoutes from "./features/admin/dashboard/dashboardRoutes.js";
+import portalAccountAdminRoutes from "./features/portal/portalAccountAdminRoutes.js";
+import { customerWorkflowRoutes, vendorWorkflowRoutes } from "./features/portal/portalWorkflowRoutes.js";
+import portalWorkflowAdminRoutes from "./features/portal/portalWorkflowAdminRoutes.js";
 import {
   adminOperationsRoutes,
   logisticsCompatibilityRoutes,
@@ -77,12 +80,16 @@ app.use(securityHeaders);
 app.use("/api/portal/auth", portalAuthRoutes);
 app.use("/api/portal/customer", portalCustomerRoutes);
 app.use("/api/portal/vendor", portalVendorRoutes);
+app.use("/api/portal/customer/workflows", customerWorkflowRoutes);
+app.use("/api/portal/vendor/workflows", vendorWorkflowRoutes);
 // Modular admin platform routes take precedence over the legacy aliases below.
 app.use("/api/auth", adminAuthRoutes);
 app.use("/api/admin", adminAuthRoutes);
 app.use("/api/admin/audit-logs", auditRoutes);
 app.use("/api/admin/dashboard", dashboardRoutes);
 app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin/portal", portalAccountAdminRoutes);
+app.use("/api/admin/portal/workflows", portalWorkflowAdminRoutes);
 app.use("/api/admin/cms/pages", adminPageRoutes);
 app.use("/api/admin/cms", adminCmsRoutes);
 app.use("/api/admin/crm", adminCrmRoutes);

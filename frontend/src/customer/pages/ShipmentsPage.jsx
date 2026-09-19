@@ -41,14 +41,14 @@ export default function ShipmentsPage() {
             </thead>
             <tbody>
               {data.items.map((delivery) => (
-                <tr key={delivery.id}>
+                <tr key={`${delivery.companyCode || 'single'}-${delivery.id}`}>
                   <td style={{ fontWeight: 600 }}>{delivery.number}</td>
                   <td>{formatSapDate(delivery.date)}</td>
                   <td>{formatSapDate(delivery.dueDate)}</td>
                   <td className="customer-amount-value">{formatAmount(delivery.amount)}</td>
                   <td>Current open</td>
                   <td>
-                    <button className="customer-btn-outline" onClick={() => setSelected(delivery.id)}>
+                    <button className="customer-btn-outline" onClick={() => setSelected(delivery)}>
                       View Summary
                     </button>
                   </td>

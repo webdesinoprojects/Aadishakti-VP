@@ -13,6 +13,31 @@ export const requireCommercialAccount = (account, role) => {
   return { cardCode: account.cardCode.trim(), companyCode: account.companyCode.trim() };
 };
 
+export const requireCommercialMappings = (account, role) => {
+  if (account?.role !== role) {
+    throw new CisIntegrationError("CIS_CONFIGURATION_INVALID", `${role} account mapping is unavailable.`);
+  }
+  const mappings = Array.isArray(account.mappings) && account.mappings.length
+    ? account.mappings
+    : [{ cardCode: account.cardCode, companyCode: account.companyCode, isPrimary: true }];
+  const normalized = mappings.map((mapping) => ({
+    cardCode: typeof mapping.cardCode === "string" ? mapping.cardCode.trim() : "",
+    companyCode: typeof mapping.companyCode === "string" ? mapping.companyCode.trim() : "",
+    companyLabel: typeof mapping.companyLabel === "string" ? mapping.companyLabel.trim() : "",
+    isPrimary: Boolean(mapping.isPrimary),
+  }));
+  if (normalized.some((mapping) => !mapping.cardCode || !mapping.companyCode)) {
+    throw new CisIntegrationError("CIS_CONFIGURATION_INVALID", `${role} account mapping is unavailable.`);
+  }
+  return normalized;
+};
+
+export const withCompanyContext = (item, mapping) => ({
+  ...item,
+  companyCode: mapping.companyCode,
+  companyLabel: mapping.companyLabel || mapping.companyCode,
+});
+
 export const exactAccountRecords = (records, cardCode) => {
   if (!Array.isArray(records)) {
     throw new CisIntegrationError("CIS_MALFORMED_RESPONSE", "CIS returned an invalid list response.");
@@ -53,10 +78,10 @@ export const paginatePortalRecords = (items, options, extras = {}) => {
   };
 };
 
-export const findPortalRecord = (items, docEntry, NotFoundError) => {
+export const findPortalRecord = (items, docEntry, NotFoundError, companyCode) => {
   const id = Number(docEntry);
   const record = Number.isSafeInteger(id) && id > 0
-    ? items.find((item) => item.id === id)
+    ? items.find((item) => item.id === id && (!companyCode || item.companyCode === companyCode))
     : null;
   if (!record) throw new NotFoundError();
   return record;

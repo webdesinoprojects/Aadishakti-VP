@@ -12,6 +12,7 @@ import GRNPage from './pages/GRNPage';
 import PaymentsPage from './pages/PaymentsPage';
 import DocumentsPage from './pages/DocumentsPage';
 import PerformancePage from './pages/PerformancePage';
+import LogisticsTrackerPage from './pages/LogisticsTrackerPage';
 import './vendor.css';
 import { usePortalSession } from '../portal/usePortalSession';
 
@@ -50,6 +51,7 @@ export default function VendorApp() {
               <Route path="/vendor/reconciliation" element={<ReconciliationPage />} />
               <Route path="/vendor/rfqs" element={<RFQsPage />} />
               <Route path="/vendor/orders" element={<PurchaseOrdersPage />} />
+              <Route path="/vendor/logistics" element={<LogisticsTrackerPage />} />
               <Route path="/vendor/invoices" element={<InvoicesPage />} />
               <Route path="/vendor/profile" element={<MyProfilePage />} />
               <Route path="/vendor/customers" element={<CustomerApprovalsPage />} />

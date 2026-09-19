@@ -85,7 +85,7 @@ export default function VendorDashboard() {
             <thead><tr><th>PO Number</th><th>Date</th><th>Due Date</th><th>Amount</th></tr></thead>
             <tbody>
               {data.recentPurchaseOrders.map((order) => (
-                <tr key={order.id}>
+                <tr key={`${order.companyCode || 'single'}-${order.id}`}>
                   <td style={{ fontWeight: 600 }}>{order.number}</td>
                   <td>{formatVendorDate(order.date)}</td>
                   <td>{formatVendorDate(order.dueDate)}</td>

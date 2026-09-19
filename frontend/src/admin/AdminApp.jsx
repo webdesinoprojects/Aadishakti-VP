@@ -20,6 +20,8 @@ import SettingsPage from './pages/SettingsPage';
 import VendorApprovalsManager from './pages/operations/VendorApprovalsManager';
 import ReconciliationsManager from './pages/operations/ReconciliationsManager';
 import RegistrationsManager from './pages/operations/RegistrationsManager';
+import PortalAccountsManager from './pages/operations/PortalAccountsManager';
+import PortalWorkflowsManager from './pages/operations/PortalWorkflowsManager';
 import './admin.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -85,6 +87,8 @@ function AdminApp() {
                       <Route path="cms/investors" element={<InvestorsManager />} />
                       <Route path="logistics" element={<LogisticsManager />} />
                       <Route path="operations/registrations" element={<RegistrationsManager />} />
+                      <Route path="operations/accounts" element={<PortalAccountsManager />} />
+                      <Route path="operations/portal-workflows" element={<PortalWorkflowsManager />} />
                       <Route path="operations/approvals" element={<VendorApprovalsManager />} />
                       <Route path="operations/reconciliations" element={<ReconciliationsManager />} />
                       <Route path="logistics/:id" element={<LogisticsOrderDetail />} />

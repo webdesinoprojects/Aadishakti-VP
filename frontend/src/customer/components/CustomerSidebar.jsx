@@ -31,11 +31,13 @@ export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/customer/dashboard' },
     { name: 'Orders', icon: ShoppingCart, path: '/customer/orders' },
+    { name: 'Statements & Reco', icon: FileSpreadsheet, path: '/customer/reconciliation' },
     { name: 'Deliveries', icon: Truck, path: '/customer/shipments' },
     { name: 'Documents', icon: FileText, path: '/customer/documents' },
     { name: 'Invoices', icon: Receipt, path: '/customer/invoices' },
     { name: 'Payments', icon: CreditCard, path: '/customer/payments' },
     { name: 'Sustainability Reports', icon: Leaf, path: '/customer/sustainability' },
+    { name: 'Returns & Claims', icon: RotateCcw, path: '/customer/returns' },
     { name: 'Support', icon: LifeBuoy, path: '/customer/support' },
     { name: 'My Profile', icon: User, path: '/customer/profile' },
   ];

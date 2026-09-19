@@ -4,7 +4,7 @@ import { ASSETS } from '../../assets/assetMap';
 import { portalAuthApi } from '../../services/portalAuthApi';
 import { 
   LayoutDashboard, FileQuestion, FileSignature, ShoppingCart, 
-  Package, Receipt, CreditCard, Activity, FolderOpen, User, LogOut, ChevronLeft, ChevronRight, FileSpreadsheet, Users
+  Package, Receipt, CreditCard, Activity, FolderOpen, User, LogOut, ChevronLeft, ChevronRight, FileSpreadsheet, Users, Truck
 } from 'lucide-react';
 
 export default function VendorSidebar() {
@@ -25,6 +25,7 @@ export default function VendorSidebar() {
     { to: '/vendor/rfqs', icon: FileQuestion, label: 'RFQs / Enquiries' },
     { to: '/vendor/quotations', icon: FileSignature, label: 'My Quotations' },
     { to: '/vendor/orders', icon: ShoppingCart, label: 'Purchase Orders' },
+    { to: '/vendor/logistics', icon: Truck, label: 'Logistics Tracker' },
     { to: '/vendor/grn', icon: Package, label: 'GRN & Receipts' },
     { to: '/vendor/invoices', icon: Receipt, label: 'Invoices' },
     { to: '/vendor/payments', icon: CreditCard, label: 'Payments' },

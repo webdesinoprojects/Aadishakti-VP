@@ -40,8 +40,10 @@ const listHook = (loader) => ({ page = 1, pageSize = 10, q = '' } = {}) => {
   return useVendorResource(load);
 };
 
-const detailHook = (loader) => (docEntry) => {
-  const load = useCallback(() => loader(docEntry), [docEntry]);
+const detailHook = (loader) => (recordRef) => {
+  const docEntry = typeof recordRef === 'object' ? recordRef?.id : recordRef;
+  const companyCode = typeof recordRef === 'object' ? recordRef?.companyCode : undefined;
+  const load = useCallback(() => loader(docEntry, companyCode), [docEntry, companyCode]);
   return useVendorResource(load, Boolean(docEntry));
 };
 

@@ -26,6 +26,8 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         { to: '/admin/cms/careers', icon: Briefcase, label: 'Careers & Jobs' },
         { to: '/admin/logistics', icon: MapPin, label: 'Logistics Tracker' },
         { to: '/admin/operations/registrations', icon: UserPlus, label: 'New Registrations' },
+        { to: '/admin/operations/accounts', icon: Users, label: 'Portal Accounts' },
+        { to: '/admin/operations/portal-workflows', icon: FileSpreadsheet, label: 'Portal Workflows' },
         { to: '/admin/operations/approvals', icon: Briefcase, label: 'Profile Updates' },
         { to: '/admin/operations/reconciliations', icon: FileSpreadsheet, label: 'Quarterly Reconciliations' },
         { to: '/admin/cms/investors', icon: TrendingUp, label: 'Investors Data' },

@@ -2,12 +2,17 @@ import { useEffect, useState } from 'react';
 import TopBar from '../../components/TopBar';
 import { CheckCircle, XCircle, X, Copy } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
-import { operationsAPI } from '../../utils/api';
+import { operationsAPI, portalAccountsAPI } from '../../utils/api';
 
 export default function RegistrationsManager() {
   const [selectedApp, setSelectedApp] = useState(null);
   const [generatedId, setGeneratedId] = useState('');
-  const [generatedPassword, setGeneratedPassword] = useState('Pending CIS account mapping');
+  const [generatedPassword, setGeneratedPassword] = useState('');
+  const [mappings, setMappings] = useState([
+    { companyCode: 'AGRPL', cardCode: '', enabled: true, isPrimary: true },
+    { companyCode: 'AM', cardCode: '', enabled: false, isPrimary: false },
+    { companyCode: 'AMRPL', cardCode: '', enabled: false, isPrimary: false },
+  ]);
   const { success, error } = useToast();
 
   const [applications, setApplications] = useState([]);
@@ -28,21 +33,42 @@ export default function RegistrationsManager() {
   const pastApps = currentApps.filter(a => a.status !== 'Pending');
 
   const generateCredentials = (app) => {
-    const prefix = 'V-';
-    const randomId = Math.floor(1000 + Math.random() * 9000);
-    setGeneratedId(`${prefix}${randomId}`);
-    setGeneratedPassword('Pending CIS account mapping');
+    setGeneratedId(app.email || `vendor-${Math.floor(1000 + Math.random() * 9000)}`);
+    setGeneratedPassword(`Aadi@${Math.floor(100000 + Math.random() * 900000)}`);
+    setMappings([
+      { companyCode: 'AGRPL', cardCode: '', enabled: true, isPrimary: true },
+      { companyCode: 'AM', cardCode: '', enabled: false, isPrimary: false },
+      { companyCode: 'AMRPL', cardCode: '', enabled: false, isPrimary: false },
+    ]);
     setSelectedApp(app);
   };
 
   const handleApprove = async () => {
     try {
-      const response = await operationsAPI.reviewRegistration(selectedApp.id, { action: 'approve', assignedId: generatedId });
+      const companyMappings = mappings.filter(item => item.enabled && item.cardCode.trim()).map(item => ({
+        companyCode: item.companyCode,
+        cardCode: item.cardCode.trim(),
+        isPrimary: item.isPrimary,
+      }));
+      if (!companyMappings.length) return error('Add at least one CIS company and supplier code mapping.');
+      const provisioned = await portalAccountsAPI.create({
+        role: selectedApp.type || 'vendor',
+        loginId: generatedId,
+        password: generatedPassword,
+        displayName: selectedApp.companyName,
+        email: selectedApp.email,
+        mappings: companyMappings,
+      });
+      const response = await operationsAPI.reviewRegistration(selectedApp.id, {
+        action: 'approve',
+        assignedId: companyMappings[0].cardCode,
+        portalAccountId: provisioned.data.account.id,
+      });
       setApplications(prev => prev.map(a => a.id === selectedApp.id ? response.data : a));
-      success('Vendor registration approved. Portal access awaits CIS account mapping.');
+      success('Vendor registration approved and portal login created.');
       setSelectedApp(null);
-    } catch {
-      error('Failed to approve registration');
+    } catch (err) {
+      error(err.response?.data?.error || 'Failed to approve registration');
     }
   };
 
@@ -185,7 +211,7 @@ export default function RegistrationsManager() {
                 <h3 style={{ fontSize: '13px', textTransform: 'uppercase', color: '#92400e', marginBottom: '16px', letterSpacing: '0.05em' }}>Access Provisioning</h3>
                 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', color: '#92400e', marginBottom: '6px' }}>Assigned Vendor ID</label>
+                  <label style={{ display: 'block', fontSize: '12px', color: '#92400e', marginBottom: '6px' }}>Portal Login ID / Email</label>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input type="text" value={generatedId} onChange={(e) => setGeneratedId(e.target.value)} style={{ flex: 1, padding: '10px 14px', border: '1px solid #fcd34d', borderRadius: '6px 0 0 6px', fontSize: '16px', fontWeight: '600', fontFamily: 'monospace' }} />
                     <button onClick={() => navigator.clipboard.writeText(generatedId)} style={{ padding: '11px 16px', background: '#fde68a', border: '1px solid #fcd34d', borderLeft: 'none', borderRadius: '0 6px 6px 0', cursor: 'pointer', color: '#92400e' }}><Copy size={16} /></button>
@@ -193,12 +219,23 @@ export default function RegistrationsManager() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', color: '#92400e', marginBottom: '6px' }}>Portal Access</label>
+                  <label style={{ display: 'block', fontSize: '12px', color: '#92400e', marginBottom: '6px' }}>Temporary Password</label>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <input type="text" value={generatedPassword} readOnly style={{ flex: 1, padding: '10px 14px', border: '1px solid #fcd34d', borderRadius: '6px 0 0 6px', fontSize: '16px', fontFamily: 'monospace' }} />
+                    <input type="text" value={generatedPassword} onChange={(e) => setGeneratedPassword(e.target.value)} style={{ flex: 1, padding: '10px 14px', border: '1px solid #fcd34d', borderRadius: '6px 0 0 6px', fontSize: '16px', fontFamily: 'monospace' }} />
                     <button onClick={() => navigator.clipboard.writeText(generatedPassword)} style={{ padding: '11px 16px', background: '#fde68a', border: '1px solid #fcd34d', borderLeft: 'none', borderRadius: '0 6px 6px 0', cursor: 'pointer', color: '#92400e' }}><Copy size={16} /></button>
                   </div>
-                  <div style={{ fontSize: '12px', color: '#b45309', marginTop: '6px' }}>CIS/SAP mapping must exist before portal credentials can be issued.</div>
+                  <div style={{ fontSize: '12px', color: '#b45309', marginTop: '6px' }}>Share this once; the partner will be asked to change it.</div>
+                </div>
+                <div style={{ marginTop: '18px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', color: '#92400e', marginBottom: '8px' }}>CIS Company / Supplier Code Mappings</label>
+                  {mappings.map((mapping, index) => (
+                    <div key={mapping.companyCode} style={{ display: 'grid', gridTemplateColumns: '24px 70px 1fr 62px', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                      <input type="checkbox" checked={mapping.enabled} onChange={(e) => setMappings(items => items.map((item, i) => i === index ? { ...item, enabled: e.target.checked } : item))} />
+                      <strong style={{ fontSize: '12px' }}>{mapping.companyCode}</strong>
+                      <input type="text" value={mapping.cardCode} disabled={!mapping.enabled} placeholder="SAP supplier code" onChange={(e) => setMappings(items => items.map((item, i) => i === index ? { ...item, cardCode: e.target.value } : item))} style={{ padding: '8px', border: '1px solid #fcd34d', borderRadius: '5px' }} />
+                      <label style={{ fontSize: '11px' }}><input type="radio" name="primary-company" checked={mapping.isPrimary} disabled={!mapping.enabled} onChange={() => setMappings(items => items.map((item, i) => ({ ...item, isPrimary: i === index })))} /> Primary</label>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

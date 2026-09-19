@@ -15,6 +15,7 @@ import {
   listLogisticsOrders,
   listProfileUpdates,
   listReconciliations,
+  listPartnerReconciliations,
   listRegistrations,
   reviewProfileUpdate,
   reviewReconciliation,
@@ -115,6 +116,10 @@ adminOperationsRoutes.patch(
 
 const { requirePortalSession } = createPortalAuth();
 portalOperationsRoutes.use(useSupabaseOrContinue, requirePortalSession);
+portalOperationsRoutes.get(
+  "/reconciliations",
+  asyncHandler(async (req, res) => res.json({ data: await listPartnerReconciliations(req.portalAccount) })),
+);
 portalOperationsRoutes.post(
   "/profile-updates",
   asyncHandler(async (req, res) => {
@@ -165,4 +170,3 @@ publicTrackingRoutes.get(
     res.json(await getPublicTracking(req.params.id));
   }),
 );
-

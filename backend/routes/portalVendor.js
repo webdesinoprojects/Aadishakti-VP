@@ -33,7 +33,7 @@ export const createPortalVendorRouter = ({
       return res.status(404).json({ code: "VENDOR_RECORD_NOT_FOUND", error: "The requested record was not found." });
     }
     try {
-      return res.json(await method(req.portalAccount, req.params.docEntry));
+      return res.json(await method(req.portalAccount, req.params.docEntry, req.query.companyCode));
     } catch (error) {
       return next(error);
     }

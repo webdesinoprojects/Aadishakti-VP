@@ -5,14 +5,14 @@ import { getPortalSessionConfig, verifyPortalSession } from "../services/portalS
 const safeUnauthorized = (res, message = "Portal authentication is required.") => res.status(401).json({ error: message });
 
 export const createPortalAuth = ({ accountService = createPortalAccountService(), environment = process.env } = {}) => {
-  const requirePortalSession = (req, res, next) => {
+  const requirePortalSession = async (req, res, next) => {
     try {
       const { cookieName } = getPortalSessionConfig(environment);
       const token = req.cookies?.[cookieName];
       if (!token) return safeUnauthorized(res);
 
       const payload = verifyPortalSession(token, environment);
-      const account = accountService.getAccountById(payload.sub);
+      const account = await accountService.getAccountById(payload.sub);
       if (!account) return safeUnauthorized(res, "Portal session is no longer valid.");
 
       req.portalAccount = account;

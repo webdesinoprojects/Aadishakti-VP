@@ -1,4 +1,8 @@
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
+import { isSupabaseEnabled } from "../infrastructure/supabase/supabaseClients.js";
+import { findPortalAccountById, findPortalAccountByLogin, updatePortalAccountRow } from "../features/portal/portalAccountRepository.js";
+import { portalAccountFromDb } from "../features/portal/portalAccountAdminService.js";
 
 export class PortalAccountConfigurationError extends Error {
   constructor(message) {
@@ -33,6 +37,7 @@ const readAccount = (environment, role, prefix) => {
 const toResolvedAccount = ({ password: _password, ...account }) => account;
 
 export const createPortalAccountService = ({ environment = process.env } = {}) => {
+  const databaseEnabled = ["1", "true", "yes", "on"].includes(String(environment.SUPABASE_ENABLED || "").toLowerCase());
   const getConfiguredAccounts = () => [
     readAccount(environment, "customer", "CUSTOMER"),
     readAccount(environment, "vendor", "VENDOR"),
@@ -41,12 +46,47 @@ export const createPortalAccountService = ({ environment = process.env } = {}) =
   const getAccounts = () => getConfiguredAccounts().map(toResolvedAccount);
 
   const getAccountById = (accountId) => {
-    const account = getConfiguredAccounts().find((candidate) => candidate.id === accountId);
-    return account ? toResolvedAccount(account) : null;
+    const configured = getConfiguredAccounts().find((candidate) => candidate.id === accountId);
+    if (configured) return toResolvedAccount(configured);
+    if (databaseEnabled && isSupabaseEnabled()) {
+      return findPortalAccountById(accountId).then((row) => {
+        if (!row || row.status !== "active") return null;
+        return portalAccountFromDb(row, { includeLogin: false });
+      });
+    }
+    return null;
   };
 
   const authenticate = ({ identifier, password, role }) => {
     if (!["customer", "vendor"].includes(role) || !identifier || !password) return null;
+    if (databaseEnabled && isSupabaseEnabled()) {
+      return (async () => {
+        const row = await findPortalAccountByLogin(identifier, role);
+        if (!row) {
+          const configured = getConfiguredAccounts().find((candidate) => candidate.role === role && secureEqual(candidate.identifier, identifier));
+          return configured && secureEqual(configured.password, password) ? toResolvedAccount(configured) : null;
+        }
+        const now = Date.now();
+        if (row.status === "inactive") return null;
+        if (row.status === "locked" && row.locked_until && new Date(row.locked_until).getTime() > now) return null;
+        if (!await bcrypt.compare(String(password), row.password_hash)) {
+          const attempts = Number(row.failed_login_attempts || 0) + 1;
+          await updatePortalAccountRow(row.id, {
+            failed_login_attempts: attempts >= 5 ? 0 : attempts,
+            status: attempts >= 5 ? "locked" : row.status,
+            locked_until: attempts >= 5 ? new Date(now + 15 * 60 * 1000).toISOString() : row.locked_until,
+          });
+          return null;
+        }
+        const refreshed = await updatePortalAccountRow(row.id, {
+          status: "active",
+          failed_login_attempts: 0,
+          locked_until: null,
+          last_login_at: new Date().toISOString(),
+        });
+        return portalAccountFromDb(refreshed, { includeLogin: false });
+      })();
+    }
     const account = getConfiguredAccounts().find((candidate) => candidate.role === role && secureEqual(candidate.identifier, identifier));
     if (!account || !secureEqual(account.password, password)) return null;
     return toResolvedAccount(account);

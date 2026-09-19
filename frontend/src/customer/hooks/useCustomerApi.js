@@ -61,8 +61,10 @@ export const useCustomerFinancialDocuments = ({ kind = 'invoice', page = 1, page
   return useCustomerResource(load);
 };
 
-export const useCustomerInvoice = (docEntry) => {
-  const load = useCallback(() => customerApi.getInvoice(docEntry), [docEntry]);
+export const useCustomerInvoice = (recordRef) => {
+  const docEntry = typeof recordRef === 'object' ? recordRef?.id : recordRef;
+  const companyCode = typeof recordRef === 'object' ? recordRef?.companyCode : undefined;
+  const load = useCallback(() => customerApi.getInvoice(docEntry, companyCode), [docEntry, companyCode]);
   return useCustomerResource(load, Boolean(docEntry));
 };
 
@@ -71,8 +73,10 @@ export const useCustomerCreditNotes = ({ page = 1, pageSize = 10, q = '' } = {})
   return useCustomerResource(load);
 };
 
-export const useCustomerCreditNote = (docEntry) => {
-  const load = useCallback(() => customerApi.getCreditNote(docEntry), [docEntry]);
+export const useCustomerCreditNote = (recordRef) => {
+  const docEntry = typeof recordRef === 'object' ? recordRef?.id : recordRef;
+  const companyCode = typeof recordRef === 'object' ? recordRef?.companyCode : undefined;
+  const load = useCallback(() => customerApi.getCreditNote(docEntry, companyCode), [docEntry, companyCode]);
   return useCustomerResource(load, Boolean(docEntry));
 };
 
@@ -81,8 +85,10 @@ export const useCustomerDeliveries = ({ page = 1, pageSize = 10, q = '' } = {}) 
   return useCustomerResource(load);
 };
 
-export const useCustomerDelivery = (docEntry) => {
-  const load = useCallback(() => customerApi.getDelivery(docEntry), [docEntry]);
+export const useCustomerDelivery = (recordRef) => {
+  const docEntry = typeof recordRef === 'object' ? recordRef?.id : recordRef;
+  const companyCode = typeof recordRef === 'object' ? recordRef?.companyCode : undefined;
+  const load = useCallback(() => customerApi.getDelivery(docEntry, companyCode), [docEntry, companyCode]);
   return useCustomerResource(load, Boolean(docEntry));
 };
 
@@ -91,7 +97,9 @@ export const useCustomerPayments = ({ page = 1, pageSize = 10, q = '' } = {}) =>
   return useCustomerResource(load);
 };
 
-export const useCustomerPayment = (docEntry) => {
-  const load = useCallback(() => customerApi.getPayment(docEntry), [docEntry]);
+export const useCustomerPayment = (recordRef) => {
+  const docEntry = typeof recordRef === 'object' ? recordRef?.id : recordRef;
+  const companyCode = typeof recordRef === 'object' ? recordRef?.companyCode : undefined;
+  const load = useCallback(() => customerApi.getPayment(docEntry, companyCode), [docEntry, companyCode]);
   return useCustomerResource(load, Boolean(docEntry));
 };

@@ -74,7 +74,7 @@ export default function CustomerDashboard() {
           <thead><tr><th>Invoice Number</th><th>Date</th><th>Due Date</th><th>Amount</th></tr></thead>
           <tbody>
             {data.recentInvoices.map((invoice) => (
-              <tr key={invoice.id}>
+              <tr key={`${invoice.companyCode || 'single'}-${invoice.id}`}>
                 <td style={{ fontWeight: 600 }}>{invoice.number}</td>
                 <td>{formatSapDate(invoice.date)}</td>
                 <td>{formatSapDate(invoice.dueDate)}</td>

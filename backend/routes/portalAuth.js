@@ -12,10 +12,10 @@ export const createPortalAuthRouter = ({ environment = process.env, accountServi
     next();
   });
 
-  router.post("/login", (req, res) => {
+  router.post("/login", async (req, res) => {
     try {
       const { identifier, password, role } = req.body || {};
-      const account = accountService.authenticate({ identifier: String(identifier || "").trim(), password, role });
+      const account = await accountService.authenticate({ identifier: String(identifier || "").trim(), password, role });
       if (!account) return res.status(401).json({ error: "Invalid portal credentials." });
 
       const token = createPortalSession(account, environment);

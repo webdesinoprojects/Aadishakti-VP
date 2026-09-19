@@ -61,14 +61,14 @@ export default function InvoicesPage() {
             </thead>
             <tbody>
               {data.items.map((document) => (
-                <tr key={document.id}>
+                <tr key={`${document.companyCode || 'single'}-${document.id}`}>
                   <td style={{ fontWeight: 600 }}>{document.number}</td>
                   <td>{formatSapDate(document.date)}</td>
                   <td>{formatSapDate(document.dueDate)}</td>
                   <td className="customer-amount-value">{formatAmount(document.amount)}</td>
                   <td>Current open</td>
                   <td>
-                    <button className="customer-btn-outline" onClick={() => setSelected(document.id)}>
+                    <button className="customer-btn-outline" onClick={() => setSelected(document)}>
                       View Summary
                     </button>
                   </td>

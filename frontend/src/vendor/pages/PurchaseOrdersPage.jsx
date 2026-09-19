@@ -22,13 +22,13 @@ export default function PurchaseOrdersPage() {
             <thead><tr><th>PO Number</th><th>Document Date</th><th>Due Date</th><th>Amount</th><th>Scope</th><th>Action</th></tr></thead>
             <tbody>
               {data.items.map((order) => (
-                <tr key={order.id}>
+                <tr key={`${order.companyCode || 'single'}-${order.id}`}>
                   <td style={{ fontWeight: 600 }}>{order.number}</td>
                   <td>{formatVendorDate(order.date)}</td>
                   <td>{formatVendorDate(order.dueDate)}</td>
                   <td className="vendor-amount-value">{formatVendorAmount(order.amount)}</td>
                   <td>Current open</td>
-                  <td><button className="vendor-btn-outline" onClick={() => setSelected(order.id)}>View Summary</button></td>
+                  <td><button className="vendor-btn-outline" onClick={() => setSelected(order)}>View Summary</button></td>
                 </tr>
               ))}
               {data.items.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No current open Purchase Orders were returned.</td></tr>}

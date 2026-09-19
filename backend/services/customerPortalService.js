@@ -9,7 +9,8 @@ import {
   exactAccountRecords,
   findPortalRecord,
   paginatePortalRecords,
-  requireCommercialAccount,
+  requireCommercialMappings,
+  withCompanyContext,
 } from "./portalCommercialUtils.js";
 
 export class CustomerPortalRecordNotFoundError extends Error {
@@ -39,22 +40,26 @@ const toInvoice = (record) => ({
 
 export const createCustomerPortalService = ({ cisClient = createCisClient() } = {}) => {
   const loadExact = async (account, resource, mapper) => {
-    const { cardCode, companyCode } = requireCommercialAccount(account, "customer");
-    const records = await cisClient.getResource({ companyCode, resource });
-    return exactAccountRecords(records, cardCode).map(mapper);
+    const mappings = requireCommercialMappings(account, "customer");
+    const groups = await Promise.all(mappings.map(async (mapping) => {
+      const records = await cisClient.getResource({ companyCode: mapping.companyCode, resource });
+      return exactAccountRecords(records, mapping.cardCode).map((record) => withCompanyContext(mapper(record), mapping));
+    }));
+    return groups.flat();
   };
 
   const getProfile = async (account) => {
-    const { cardCode, companyCode } = requireCommercialAccount(account, "customer");
-    const records = exactAccountRecords(
-      await cisClient.getResource({ companyCode, resource: "customer" }),
-      cardCode,
-    );
-    if (records.length === 0) throw new CustomerPortalRecordNotFoundError();
-    if (records.length > 1) {
-      throw new CisIntegrationError("CIS_MALFORMED_RESPONSE", "CIS returned duplicate Customer master records.");
-    }
-    return toCisBusinessPartnerProfile(records[0]);
+    const mappings = requireCommercialMappings(account, "customer");
+    const profiles = await Promise.all(mappings.map(async (mapping) => {
+      const records = exactAccountRecords(await cisClient.getResource({ companyCode: mapping.companyCode, resource: "customer" }), mapping.cardCode);
+      if (records.length > 1) throw new CisIntegrationError("CIS_MALFORMED_RESPONSE", "CIS returned duplicate Customer master records.");
+      return records.length ? withCompanyContext(toCisBusinessPartnerProfile(records[0]), mapping) : null;
+    }));
+    const available = profiles.filter(Boolean);
+    if (!available.length) throw new CustomerPortalRecordNotFoundError();
+    const primaryCode = mappings.find((mapping) => mapping.isPrimary)?.companyCode;
+    const primary = available.find((profile) => profile.companyCode === primaryCode) || available[0];
+    return { ...primary, organizations: available };
   };
 
   const loadInvoices = (account) => loadExact(account, "arinvoice", toInvoice);
@@ -80,8 +85,8 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
     });
   };
 
-  const getInvoice = async (account, docEntry) => ({
-    ...findPortalRecord(await loadInvoices(account), docEntry, CustomerPortalRecordNotFoundError),
+  const getInvoice = async (account, docEntry, companyCode) => ({
+    ...findPortalRecord(await loadInvoices(account), docEntry, CustomerPortalRecordNotFoundError, companyCode),
     lines: [],
     detailAvailable: false,
   });
@@ -92,8 +97,8 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
     { supported: true, scope: "current-open" },
   );
 
-  const getCreditNote = async (account, docEntry) => ({
-    ...findPortalRecord(await loadCreditNotes(account), docEntry, CustomerPortalRecordNotFoundError),
+  const getCreditNote = async (account, docEntry, companyCode) => ({
+    ...findPortalRecord(await loadCreditNotes(account), docEntry, CustomerPortalRecordNotFoundError, companyCode),
     lines: [],
     detailAvailable: false,
   });
@@ -104,8 +109,8 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
     { supported: true, scope: "current-open" },
   );
 
-  const getDelivery = async (account, docEntry) => ({
-    ...findPortalRecord(await loadDeliveries(account), docEntry, CustomerPortalRecordNotFoundError),
+  const getDelivery = async (account, docEntry, companyCode) => ({
+    ...findPortalRecord(await loadDeliveries(account), docEntry, CustomerPortalRecordNotFoundError, companyCode),
     lines: [],
     detailAvailable: false,
   });
@@ -116,10 +121,11 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
     { supported: true, scope: "not-cancelled" },
   );
 
-  const getPayment = async (account, docEntry) => findPortalRecord(
+  const getPayment = async (account, docEntry, companyCode) => findPortalRecord(
     await loadPayments(account),
     docEntry,
     CustomerPortalRecordNotFoundError,
+    companyCode,
   );
 
   const getDashboard = async (account) => {

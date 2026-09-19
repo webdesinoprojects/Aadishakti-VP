@@ -11,6 +11,7 @@
     "init-data": "node init-data.js",
     "generate-password": "node generate-password.js",
     "db:bootstrap-admin": "node scripts/bootstrap-admin.js",
+    "db:bootstrap-portals": "node scripts/bootstrap-portal-accounts.js",
     "db:import-json": "node scripts/import-json-to-supabase.js"
   },
   "dependencies": {

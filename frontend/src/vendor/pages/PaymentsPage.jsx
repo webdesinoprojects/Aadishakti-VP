@@ -5,6 +5,8 @@ import VendorPagination from '../components/VendorPagination';
 import VendorTransactionDrawer from '../components/VendorTransactionDrawer';
 import { useVendorPayments } from '../hooks/useVendorApi';
 import { formatVendorAmount, formatVendorDate, UNKNOWN_CURRENCY_NOTE } from '../utils/vendorFormatters';
+import PortalReceiptsWorkspace from '../../portal/PortalReceiptsWorkspace';
+import vendorApi from '../../services/vendorApi';
 
 export default function PaymentsPage() {
   const [page, setPage] = useState(1);
@@ -21,13 +23,13 @@ export default function PaymentsPage() {
             <thead><tr><th>Payment Number</th><th>Date</th><th>Cash Amount</th><th>Transfer Amount</th><th>Total</th><th>Action</th></tr></thead>
             <tbody>
               {data.items.map((payment) => (
-                <tr key={payment.id}>
+                <tr key={`${payment.companyCode || 'single'}-${payment.id}`}>
                   <td style={{ fontWeight: 600 }}>{payment.number}</td>
                   <td>{formatVendorDate(payment.date)}</td>
                   <td className="vendor-amount-value">{formatVendorAmount(payment.cashAmount)}</td>
                   <td className="vendor-amount-value">{formatVendorAmount(payment.transferAmount)}</td>
                   <td className="vendor-amount-value vendor-total-value">{formatVendorAmount(payment.totalPaymentAmount)}</td>
-                  <td><button className="vendor-btn-outline" onClick={() => setSelected(payment.id)}>View Summary</button></td>
+                  <td><button className="vendor-btn-outline" onClick={() => setSelected(payment)}>View Summary</button></td>
                 </tr>
               ))}
               {data.items.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No outgoing payments were returned.</td></tr>}
@@ -37,6 +39,7 @@ export default function PaymentsPage() {
         </div>
       )}
       <VendorTransactionDrawer type="payment" docEntry={selected} onClose={() => setSelected(null)} />
+      <PortalReceiptsWorkspace api={vendorApi} role="vendor" />
     </div>
   );
 }

@@ -9,7 +9,8 @@ import {
   exactAccountRecords,
   findPortalRecord,
   paginatePortalRecords,
-  requireCommercialAccount,
+  requireCommercialMappings,
+  withCompanyContext,
 } from "./portalCommercialUtils.js";
 
 export class VendorPortalRecordNotFoundError extends Error {
@@ -24,22 +25,26 @@ export const createVendorPortalService = ({
   today = () => new Date().toISOString().slice(0, 10),
 } = {}) => {
   const loadExact = async (account, resource, mapper) => {
-    const { cardCode, companyCode } = requireCommercialAccount(account, "vendor");
-    const records = await cisClient.getResource({ companyCode, resource });
-    return exactAccountRecords(records, cardCode).map(mapper);
+    const mappings = requireCommercialMappings(account, "vendor");
+    const groups = await Promise.all(mappings.map(async (mapping) => {
+      const records = await cisClient.getResource({ companyCode: mapping.companyCode, resource });
+      return exactAccountRecords(records, mapping.cardCode).map((record) => withCompanyContext(mapper(record), mapping));
+    }));
+    return groups.flat();
   };
 
   const getProfile = async (account) => {
-    const { cardCode, companyCode } = requireCommercialAccount(account, "vendor");
-    const records = exactAccountRecords(
-      await cisClient.getResource({ companyCode, resource: "vendor" }),
-      cardCode,
-    );
-    if (records.length === 0) throw new VendorPortalRecordNotFoundError();
-    if (records.length > 1) {
-      throw new CisIntegrationError("CIS_MALFORMED_RESPONSE", "CIS returned duplicate Vendor master records.");
-    }
-    return toCisBusinessPartnerProfile(records[0]);
+    const mappings = requireCommercialMappings(account, "vendor");
+    const profiles = await Promise.all(mappings.map(async (mapping) => {
+      const records = exactAccountRecords(await cisClient.getResource({ companyCode: mapping.companyCode, resource: "vendor" }), mapping.cardCode);
+      if (records.length > 1) throw new CisIntegrationError("CIS_MALFORMED_RESPONSE", "CIS returned duplicate Vendor master records.");
+      return records.length ? withCompanyContext(toCisBusinessPartnerProfile(records[0]), mapping) : null;
+    }));
+    const available = profiles.filter(Boolean);
+    if (!available.length) throw new VendorPortalRecordNotFoundError();
+    const primaryCode = mappings.find((mapping) => mapping.isPrimary)?.companyCode;
+    const primary = available.find((profile) => profile.companyCode === primaryCode) || available[0];
+    return { ...primary, organizations: available };
   };
 
   const loadPurchaseOrders = (account) => loadExact(account, "purchaseorder", toCisDocumentSummary);
@@ -55,8 +60,8 @@ export const createVendorPortalService = ({
     { supported: true, scope },
   );
 
-  const detail = (loader) => async (account, docEntry) => ({
-    ...findPortalRecord(await loader(account), docEntry, VendorPortalRecordNotFoundError),
+  const detail = (loader) => async (account, docEntry, companyCode) => ({
+    ...findPortalRecord(await loader(account), docEntry, VendorPortalRecordNotFoundError, companyCode),
     lines: [],
     detailAvailable: false,
   });

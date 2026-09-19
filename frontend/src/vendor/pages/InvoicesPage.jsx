@@ -38,13 +38,13 @@ export default function InvoicesPage() {
             <thead><tr><th>{labels.number}</th><th>Date</th><th>Due Date</th><th>Amount</th><th>Scope</th><th>Action</th></tr></thead>
             <tbody>
               {data.items.map((document) => (
-                <tr key={document.id}>
+                <tr key={`${document.companyCode || 'single'}-${document.id}`}>
                   <td style={{ fontWeight: 600 }}>{document.number}</td>
                   <td>{formatVendorDate(document.date)}</td>
                   <td>{formatVendorDate(document.dueDate)}</td>
                   <td className="vendor-amount-value">{formatVendorAmount(document.amount)}</td>
                   <td>Current open</td>
-                  <td><button className="vendor-btn-outline" onClick={() => setSelected(document.id)}>View Summary</button></td>
+                  <td><button className="vendor-btn-outline" onClick={() => setSelected(document)}>View Summary</button></td>
                 </tr>
               ))}
               {data.items.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No current open {labels.empty} were returned.</td></tr>}
