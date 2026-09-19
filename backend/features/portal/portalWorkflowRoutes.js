@@ -23,6 +23,7 @@ import {
   submitReceipt,
   submitVendorQuotation,
   submitVendorPod,
+  reviewCustomerPod,
   updateVendorLogisticsStage,
 } from "./portalWorkflowService.js";
 
@@ -71,3 +72,4 @@ vendorWorkflowRoutes.post("/logistics/:id/pod", documentUpload.single("document"
 export const customerWorkflowRoutes = buildRouter("customer");
 customerWorkflowRoutes.get("/requests", asyncHandler(async (req, res) => res.json(await listCustomerRequests(req.portalAccount, req.query.type))));
 customerWorkflowRoutes.post("/requests", documentUpload.single("document"), asyncHandler(async (req, res) => res.status(201).json(await submitCustomerRequest(req.portalAccount, req.body || {}, req.file))));
+customerWorkflowRoutes.post("/logistics/:id/pod-review", asyncHandler(async (req, res) => res.json(await reviewCustomerPod(req.portalAccount, req.params.id, req.body || {}))));

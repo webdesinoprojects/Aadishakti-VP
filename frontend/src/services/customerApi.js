@@ -32,6 +32,7 @@ const customerApi = {
   submitRequest: (formData) => formRequest(`${workflow}/requests`, formData),
   getLogistics: () => portalApiClient.get(`${workflow}/logistics`).then(unwrap),
   addLogisticsMessage: (id, data) => portalApiClient.post(`${workflow}/logistics/${encodeURIComponent(id)}/messages`, data).then(unwrap),
+  reviewPod: (id, data) => portalApiClient.post(`${workflow}/logistics/${encodeURIComponent(id)}/pod-review`, data).then(unwrap),
   getReconciliations: () => portalApiClient.get('/api/portal/operations/reconciliations').then(unwrap),
   submitReconciliation: (formData) => formRequest('/api/portal/operations/reconciliations', formData),
 };

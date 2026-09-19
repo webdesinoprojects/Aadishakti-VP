@@ -237,3 +237,35 @@ export const submitVendorPod = async (account, id, file) => {
   throwOnSupabaseError(error, "submit proof of delivery");
   return data;
 };
+
+export const reviewCustomerPod = async (account, id, input) => {
+  if (account.role !== "customer") throw badRequest("Only customers can review proof of delivery.");
+  const action = clean(input.action).toLowerCase();
+  if (!new Set(["accept", "reject"]).has(action)) throw badRequest("POD action must accept or reject.");
+
+  const order = await getOwnedLogisticsOrder(account, id);
+  if (!order.pod_image_url || order.pod_status !== "Under Review") {
+    throw badRequest("This proof of delivery is not awaiting customer review.");
+  }
+
+  const note = clean(input.note);
+  if (action === "reject" && !note) throw badRequest("A rejection reason is required.");
+
+  const history = [...(order.chat_history || []), {
+    sender: "Customer",
+    senderId: account.id,
+    message: action === "accept" ? "Proof of delivery accepted." : `Proof of delivery rejected: ${note}`,
+    timestamp: new Date().toISOString(),
+  }];
+  const payload = {
+    pod_status: action === "accept" ? "Accepted" : "Rejected",
+    status: action === "accept" ? "Delivered" : "Reached Customer",
+    chat_history: history,
+  };
+  if (action === "reject") payload.pod_image_url = null;
+
+  const { data, error } = await getSupabaseAdminClient().from("logistics_orders")
+    .update(payload).eq("id", id).select("*").single();
+  throwOnSupabaseError(error, "review proof of delivery");
+  return data;
+};
