@@ -6,6 +6,8 @@ import AnimatedNumber from "../components/AnimatedNumber";
 import ScrollReveal from "../components/ScrollReveal";
 import { ASSETS } from "../assets/assetMap";
 import { useCms } from "../context/CmsContext";
+import { DEFAULT_HOME_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
+import { buildProductCatalog } from "../data/productCatalog";
 
 /* â”€â”€ Data â”€â”€ */
 const heroSlides = [
@@ -94,40 +96,15 @@ const strengths = [
   },
 ];
 
-const products = [
-  { key: "pure-lead-ingots",   name: "Refined Pure Lead", spec: "99.97-99.985% Pb", desc: "LME-grade for battery and industrial applications.", apps: "Batteries, Chemicals, Sheathing", img: ASSETS.products.pureLead },
-  { key: "lead-antimony-alloys", name: "Lead Alloys",        spec: "Sb, Ca, Sn Variants", desc: "Custom metallurgy for automotive and energy storage.", apps: "Automotive, Energy Storage", img: ASSETS.products.leadAlloys },
-  { key: "red-lead-oxide",   name: "Red Lead Oxide",     spec: "Pb₃O₄",           desc: "Consistent particle profile for battery and glass.", apps: "Batteries, Glass, Paint", img: ASSETS.products.redLead },
-  { key: "grey-lead-oxide", name: "Grey Lead Oxide",    spec: "2PbO·Pb",        desc: "Precision milled for active material manufacturing.", apps: "Active Electrodes", img: ASSETS.products.greyOxide }
-];
-
-const statsStrip = [
-  { num: "50000", suffix: "+", label: "Metric Tonnes PA" },
-  { num: "20",    suffix: "+", label: "Years of Operations" },
-  { num: "2",     suffix: "",  label: "World-Class Plants" },
-  { num: "4",     suffix: "+", label: "Certifications" },
-];
-
-const sustainabilityStats = [
-  { value: "100%", label: "Battery Scrap Recycled — Nothing to Landfill" },
-  { value: "ZLD",  label: "Zero Liquid Discharge — All Water Recycled In-Plant" },
-  { value: "ISO",  label: "ISO 14001:2015 Environmental Management System" },
-];
-
-const clientLogos = [
-  { name: "Exide Industries", src: "/trusted-logo/exide.png", style: { height: "45px" } },
-  { name: "Luminous Power Technologies", src: "/trusted-logo/luminous.jpg", style: { height: "55px" } },
-  { name: "Su-Kam Power Systems", src: "/trusted-logo/sukam.jpg", style: { height: "55px" } },
-  { name: "HBL Power Systems", src: "/trusted-logo/hbl.png", style: { height: "40px" } },
-  { name: "Okaya Power Group", src: "/trusted-logo/okaya.png", style: { height: "55px", transform: "scale(1.2)" } },
-  { name: "Rocket Electric", src: "/trusted-logo/rocket.jpeg", style: { height: "50px" } },
-  { name: "Genus Power Infrastructure", src: "/trusted-logo/genus.jpg", style: { height: "45px", transform: "scale(1.2)" } },
-  { name: "Livguard Energy", src: "/trusted-logo/livguard.png", style: { height: "40px" } },
-];
-
 /* â”€â”€ Component â”€â”€ */
 export default function Home() {
   const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_HOME_PAGE, cms?.homePage);
+  const featuredProducts = buildProductCatalog(cms?.products).slice(0, 4).map((product) => ({
+    key: product.key, name: product.name, spec: product.purity || product.grade,
+    desc: product.overview, apps: product.applications?.join(", "), img: product.img,
+  }));
+  const strengthItems = content.strengths.map((item, index) => ({ ...item, icon: strengths[index % strengths.length]?.icon }));
   const liveHeroSlides = cms?.home?.heroSlides?.length ? cms.home.heroSlides : heroSlides;
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -211,8 +188,8 @@ export default function Home() {
             </p>
 
             <div style={{ marginTop: "36px", display: "flex", gap: "14px", flexWrap: "wrap" }}>
-              <Link to="/businesses" className="btn-solid-red">Explore Operations</Link>
-              <Link to="/investors"  className="btn-ghost-steel">Investor Relations →</Link>
+              <Link to="/businesses" className="btn-solid-red">{content.heroPrimaryButton}</Link>
+              <Link to="/investors"  className="btn-ghost-steel">{content.heroSecondaryButton}</Link>
             </div>
 
             {/* Slide dots */}
@@ -242,11 +219,7 @@ export default function Home() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
         >
-          {[
-            { label: "ISO 9001:2015", value: "Quality Certified" },
-            { label: "LME Grade Lead", value: "99.97% Pb Min." },
-            { label: "Est. 2004", value: "Mundra · Roorkee" },
-          ].map((row) => (
+          {content.heroFacts.map((row) => (
             <div key={row.label} className="hero-glass-row">
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
                 {row.label}
@@ -280,14 +253,10 @@ export default function Home() {
         {/* Bottom stats bar */}
         <div className="hero-stats-wrapper">
           <div className="container hero-stats-grid">
-            {[
-              { num: "50000", suffix: "+", label: "Metric Tonnes PA" },
-              { num: "20",    suffix: "+", label: "Years of Excellence" },
-              { num: "2",     suffix: "",  label: "World-Class Plants" },
-            ].map((stat, i) => (
+            {content.heroStats.map((stat, i) => (
               <div key={stat.label} className="hero-stat-item" style={{ padding: "0 24px", textAlign: "center", borderLeft: i > 0 ? "1px solid var(--border-light)" : "none" }}>
                 <div className="hero-stat-num" style={{ fontFamily: "var(--font-primary)", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1 }}>
-                  <AnimatedNumber value={stat.num} suffix={stat.suffix} />
+                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </div>
                 <div className="hero-stat-label" style={{ marginTop: "6px", fontFamily: "var(--font-primary)", fontWeight: 500, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-muted)" }}>
                   {stat.label}
@@ -305,12 +274,12 @@ export default function Home() {
         <div style={{ display: "flex", alignItems: "center", height: "90px" }}>
           <div style={{ padding: "0 32px", flexShrink: 0, borderRight: "1px solid var(--border-light)", height: "100%", display: "flex", alignItems: "center" }}>
             <span style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
-              Trusted by
+              {content.clientsLabel}
             </span>
           </div>
           <div className="clients-marquee-wrap" style={{ flex: 1, overflow: "hidden" }}>
             <div className="clients-marquee-inner">
-              {[...clientLogos, ...clientLogos].map((logo, i) => (
+              {[...content.clients, ...content.clients].map((logo, i) => (
                 <div
                   key={i}
                   style={{
@@ -323,13 +292,13 @@ export default function Home() {
                   }}
                 >
                   <img 
-                    src={logo.src} 
+                    src={logo.image}
                     alt={logo.name} 
                     style={{ 
                       objectFit: "contain", 
                       mixBlendMode: "multiply", 
                       filter: "contrast(1.1) grayscale(0.2)",
-                      ...logo.style
+                      height: logo.height || "45px"
                     }}
                   />
                 </div>
@@ -348,34 +317,25 @@ export default function Home() {
             <div className="split-grid-55-45">
               {/* Left — text */}
               <div>
-                <SectionLabel text="// WHO WE ARE" />
+                <SectionLabel text={content.overviewLabel} />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, lineHeight: 1.15, marginBottom: "20px" }}>
-                  With Over 20 Years of <span style={{ color: "var(--red-core)" }}>Operations</span>
+                  {content.overviewHeading}
                 </h2>
                 <p style={{ fontSize: "var(--fs-lead)", color: "var(--text-secondary)", lineHeight: 1.75, marginBottom: "16px" }}>
-                  Aadishakti Group transforms used lead-acid battery scrap into high-purity refined products
-                  for energy storage and industrial applications. Through strategic smelting facilities in
-                  Mundra and Roorkee, we combine process discipline, scale, and supply consistency.
+                  {content.overviewLead}
                 </p>
                 <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.7, marginBottom: "16px" }}>
-                  Our Mundra facility (AGRPL) operates in Kutch, Gujarat, adjacent to Adani Port — giving
-                  us unmatched access to international battery scrap. Our Roorkee division (AMRPL) serves
-                  North India's major battery manufacturers with domestic supply consistency.
+                  {content.overviewBody}
                 </p>
                 <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.7, marginBottom: "36px" }}>
-                  Committed to BIS standards, Basel Convention compliance, and zero-liquid-discharge operations,
-                  we deliver certified quality with environmental responsibility built in.
+                  {content.overviewFootnote}
                 </p>
 
                 <div className="home-stats-row" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginTop: "24px" }}>
-                  {[
-                    { num: "50,000+", label: "MT Annual Capacity" },
-                    { num: "₹1000+",  label: "Crore Group Turnover" },
-                    { num: "4+",      label: "Active Certifications" },
-                  ].map((s) => (
+                  {content.overviewStats.map((s) => (
                     <div key={s.label}>
                       <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(22px, 2.5vw, 32px)", color: "var(--text-primary)", lineHeight: 1 }}>
-                        {s.num}
+                        {s.value}
                       </div>
                       <div style={{ marginTop: "6px", fontFamily: "var(--font-primary)", fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)" }}>
                         {s.label}
@@ -387,17 +347,13 @@ export default function Home() {
 
               {/* Right â€” image mosaic */}
               <div className="mosaic-grid">
-                {[
-                  { src: ASSETS.mundraPlant[0], alt: "Mundra plant exterior", style: { gridColumn: "1/2", gridRow: "1/2" } },
-                  { src: ASSETS.mundraPlant[11], alt: "Production floor", style: { gridColumn: "2/3", gridRow: "1/2" } },
-                  { src: ASSETS.mundraPlant[4], alt: "Plant overview", style: { gridColumn: "1/3", gridRow: "2/3" } },
-                ].map((img) => (
+                {content.overviewImages.map((img, index) => (
                   <motion.img
-                    key={img.src}
-                    src={img.src}
+                    key={`${img.image}-${index}`}
+                    src={img.image}
                     alt={img.alt}
                     loading="lazy"
-                    style={{ ...img.style, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    style={{ ...(index === 2 ? { gridColumn: "1/3", gridRow: "2/3" } : { gridColumn: `${index + 1}/${index + 2}`, gridRow: "1/2" }), width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                     initial={{ opacity: 0, scale: 0.96 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
@@ -415,59 +371,21 @@ export default function Home() {
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section>
         <div className="grid-2 no-gap">
-          {/* AGRPL â€” Mundra */}
-          <div className="entity-card">
-            <img className="entity-card-bg" src={ASSETS.mundraPlant[0]} alt="AGRPL Mundra Plant" loading="lazy" />
-            <div className="entity-card-overlay" />
-            <div className="entity-card-glass">
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(28px, 3vw, 42px)", color: "#FFFFFF", marginBottom: "4px", lineHeight: 1 }}>
-                AGRPL
-              </h3>
-              <h4 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: "14px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>
-                Mundra Smelter Division
-              </h4>
-              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
-                Export-oriented processing hub — 30,000 MT active, 120,000 MT by 2026. Port-adjacent logistics.
-              </p>
-              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
-                {["Mundra SEZ", "ISO 9001:2015", "Basel Compliant"].map((tag) => (
-                  <span key={tag} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.25)", padding: "4px 10px", letterSpacing: "0.1em" }}>
-                    {tag}
-                  </span>
-                ))}
+          {content.entities.map((entity) => (
+            <div className="entity-card" key={entity.code}>
+              <img className="entity-card-bg" src={entity.image} alt={entity.subtitle} loading="lazy" />
+              <div className="entity-card-overlay" />
+              <div className="entity-card-glass">
+                <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(28px, 3vw, 42px)", color: "#FFFFFF", marginBottom: "4px", lineHeight: 1 }}>{entity.code}</h3>
+                <h4 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: "14px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>{entity.subtitle}</h4>
+                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>{entity.description}</p>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
+                  {entity.tags.map((tag) => <span key={tag} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.25)", padding: "4px 10px", letterSpacing: "0.1em" }}>{tag}</span>)}
+                </div>
+                <Link to={entity.link} style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{entity.button}</Link>
               </div>
-              <Link to="/businesses?plant=mundra" style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Explore AGRPL →
-              </Link>
             </div>
-          </div>
-
-          {/* AMRPL â€” Roorkee */}
-          <div className="entity-card">
-            <img className="entity-card-bg" src={ASSETS.roorkeeOffice[0]} alt="AMRPL Roorkee Plant" loading="lazy" />
-            <div className="entity-card-overlay" />
-            <div className="entity-card-glass">
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(28px, 3vw, 42px)", color: "#FFFFFF", marginBottom: "4px", lineHeight: 1 }}>
-                AMRPL
-              </h3>
-              <h4 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: "14px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>
-                Roorkee Domestic Division
-              </h4>
-              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>
-                Domestic supply hub — 40,000 MT capacity. OES spectrograph quality lab. North India distribution.
-              </p>
-              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
-                {["Haridwar, UK", "ISO 14001:2015", "Hazardous Permit"].map((tag) => (
-                  <span key={tag} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.25)", padding: "4px 10px", letterSpacing: "0.1em" }}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <Link to="/businesses?plant=roorkee" style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Explore AMRPL →
-              </Link>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
@@ -477,19 +395,19 @@ export default function Home() {
       <section className="section-padding bg-diagonal-hatch">
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// WHY AADISHAKTI" />
+            <SectionLabel text={content.strengthsLabel} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}>
-              <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>Our Core Strengths</h2>
-              <Link to="/about" className="btn-ghost-steel">Company Overview →</Link>
+              <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>{content.strengthsHeading}</h2>
+              <Link to="/about" className="btn-ghost-steel">{content.strengthsButton}</Link>
             </div>
             <div className="grid-3" style={{ gap: "20px" }}>
-              {strengths.map((s) => (
+              {strengthItems.map((s) => (
                 <div key={s.title} className="strength-item">
                   <div style={{ marginBottom: "14px" }}>{s.icon}</div>
                   <h4 style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", marginBottom: "10px" }}>
                     {s.title}
                   </h4>
-                  <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.65 }}>{s.desc}</p>
+                  <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.65 }}>{s.description}</p>
                 </div>
               ))}
             </div>
@@ -505,14 +423,14 @@ export default function Home() {
           <ScrollReveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "36px" }}>
               <div>
-                <SectionLabel text="// PRODUCTS" />
-                <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>Core Product Portfolio</h2>
+                <SectionLabel text={content.productsLabel} />
+                <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>{content.productsHeading}</h2>
               </div>
-              <Link to="/products" className="btn-solid-red">Full Product Catalog</Link>
+              <Link to="/products" className="btn-solid-red">{content.productsButton}</Link>
             </div>
 
             <div className="grid-4" style={{ gap: "16px" }}>
-              {products.map((p) => (
+              {featuredProducts.map((p) => (
                 <div key={p.key} className="product-teaser-card">
                   <div style={{ height: "180px", overflow: "hidden" }}>
                     <Link to={`/products/${p.key}`}>
@@ -536,7 +454,7 @@ export default function Home() {
                     {p.apps && (
                       <div style={{ borderTop: "1px solid var(--border-light)", paddingTop: "12px" }}>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-secondary)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "4px", fontWeight: "600" }}>
-                          INDUSTRY APPLICATIONS
+                          {content.productApplicationsLabel}
                         </div>
                         <div style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.5 }}>
                           {p.apps}
@@ -558,10 +476,10 @@ export default function Home() {
         <div className="container">
           <ScrollReveal>
             <div className="grid-4 no-gap stats-bento">
-              {statsStrip.map((s) => (
+              {content.stats.map((s) => (
                 <div key={s.label} className="stats-strip-item">
                   <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(36px, 4vw, 56px)", color: "#FFFFFF", lineHeight: 1 }}>
-                    <AnimatedNumber value={s.num} suffix={s.suffix} />
+                    <AnimatedNumber value={s.value} suffix={s.suffix} />
                   </div>
                   <div style={{ marginTop: "8px", fontFamily: "var(--font-primary)", fontWeight: 500, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.72)" }}>
                     {s.label}
@@ -577,26 +495,25 @@ export default function Home() {
           SECTION 8 â€” SUSTAINABILITY (dark photo)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="dark-photo-section">
-        <img className="dps-bg" src={ASSETS.sustainabilityBg} alt="Aadishakti plant operations" loading="lazy" />
+        <img className="dps-bg" src={content.sustainabilityImage} alt="Aadishakti plant operations" loading="lazy" />
         <div className="dps-content container" style={{ padding: "60px 0" }}>
           <ScrollReveal>
             <div className="grid-2" style={{ gridTemplateColumns: "1.1fr 0.9fr", gap: "60px", alignItems: "center" }}>
               {/* Left â€” quote + link */}
               <div>
-                <SectionLabel text="// SUSTAINABILITY" light={true} />
+                <SectionLabel text={content.sustainabilityLabel} light={true} />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "#FFFFFF", lineHeight: 1.15, marginBottom: "24px" }}>
-                  Responsible Circular Economy Practices
+                  {content.sustainabilityHeading}
                 </h2>
                 <blockquote style={{ fontFamily: "var(--font-editorial)", fontStyle: "italic", fontSize: "clamp(16px, 1.5vw, 20px)", color: "rgba(255,255,255,0.82)", lineHeight: 1.65, borderLeft: "3px solid var(--red-core)", paddingLeft: "20px", marginBottom: "32px" }}>
-                  "Lead recycling is the most efficient form of circular economy — returning full industrial
-                   value while protecting the environment from raw mining hazards."
+                  “{content.sustainabilityQuote}”
                 </blockquote>
-                <Link to="/sustainability" className="btn-solid-red">Our Sustainability Commitment →</Link>
+                <Link to="/sustainability" className="btn-solid-red">{content.sustainabilityButton}</Link>
               </div>
 
               {/* Right â€” glass stat cards */}
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                {sustainabilityStats.map((s) => (
+                {content.sustainabilityStats.map((s) => (
                   <div key={s.value} className="glass-card-dark" style={{ padding: "22px 24px", display: "flex", alignItems: "center", gap: "20px" }}>
                     <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "28px", color: "#FFFFFF", lineHeight: 1, flexShrink: 0 }}>
                       {s.value}
@@ -619,22 +536,18 @@ export default function Home() {
           <ScrollReveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "20px", marginBottom: "40px" }}>
               <div>
-                <SectionLabel text="// INVESTORS" />
+                <SectionLabel text={content.investorsLabel} />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, color: "var(--text-primary)", lineHeight: 1.15 }}>
-                  Performance & Growth Visibility
+                  {content.investorsHeading}
                 </h2>
               </div>
               <Link to="/investors" className="btn-ghost" style={{ color: "var(--text-secondary)", borderColor: "var(--border-light)" }}>
-                Open Investor Desk →
+                {content.investorsTopButton}
               </Link>
             </div>
 
             <div className="grid-3" style={{ gap: "32px" }}>
-              {[
-                { label: "Revenue Growth", value: "↑ Consistent YoY", desc: "Multi-year track record of volume and revenue expansion." },
-                { label: "Capacity Pipeline", value: "120,000 MT", desc: "Expansion to 120,000 MTPA by April 2026 at Mundra facility." },
-                { label: "Export Share", value: "48% Volume", desc: "Nearly half of output serves international battery manufacturers." },
-              ].map((item) => (
+              {content.investorCards.map((item) => (
                 <div key={item.label} className="corporate-card" style={{ padding: "32px 28px" }}>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--red-core)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "12px" }}>
                     {item.label}
@@ -642,14 +555,14 @@ export default function Home() {
                   <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "24px", color: "var(--text-primary)", marginBottom: "12px" }}>
                     {item.value}
                   </div>
-                  <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+                  <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>{item.description}</p>
                 </div>
               ))}
             </div>
 
             <div style={{ textAlign: "center", marginTop: "40px" }}>
               <Link to="/investors" className="btn-solid-red">
-                Access Full Investor Dashboard →
+                {content.investorsBottomButton}
               </Link>
             </div>
           </ScrollReveal>

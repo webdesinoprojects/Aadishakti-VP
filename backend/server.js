@@ -70,7 +70,7 @@ const corsOptions = {
   origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Portal-Role'],
 };
 
 app.use(cors(corsOptions));
@@ -803,6 +803,7 @@ app.post("/api/enquiries", upload.single("attachment"), async (req, res) => {
       estimatedQuantity: estimatedQuantity || "Not specified",
       additionalDetails: additionalDetails || "",
       attachmentPath: req.file ? `/uploads/${req.file.filename}` : null,
+      attachmentOriginalName: req.file?.originalname || null,
       submittedAt: new Date().toISOString(),
     };
 

@@ -38,6 +38,16 @@
   height: 100vh;
   z-index: 100;
 }
+
+.customer-sidebar,
+.customer-sidebar nav {
+  scrollbar-width: none;
+}
+
+.customer-sidebar::-webkit-scrollbar,
+.customer-sidebar nav::-webkit-scrollbar {
+  display: none;
+}
 .customer-sidebar.collapsed {
   width: 80px;
 }

@@ -2,9 +2,25 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import PageHero from "../components/PageHero";
 import { useCms } from "../context/CmsContext";
+import { DEFAULT_MEDIA_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
+
+const articleExcerpt = (content = "", maxLength = 190) => {
+  const plainText = String(content).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  if (plainText.length <= maxLength) return plainText;
+  return `${plainText.slice(0, maxLength).trimEnd()}...`;
+};
+
+const articleParagraphs = (content = "") => String(content)
+  .replace(/<br\s*\/?>/gi, "\n")
+  .replace(/<\/p>/gi, "\n\n")
+  .replace(/<[^>]*>/g, "")
+  .split(/\n{2,}/)
+  .map((paragraph) => paragraph.trim())
+  .filter(Boolean);
 
 export default function Media() {
   const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_MEDIA_PAGE, cms?.mediaPage);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -20,18 +36,23 @@ export default function Media() {
     { id: "4", type: "blogs", title: "Why BIS Certification Matters", date: "Aug 15, 2026", img: "/gallery/office/Roorkee/WhatsApp_Image_2026-03-11_at_16.03.43.jpeg", desc: "Understanding the rigorous standards behind IS 27:1992." }
   ];
 
-  const mediaData = cms?.media || defaultMedia;
+  const managedMedia = Array.isArray(cms?.news) ? cms.news.map((item) => ({
+    id: item.slug || item.id,
+    type: String(item.category || 'news').toLowerCase() === 'blog' ? 'blogs' : String(item.category || 'news').toLowerCase(),
+    title: item.title,
+    date: item.publishDate || '',
+    img: item.featuredImage,
+    desc: item.content,
+  })) : [];
+  const mediaData = managedMedia.length ? managedMedia : defaultMedia;
   const currentItems = mediaData.filter(m => m.type === activeType);
   const activeItem = activeId ? mediaData.find(m => m.id === activeId) : null;
   
-  const types = [
-    { id: "blogs", label: "BLOGS" },
-    { id: "news", label: "NEWS" }
-  ];
+  const types = content.types;
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="MEDIA & UPDATES" activePage="MEDIA" />
+      <PageHero title={content.heroTitle} activePage="MEDIA" image={content.heroImage} />
 
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
@@ -62,9 +83,11 @@ export default function Media() {
                 {activeItem.title}
               </h2>
 
-              <p style={{ color: "var(--text-secondary)", fontSize: "16px", lineHeight: "1.8", marginBottom: "2rem" }}>
-                {activeItem.desc}
-              </p>
+              <div style={{ color: "var(--text-secondary)", fontSize: "16px", lineHeight: "1.8", marginBottom: "2rem" }}>
+                {articleParagraphs(activeItem.desc).map((paragraph, index) => (
+                  <p key={`${activeItem.id}-${index}`} style={{ margin: index === 0 ? 0 : "1.25rem 0 0" }}>{paragraph}</p>
+                ))}
+              </div>
             </div>
           ) : (
             <>
@@ -125,7 +148,7 @@ export default function Media() {
                         {item.title}
                       </h3>
                       <p style={{ color: "var(--text-secondary)", fontSize: "14px", lineHeight: 1.6, marginBottom: "1.5rem", flex: 1 }}>
-                        {item.desc}
+                        {articleExcerpt(item.desc)}
                       </p>
                       <button className="btn-ghost-steel" style={{ padding: "8px 16px", alignSelf: "flex-start", fontSize: "11px", color: "var(--red-core)", borderColor: "var(--border-light)", cursor: "pointer" }}>
                         READ MORE →

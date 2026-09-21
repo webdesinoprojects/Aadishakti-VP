@@ -1,0 +1,93 @@
+.admin-logistics-order-page {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-logistics-order-heading {
+  min-width: 0;
+  gap: 24px;
+}
+
+.admin-logistics-order-heading > div:first-child {
+  min-width: 0;
+}
+
+.admin-logistics-order-heading h1,
+.admin-logistics-order-heading p {
+  overflow-wrap: anywhere;
+}
+
+.admin-logistics-order-heading > div:last-child {
+  flex: 0 0 auto;
+  max-width: 38%;
+}
+
+.admin-logistics-order-grid,
+.admin-logistics-order-grid > *,
+.admin-logistics-chat {
+  min-width: 0;
+}
+
+.admin-logistics-chat {
+  overflow: hidden;
+}
+
+.admin-logistics-chat-messages {
+  min-height: 0;
+  scrollbar-width: none;
+}
+
+.admin-logistics-chat-messages::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-logistics-chat-footer {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.admin-logistics-chat-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-logistics-chat-composer .form-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-logistics-chat-composer .btn {
+  width: 56px;
+  min-width: 0;
+  padding-inline: 0;
+}
+
+@media (max-width: 1180px) {
+  .admin-logistics-order-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-logistics-chat {
+    height: min(600px, 72vh) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-logistics-order-heading {
+    flex-direction: column;
+  }
+
+  .admin-logistics-order-heading > div:last-child {
+    max-width: 100%;
+    text-align: left !important;
+  }
+
+  .admin-logistics-chat-footer {
+    padding: 14px !important;
+  }
+}

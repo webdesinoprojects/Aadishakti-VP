@@ -24,6 +24,7 @@ export default function Login() {
     try {
       const response = await portalAuthApi.login({ identifier: code, password, role: tab });
       const role = response.data?.session?.role;
+      sessionStorage.setItem('portal_active_role', role);
       navigate(role === 'vendor' ? '/vendor/dashboard' : '/customer/dashboard');
     } catch (loginError) {
       setError(loginError.response?.data?.error || 'Unable to sign in. Please check your credentials.');

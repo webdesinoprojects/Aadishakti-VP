@@ -1,6 +1,7 @@
 import { getSupabaseAdminClient, throwOnSupabaseError } from "../../infrastructure/supabase/supabaseClients.js";
 import { badRequest, notFound } from "../../shared/errors.js";
 import { uploadMediaBuffer } from "../media/mediaService.js";
+import { notifyVendorWorkflowChanged } from "./vendorWorkflowEvents.js";
 
 const clean = (value) => String(value ?? "").trim();
 const requireText = (value, label) => {
@@ -29,11 +30,9 @@ const upload = async (file, folder, tags) => {
   return uploadMediaBuffer({ buffer: file.buffer, originalName: file.originalname, mimeType: file.mimetype, folder, tags });
 };
 
-export const listPartnerDocuments = (account) => listOwned(
-  "partner_documents",
-  account.id,
-  "*,media:media_assets!partner_documents_media_id_fkey(url,name,mime_type)",
-);
+const partnerDocumentColumns = "*,media:media_assets!partner_documents_media_id_fkey(url,name,mime_type)";
+
+export const listPartnerDocuments = (account) => listOwned("partner_documents", account.id, partnerDocumentColumns);
 
 export const submitPartnerDocument = async (account, input, file) => {
   const media = await upload(file, `/aadishakti/portal/${account.role}/documents`, [account.role, "partner-document"]);
@@ -45,9 +44,32 @@ export const submitPartnerDocument = async (account, input, file) => {
     issued_on: input.issuedOn || null,
     expires_on: input.expiresOn || null,
     media_id: media.id,
-  }).select("*").single();
+  }).select(partnerDocumentColumns).single();
   throwOnSupabaseError(error, "submit partner document");
   return data;
+};
+
+export const submitPartnerDocuments = async (account, input, files) => {
+  if (!Array.isArray(files) || files.length === 0) throw badRequest("At least one document is required.");
+  const documentType = requireText(input.documentType, "Document type");
+  const suppliedTitle = clean(input.title);
+  const mediaItems = await Promise.all(files.map((file) => upload(
+    file,
+    `/aadishakti/portal/${account.role}/documents`,
+    [account.role, "partner-document"],
+  )));
+  const rows = files.map((file, index) => ({
+    portal_account_id: account.id,
+    document_type: documentType,
+    title: suppliedTitle && files.length === 1 ? suppliedTitle : file.originalname.replace(/\.[^.]+$/, ""),
+    document_number: clean(input.documentNumber),
+    issued_on: input.issuedOn || null,
+    expires_on: input.expiresOn || null,
+    media_id: mediaItems[index].id,
+  }));
+  const { data, error } = await getSupabaseAdminClient().from("partner_documents").insert(rows).select(partnerDocumentColumns);
+  throwOnSupabaseError(error, "submit partner documents");
+  return data || [];
 };
 
 export const listReceipts = (account) => listOwned(
@@ -180,6 +202,7 @@ export const submitVendorQuotation = async (account, assignmentId, input, file) 
   const { data, error } = await client.from("vendor_quotations").upsert(payload, { onConflict: "rfq_assignment_id" }).select("*").single();
   throwOnSupabaseError(error, "submit vendor quotation");
   await client.from("rfq_assignments").update({ status: "responded" }).eq("id", assignment.id);
+  notifyVendorWorkflowChanged(account.id);
   return data;
 };
 

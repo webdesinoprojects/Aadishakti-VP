@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { MapPin, 
   Home, Package, Image, Newspaper, Users, Briefcase, 
   TrendingUp, Mail, FileText, Settings, LogOut,
-  ChevronLeft, ChevronRight, FileSpreadsheet, UserPlus } from 'lucide-react';
+  ChevronLeft, ChevronRight, FileSpreadsheet, UserPlus, FlaskConical, PanelsTopLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
@@ -13,8 +13,12 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       label: 'Content Management',
       items: [
         { to: '/admin/dashboard', icon: Home, label: 'Dashboard' },
-        { to: '/admin/cms/hero', icon: Home, label: 'Home / Hero' },
+        { to: '/admin/cms/hero', icon: Home, label: 'Home Hero Slides' },
+        { to: '/admin/cms/pages/home', icon: PanelsTopLeft, label: 'Home Page Sections' },
+        { to: '/admin/cms/pages/businesses', icon: Briefcase, label: 'Businesses Page' },
+        { to: '/admin/cms/pages', icon: PanelsTopLeft, label: 'Public Pages' },
         { to: '/admin/cms/products', icon: Package, label: 'Products' },
+        { to: '/admin/cms/custom-alloy', icon: FlaskConical, label: 'Custom Alloy Page' },
         { to: '/admin/cms/gallery', icon: Image, label: 'Gallery' },
         { to: '/admin/cms/news', icon: Newspaper, label: 'News & Announcements' },
         { to: '/admin/cms/team', icon: Users, label: 'Our Team' },
@@ -28,9 +32,9 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         { to: '/admin/operations/registrations', icon: UserPlus, label: 'New Registrations' },
         { to: '/admin/operations/accounts', icon: Users, label: 'Portal Accounts' },
         { to: '/admin/operations/portal-workflows', icon: FileSpreadsheet, label: 'Portal Workflows' },
-        { to: '/admin/operations/approvals', icon: Briefcase, label: 'Profile Updates' },
+        { to: '/admin/operations/approvals', icon: Briefcase, label: 'Profile Update Requests' },
         { to: '/admin/operations/reconciliations', icon: FileSpreadsheet, label: 'Quarterly Reconciliations' },
-        { to: '/admin/cms/investors', icon: TrendingUp, label: 'Investors Data' },
+        { to: '/admin/cms/pages/investors', icon: TrendingUp, label: 'Investors Page' },
       ],
     },
     {
@@ -71,6 +75,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.to === '/admin/cms/pages'}
                 className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
               >
                 <item.icon />

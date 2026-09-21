@@ -1,53 +1,80 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CheckCircle2, Clock3, Eye, EyeOff, KeyRound, RotateCcw, Save, ShieldCheck, XCircle } from 'lucide-react';
 import { portalAuthApi } from '../services/portalAuthApi';
+import { usePortalToast } from './PortalToastContext';
+import './portal-account-workspace.css';
 
 const cleanValue = (value) => value == null || value === 'Unavailable' ? '' : String(value);
 const profileFields = [
-  ['email', 'Email Address'],
-  ['phone', 'Phone'],
-  ['mobile', 'Mobile'],
-  ['taxReference', 'Tax Reference'],
+  { key: 'email', label: 'Email Address', type: 'email', placeholder: 'name@company.com' },
+  { key: 'phone', label: 'Phone', type: 'tel', placeholder: 'Business phone number' },
+  { key: 'mobile', label: 'Mobile', type: 'tel', placeholder: 'Mobile number' },
+  { key: 'taxReference', label: 'Tax Reference', type: 'text', placeholder: 'GST / tax reference' },
 ];
+
+const statusMeta = {
+  Approved: { icon: CheckCircle2, className: 'is-approved' },
+  Rejected: { icon: XCircle, className: 'is-rejected' },
+  Pending: { icon: Clock3, className: 'is-pending' },
+};
+
+const initialProfileValues = (profile) => Object.fromEntries(
+  profileFields.map(({ key }) => [key, cleanValue(profile[key])]),
+);
 
 export default function PortalAccountWorkspace({ api, profile, role = 'vendor' }) {
   const [requests, setRequests] = useState([]);
-  const [profileMessage, setProfileMessage] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState('');
+  const [formValues, setFormValues] = useState(() => initialProfileValues(profile));
   const [submitting, setSubmitting] = useState(false);
-  const isVendor = role === 'vendor';
-  const cardClass = isVendor ? 'vendor-panel' : 'customer-card';
-  const tableClass = isVendor ? 'vendor-table' : 'customer-table';
-  const buttonClass = isVendor ? 'vendor-btn-outline' : 'customer-btn-outline';
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
+  const knownStatuses = useRef(new Map());
+  const historyLoaded = useRef(false);
+  const toast = usePortalToast();
+  const originalValues = useMemo(() => initialProfileValues(profile), [profile]);
+  const changedFields = profileFields.filter(({ key }) => originalValues[key] !== formValues[key]);
+  const latestDecision = requests.find((request) => request.status === 'Rejected' || request.status === 'Approved');
 
-  const loadRequests = async () => {
+  const loadRequests = useCallback(async ({ reportError = true } = {}) => {
     try {
       const result = await api.getProfileUpdates();
-      setRequests(result.data || []);
+      const nextRequests = result.data || [];
+      if (historyLoaded.current) {
+        nextRequests.forEach((request) => {
+          const previousStatus = knownStatuses.current.get(request.id);
+          if (previousStatus === 'Pending' && request.status === 'Rejected') {
+            toast.error(`Profile request ${request.requestReference} was rejected${request.reviewNote ? `: ${request.reviewNote}` : '.'}`);
+          }
+          if (previousStatus === 'Pending' && request.status === 'Approved') {
+            toast.success(`Profile request ${request.requestReference} was approved.`);
+          }
+        });
+      }
+      knownStatuses.current = new Map(nextRequests.map((request) => [request.id, request.status]));
+      historyLoaded.current = true;
+      setRequests(nextRequests);
     } catch (error) {
-      setProfileMessage(error.response?.data?.error || 'Unable to load profile-update history.');
+      if (reportError) toast.error(error.response?.data?.error || 'Unable to load profile-update history.');
     }
-  };
+  }, [api, toast]);
 
-  useEffect(() => { loadRequests(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    loadRequests();
+    const intervalId = window.setInterval(() => loadRequests({ reportError: false }), 15000);
+    return () => window.clearInterval(intervalId);
+  }, [loadRequests]);
 
   const submitProfileUpdate = async (event) => {
     event.preventDefault();
+    if (!changedFields.length) return toast.warning('Change at least one field before submitting.');
     setSubmitting(true);
-    const values = Object.fromEntries(new FormData(event.currentTarget).entries());
-    const oldData = Object.fromEntries(profileFields.map(([key]) => [key, cleanValue(profile[key])]));
-    const newData = Object.fromEntries(profileFields.map(([key]) => [key, cleanValue(values[key])]));
-    const changed = profileFields.some(([key]) => oldData[key] !== newData[key]);
-    if (!changed) {
-      setProfileMessage('Change at least one field before submitting.');
-      setSubmitting(false);
-      return;
-    }
     try {
-      await api.submitProfileUpdate({ oldData, newData });
-      setProfileMessage('Profile update request submitted for Admin review.');
-      await loadRequests();
+      await api.submitProfileUpdate({ oldData: originalValues, newData: formValues });
+      toast.success('Profile update request sent to Admin for review.');
+      setFormValues(originalValues);
+      await loadRequests({ reportError: false });
     } catch (error) {
-      setProfileMessage(error.response?.data?.error || 'Unable to submit the profile update request.');
+      toast.error(error.response?.data?.error || 'Unable to submit the profile update request.');
     } finally {
       setSubmitting(false);
     }
@@ -57,49 +84,87 @@ export default function PortalAccountWorkspace({ api, profile, role = 'vendor' }
     event.preventDefault();
     const form = event.currentTarget;
     const values = Object.fromEntries(new FormData(form).entries());
-    if (values.newPassword !== values.confirmPassword) {
-      setPasswordMessage('New password and confirmation do not match.');
-      return;
-    }
+    if (values.newPassword !== values.confirmPassword) return toast.error('New password and confirmation do not match.');
+    if (values.currentPassword === values.newPassword) return toast.warning('Choose a new password different from the current password.');
+    setChangingPassword(true);
     try {
-      await portalAuthApi.changePassword({ currentPassword: values.currentPassword, newPassword: values.newPassword });
+      await portalAuthApi.changePassword({ currentPassword: values.currentPassword, newPassword: values.newPassword }, role);
       form.reset();
-      setPasswordMessage('Password changed successfully.');
+      toast.success('Portal password changed successfully.');
     } catch (error) {
-      setPasswordMessage(error.response?.data?.error || 'Unable to change password.');
+      toast.error(error.response?.data?.error || 'Unable to change password.');
+    } finally {
+      setChangingPassword(false);
     }
   };
 
-  return <>
-    <div className={cardClass} style={{ marginTop: '24px', padding: '20px' }}>
-      <h3 style={{ margin: '0 0 6px' }}>Request Profile Update</h3>
-      <p style={{ margin: '0 0 18px', color: 'var(--text-muted)' }}>CIS master data stays read-only. Submit corrections for Admin verification.</p>
-      <form onSubmit={submitProfileUpdate} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
-        {profileFields.map(([key, label]) => <label key={key}>{label}<input name={key} defaultValue={cleanValue(profile[key])} style={{ width: '100%', padding: '10px', marginTop: '6px' }} /></label>)}
-        <button className={buttonClass} disabled={submitting} style={{ alignSelf: 'end' }}>{submitting ? 'Submitting...' : 'Submit for Review'}</button>
+  return <div className={`portal-account-workspace is-${role}`}>
+    <section className="portal-account-card">
+      <header className="portal-account-card-header">
+        <div className="portal-account-heading-icon is-blue"><Save size={21} /></div>
+        <div><h2>Request profile correction</h2><p>CIS master data remains read-only until an administrator verifies your request.</p></div>
+        {changedFields.length > 0 && <span className="portal-account-change-count">{changedFields.length} changed</span>}
+      </header>
+      <form className="portal-account-form" onSubmit={submitProfileUpdate}>
+        <div className="portal-account-grid">
+          {profileFields.map(({ key, label, type, placeholder }) => <label key={key} className={originalValues[key] !== formValues[key] ? 'is-changed' : ''}>
+            <span>{label}{originalValues[key] !== formValues[key] && <small>Modified</small>}</span>
+            <input type={type} value={formValues[key]} placeholder={placeholder} onChange={(event) => setFormValues((current) => ({ ...current, [key]: event.target.value }))} />
+          </label>)}
+        </div>
+        <footer className="portal-account-form-footer">
+          <p><ShieldCheck size={16} /> Your request will be reviewed before any profile correction is applied.</p>
+          <div>
+            <button type="button" className="portal-account-secondary" disabled={!changedFields.length || submitting} onClick={() => setFormValues(originalValues)}><RotateCcw size={16} /> Reset</button>
+            <button type="submit" className="portal-account-primary" disabled={!changedFields.length || submitting}><Save size={16} /> {submitting ? 'Submitting…' : 'Submit for review'}</button>
+          </div>
+        </footer>
       </form>
-      {profileMessage && <p style={{ margin: '12px 0 0' }}>{profileMessage}</p>}
-    </div>
+    </section>
 
-    <div className={cardClass} style={{ marginTop: '24px', padding: '20px' }}>
-      <h3 style={{ margin: '0 0 16px' }}>Change Portal Password</h3>
-      <form onSubmit={changePassword} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', alignItems: 'end' }}>
-        <label>Current Password<input name="currentPassword" type="password" required autoComplete="current-password" style={{ width: '100%', padding: '10px', marginTop: '6px' }} /></label>
-        <label>New Password<input name="newPassword" type="password" required minLength="8" autoComplete="new-password" style={{ width: '100%', padding: '10px', marginTop: '6px' }} /></label>
-        <label>Confirm New Password<input name="confirmPassword" type="password" required minLength="8" autoComplete="new-password" style={{ width: '100%', padding: '10px', marginTop: '6px' }} /></label>
-        <button className={buttonClass}>Change Password</button>
+    <section className="portal-account-card">
+      <header className="portal-account-card-header">
+        <div className="portal-account-heading-icon is-amber"><KeyRound size={21} /></div>
+        <div><h2>Change portal password</h2><p>This updates your own portal login immediately and does not require admin approval.</p></div>
+      </header>
+      <form className="portal-account-form" onSubmit={changePassword}>
+        <div className="portal-account-password-grid">
+          <label><span>Current password</span><input name="currentPassword" type={showPasswords ? 'text' : 'password'} required autoComplete="current-password" /></label>
+          <label><span>New password</span><input name="newPassword" type={showPasswords ? 'text' : 'password'} required minLength="8" autoComplete="new-password" /></label>
+          <label><span>Confirm new password</span><input name="confirmPassword" type={showPasswords ? 'text' : 'password'} required minLength="8" autoComplete="new-password" /></label>
+        </div>
+        <footer className="portal-account-form-footer">
+          <button type="button" className="portal-account-password-toggle" onClick={() => setShowPasswords((current) => !current)}>{showPasswords ? <EyeOff size={16} /> : <Eye size={16} />} {showPasswords ? 'Hide passwords' : 'Show passwords'}</button>
+          <button type="submit" className="portal-account-primary is-dark" disabled={changingPassword}><KeyRound size={16} /> {changingPassword ? 'Updating…' : 'Change password'}</button>
+        </footer>
       </form>
-      {passwordMessage && <p style={{ margin: '12px 0 0' }}>{passwordMessage}</p>}
-    </div>
+    </section>
 
-    <div className={cardClass} style={{ marginTop: '24px', padding: 0 }}>
-      <table className={tableClass}>
-        <thead><tr><th>Request</th><th>Submitted</th><th>Status</th><th>Admin Note</th></tr></thead>
-        <tbody>
-          {requests.map((item) => <tr key={item.id}><td>{item.requestReference}</td><td>{new Date(item.createdAt).toLocaleDateString()}</td><td>{item.status}</td><td>{item.reviewNote || '-'}</td></tr>)}
-          {!requests.length && <tr><td colSpan="4" style={{ textAlign: 'center' }}>No profile-update requests yet.</td></tr>}
-        </tbody>
-      </table>
-    </div>
-  </>;
+    <section className="portal-account-card portal-account-history">
+      <header className="portal-account-card-header">
+        <div className="portal-account-heading-icon is-green"><Clock3 size={21} /></div>
+        <div><h2>Request history</h2><p>Track admin decisions and review notes for your submitted corrections.</p></div>
+        <span className="portal-account-history-count">{requests.length} total</span>
+      </header>
+      {latestDecision && <div className={`portal-account-decision is-${latestDecision.status.toLowerCase()}`} role="status">
+        {latestDecision.status === 'Rejected' ? <XCircle size={20} /> : <CheckCircle2 size={20} />}
+        <div>
+          <strong>{latestDecision.requestReference} was {latestDecision.status.toLowerCase()}</strong>
+          <p>{latestDecision.reviewNote || (latestDecision.status === 'Approved' ? 'Your requested profile correction was approved.' : 'Please review the request details and submit a corrected request.')}</p>
+        </div>
+        {latestDecision.reviewedAt && <time>{new Date(latestDecision.reviewedAt).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</time>}
+      </div>}
+      <div className="portal-account-table-shell">
+        <table><thead><tr><th>Request</th><th>Submitted</th><th>Status</th><th>Admin note</th></tr></thead>
+          <tbody>{requests.map((item) => {
+            const meta = statusMeta[item.status] || statusMeta.Pending;
+            const Icon = meta.icon;
+            return <tr key={item.id}><td><strong>{item.requestReference}</strong></td><td>{new Date(item.createdAt).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</td><td><span className={`portal-account-status ${meta.className}`}><Icon size={14} />{item.status}</span></td><td>{item.reviewNote || <span className="portal-account-muted">No note</span>}</td></tr>;
+          })}
+          {!requests.length && <tr><td colSpan="4"><div className="portal-account-empty"><Clock3 size={28} /><strong>No update requests yet</strong><span>Your submitted profile corrections will appear here.</span></div></td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>;
 }

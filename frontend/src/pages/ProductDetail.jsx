@@ -1,15 +1,19 @@
+import { useMemo } from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
-import { productsData } from "../data/products";
+import { useCms } from "../context/CmsContext";
+import { buildProductCatalog } from "../data/productCatalog";
 import { Download } from "lucide-react";
 
 export default function ProductDetail() {
   const { slug } = useParams();
+  const { cms } = useCms();
+  const products = useMemo(() => buildProductCatalog(cms?.products), [cms?.products]);
   
   // Find the product by its key (slug)
-  const product = productsData.find(p => p.key === slug);
+  const product = products.find(p => p.key === slug);
 
   // If no product matches the slug, redirect to main products page
   if (!product) {
@@ -98,9 +102,7 @@ export default function ProductDetail() {
                 <Link to="/contact" className="btn-solid-red" style={{ height: "48px", paddingInline: "32px", fontSize: "13px" }}>
                   ENQUIRE NOW &rarr;
                 </Link>
-                <button type="button" style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "48px", paddingInline: "24px", background: "transparent", border: "1px solid var(--border-light)", color: "var(--text-primary)", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.background = "#fafafa"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
-                  <Download size={16} /> DATA SHEET
-                </button>
+                {product.datasheet && <a href={product.datasheet} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "48px", paddingInline: "24px", background: "transparent", border: "1px solid var(--border-light)", color: "var(--text-primary)", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", cursor: "pointer", transition: "all 0.2s", textDecoration: "none" }}><Download size={16} /> DATA SHEET</a>}
               </div>
 
             </div>

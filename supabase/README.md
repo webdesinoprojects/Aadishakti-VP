@@ -14,6 +14,10 @@ Current order:
 
 6. `006_profile_update_account_ownership.sql` - Portal-account ownership for scoped profile-update submission and history.
 
+7. `007_allow_multiple_reconciliation_files.sql` - Multiple statement files for the same partner and quarter.
+
+8. `008_link_logistics_orders_to_quotations.sql` - Optional one-to-one link from a logistics order to an accepted vendor quotation.
+
 Naming convention for every future migration:
 
 ```text

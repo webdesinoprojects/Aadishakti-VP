@@ -2,17 +2,19 @@ import { useState } from "react";
 import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
-import ScrollReveal from "../components/ScrollReveal";
-import { Search, MapPin, Building2, ChevronRight, Loader2, Paperclip, X } from "lucide-react";
+import { Loader2, Paperclip, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCms } from "../context/CmsContext";
-import { allCountryOptions } from "../utils/countries";
 import CountrySelect from "../components/CountrySelect";
+import { DEFAULT_CAREERS_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
+import { usePortalToast } from "../portal/PortalToastContext";
 
 export default function Careers() {
   const { cms } = useCms();
+  const pageContent = mergeCmsContent(DEFAULT_CAREERS_PAGE, cms?.careersPage);
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = usePortalToast();
 
   // Parse URL query parameters
   const searchParams = new URLSearchParams(location.search);
@@ -65,7 +67,10 @@ export default function Careers() {
     ]
   };
 
-  const careersData = cms?.careersData || defaultCareersData;
+  const careersData = {
+    ...(cms?.careersData || defaultCareersData),
+    categories: pageContent.categories,
+  };
   const currentJobs = careersData.jobs.filter(j => j.category === activeCategory);
   
   // Detail View Active Job
@@ -127,7 +132,7 @@ export default function Careers() {
       let resJson = {};
       try {
         resJson = await response.json();
-      } catch (e) {
+      } catch {
         // Safely ignore empty responses
       }
       
@@ -135,10 +140,6 @@ export default function Careers() {
         throw new Error(resJson.error || "Failed to submit career request.");
       }
 
-      setSubmitStatus({
-        type: "success",
-        msg: "Application submitted successfully! Our HR desk will connect shortly.",
-      });
       setFormData({
         fullName: "",
         email: "",
@@ -148,6 +149,9 @@ export default function Careers() {
         description: "",
       });
       setResume(null);
+      setSubmitStatus(null);
+      setShowModal(false);
+      toast.success("Application submitted successfully. Our HR desk will connect shortly.");
     } catch (err) {
       console.error(err);
       setSubmitStatus({ type: "error", msg: err.message || "An unexpected error occurred." });
@@ -221,7 +225,7 @@ export default function Careers() {
           className="btn-solid-red"
           style={{ width: "100%", height: "52px", fontSize: "14px" }}
         >
-          APPLY NOW →
+          {pageContent.applyButton}
         </button>
       </div>
     );
@@ -229,8 +233,8 @@ export default function Careers() {
 
   const renderJobList = () => (
     <>
-      <SectionLabel text="// HUMAN RESOURCES" />
-      <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>CAREER PIPELINES</h2>
+      <SectionLabel text={pageContent.sectionLabel} />
+      <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>{pageContent.heading}</h2>
 
       {/* Two Tab Layout Switches */}
       <div style={{ display: "flex", gap: "1rem", marginBottom: "3rem", flexWrap: "wrap" }}>
@@ -300,7 +304,7 @@ export default function Careers() {
         ))}
         {currentJobs.length === 0 && (
           <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--text-muted)", padding: "4rem" }}>
-            No roles available in this category currently.
+            {pageContent.emptyText}
           </div>
         )}
       </div>
@@ -309,7 +313,7 @@ export default function Careers() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="CAREERS" activePage="CAREERS" />
+      <PageHero title={pageContent.heroTitle} activePage="CAREERS" image={pageContent.heroImage} />
 
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">

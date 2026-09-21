@@ -62,7 +62,8 @@ export default function CustomerApp() {
             <Route path="/customer/documents" element={<DocumentsPage />} />
             <Route path="/customer/payments" element={<PaymentsPage />} />
             <Route path="/customer/sustainability" element={<SustainabilityReportsPage />} />
-            <Route path="/customer/returns" element={<ReturnsPage />} />
+            <Route path="/customer/claims" element={<ReturnsPage />} />
+            <Route path="/customer/returns" element={<Navigate to="/customer/claims" replace />} />
             <Route path="/customer/support" element={<SupportPage />} />
             <Route path="/customer/profile" element={<MyProfilePage />} />
             <Route path="/customer/*" element={<Navigate to="/customer/dashboard" replace />} />

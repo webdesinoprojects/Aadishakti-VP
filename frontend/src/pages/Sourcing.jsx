@@ -4,9 +4,9 @@ import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
 import LeadCalculator from "../components/LeadCalculator";
-import { ASSETS } from "../assets/assetMap";
-import { allCountryOptions } from "../utils/countries";
 import CountrySelect from "../components/CountrySelect";
+import { useCms } from "../context/CmsContext";
+import { DEFAULT_SOURCING_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
 
 const whatWeBuy = [
   {
@@ -48,14 +48,9 @@ const whatWeBuy = [
   },
 ];
 
-const criteria = [
-  { grade: "Grade A", lead: "≥ 60% Pb", form: "Whole batteries, intact", min: "5 MT", notes: "Premium pricing" },
-  { grade: "Grade B", lead: "50–60% Pb", form: "Drained, cracked cases", min: "10 MT", notes: "Standard pricing" },
-  { grade: "Grade C", lead: "40–50% Pb", form: "Mixed, plates only", min: "20 MT", notes: "Negotiated pricing" },
-  { grade: "Dross/Slag", lead: "25–45% Pb", form: "Loose material, bags", min: "5 MT", notes: "Assay required" },
-];
-
 export default function Sourcing() {
+  const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_SOURCING_PAGE, cms?.sourcingPage);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [phoneCode, setPhoneCode] = useState("+91");
@@ -82,32 +77,30 @@ export default function Sourcing() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="SOURCING" activePage="SOURCING" />
+      <PageHero title={content.heroTitle} activePage="SOURCING" image={content.heroImage} />
 
       {/* SECTION 1: WHAT WE BUY */}
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// WE BUY" />
+            <SectionLabel text={content.buyLabel} />
             <div style={{ maxWidth: "700px", marginBottom: "48px" }}>
               <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, marginBottom: "16px" }}>
-                Procuring Lead-Rich Scrap <span style={{ color: "var(--red-core)" }}>Nationwide</span>
+                {content.buyHeading}
               </h2>
               <p style={{ fontSize: "var(--fs-lead)", color: "var(--text-secondary)", lineHeight: 1.7 }}>
-                Aadishakti Group is one of India's largest secondary lead processors. We actively procure
-                used lead-acid batteries and scrap materials from dismantlers, dealers, and industrial
-                generators across India and internationally through Mundra Port.
+                {content.buyIntroduction}
               </p>
             </div>
 
             <div className="grid-4" style={{ gap: "20px" }}>
-              {whatWeBuy.map((item) => (
+              {content.materials.map((item, index) => (
                 <div key={item.title} className="strength-item" style={{ minHeight: "200px" }}>
-                  <div style={{ color: "var(--red-core)", marginBottom: "14px" }}>{item.icon}</div>
+                  <div style={{ color: "var(--red-core)", marginBottom: "14px" }}>{whatWeBuy[index]?.icon || whatWeBuy[0].icon}</div>
                   <h4 style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "15px", color: "var(--text-primary)", marginBottom: "10px" }}>
                     {item.title}
                   </h4>
-                  <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.6 }}>{item.desc}</p>
+                  <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.6 }}>{item.description}</p>
                 </div>
               ))}
             </div>
@@ -119,8 +112,8 @@ export default function Sourcing() {
       <section className="section-padding bg-steel-grid">
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// QUALITY STANDARDS" />
-            <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, marginBottom: "40px" }}>Acceptance Criteria</h2>
+            <SectionLabel text={content.criteriaLabel} />
+            <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, marginBottom: "40px" }}>{content.criteriaHeading}</h2>
 
             <div style={{ overflowX: "auto" }}>
               <table className="sourcing-table">
@@ -134,13 +127,13 @@ export default function Sourcing() {
                   </tr>
                 </thead>
                 <tbody>
-                  {criteria.map((row) => (
+                  {content.criteria.map((row) => (
                     <tr key={row.grade}>
                       <td style={{ fontFamily: "var(--font-primary)", fontWeight: 700, color: "var(--text-primary)" }}>{row.grade}</td>
                       <td style={{ color: "var(--red-core)", fontWeight: 700 }}>{row.lead}</td>
                       <td>{row.form}</td>
-                      <td>{row.min}</td>
-                      <td>{row.notes}</td>
+                      <td>{row.minimum}</td>
+                      <td>{row.pricing}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -157,28 +150,19 @@ export default function Sourcing() {
             <div className="grid-2" style={{ gridTemplateColumns: "1fr 340px", gap: "60px", alignItems: "start" }}>
               {/* Left: import info */}
               <div>
-                <SectionLabel text="// IMPORT CAPABILITY" />
+                <SectionLabel text={content.importLabel} />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, marginBottom: "20px" }}>
-                  International Scrap Procurement
+                  {content.importHeading}
                 </h2>
                 <p style={{ fontSize: "var(--fs-lead)", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "20px" }}>
-                  Our Mundra facility (AGRPL) operates adjacent to Adani Port — one of India's largest
-                  private ports — enabling efficient customs clearance for international ULAB and lead
-                  scrap consignments under the Basel Convention framework.
+                  {content.importLead}
                 </p>
                 <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", lineHeight: 1.7, marginBottom: "32px" }}>
-                  We handle complete documentation: Pre-Shipment Inspection (PSI), Import NOC from
-                  Central Pollution Control Board, CDSCO clearances, and all statutory compliance for
-                  hazardous waste imports under Schedule IV of Hazardous Waste Rules.
+                  {content.importBody}
                 </p>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "32px" }}>
-                  {[
-                    { label: "Import Port", value: "Mundra, Gujarat" },
-                    { label: "Port Code", value: "INMUN" },
-                    { label: "Compliance", value: "Basel Convention" },
-                    { label: "Turnaround", value: "48–72 hrs clearance" },
-                  ].map((item) => (
+                  {content.importFacts.map((item) => (
                     <div key={item.label} className="corporate-card" style={{ padding: "18px 20px" }}>
                       <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "4px" }}>
                         {item.label}
@@ -195,12 +179,12 @@ export default function Sourcing() {
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>
                     // SOURCING CONTACT
                   </div>
-                  <h4 style={{ fontWeight: 800, fontSize: "16px", marginBottom: "4px" }}>Import & Procurement Desk</h4>
+                  <h4 style={{ fontWeight: 800, fontSize: "16px", marginBottom: "4px" }}>{content.contactHeading}</h4>
                   <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "12px" }}>
-                    For bulk international procurement enquiries and pre-shipment discussions.
+                    {content.contactText}
                   </p>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--text-secondary)" }}>
-                    gourav.sharma@aadishakti.com · +91-8743000799
+                    {content.contactDetails}
                   </div>
                 </div>
               </div>
@@ -218,20 +202,18 @@ export default function Sourcing() {
       <section className="section-padding bg-diagonal-hatch">
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// GET IN TOUCH" />
+            <SectionLabel text={content.formLabel} />
             <div className="grid-2" style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "start" }}>
               <div>
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, marginBottom: "16px" }}>
-                  Start a Sourcing Conversation
+                  {content.formHeading}
                 </h2>
                 <p style={{ fontSize: "var(--fs-body)", color: "var(--text-muted)", marginBottom: "32px" }}>
-                  Whether you are a battery dismantler, scrap dealer, municipal collector, or overseas
-                  exporter — we invite you to connect. We offer competitive pricing, timely payment,
-                  and complete documentation support.
+                  {content.formIntroduction}
                 </p>
 
                 <form
-                  onSubmit={(e) => { e.preventDefault(); alert("Your enquiry has been received. Our sourcing team will contact you within 24 hours."); }}
+                  onSubmit={(e) => { e.preventDefault(); alert(content.formSuccessMessage); }}
                   style={{ display: "flex", flexDirection: "column", gap: "16px" }}
                 >
                   <div className="grid-2" style={{ gap: "16px" }}>
@@ -337,30 +319,23 @@ export default function Sourcing() {
                     />
                   </div>
                   <button type="submit" className="btn-solid-red" style={{ alignSelf: "flex-start", paddingInline: "36px" }}>
-                    Submit Sourcing Enquiry →
+                    {content.formSubmitButton}
                   </button>
                 </form>
               </div>
 
               <div>
                 <img
-                  src={ASSETS.mundraPlant[0]}
+                  src={content.sellerImage}
                   alt="Mundra Port AGRPL"
                   loading="lazy"
                   style={{ width: "100%", height: "240px", objectFit: "cover", marginBottom: "20px" }}
                 />
                 <div className="corporate-card" style={{ padding: "20px 22px" }}>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>
-                    Why sell to Aadishakti?
+                    {content.benefitsHeading}
                   </div>
-                  {[
-                    "Competitive market-linked pricing",
-                    "Immediate payment terms available",
-                    "Complete documentation support",
-                    "ISO-certified processing facility",
-                    "Basel Convention compliant import",
-                    "Pan-India pickup network",
-                  ].map((point) => (
+                  {content.benefits.map((point) => (
                     <div key={point} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "7px 0", borderBottom: "1px solid var(--border-light)" }}>
                       <span style={{ color: "var(--red-core)", fontSize: "10px", fontWeight: 700 }}>●</span>
                       <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>{point}</span>
@@ -370,21 +345,21 @@ export default function Sourcing() {
                 
                 <div className="corporate-card" style={{ padding: "20px 22px", marginTop: "20px" }}>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>
-                    Direct Sourcing Contact
+                    {content.directContactLabel}
                   </div>
                   <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "4px" }}>
-                    Rajesh Mehta
+                    {content.directContactName}
                   </div>
                   <div style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "12px" }}>
-                    Head of Sourcing & Import
+                    {content.directContactRole}
                   </div>
                   <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--red-core)" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-                    <a href="tel:+918743000799" style={{ fontSize: "13px", color: "var(--text-primary)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.target.style.color = "var(--red-core)"} onMouseLeave={(e) => e.target.style.color = "var(--text-primary)"}>+91 8743 000 799</a>
+                    <a href={`tel:${content.directContactPhoneHref}`} style={{ fontSize: "13px", color: "var(--text-primary)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.target.style.color = "var(--red-core)"} onMouseLeave={(e) => e.target.style.color = "var(--text-primary)"}>{content.directContactPhone}</a>
                   </div>
                   <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--red-core)" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                    <a href="mailto:rajesh.mehta@aadishakti.com" style={{ fontSize: "13px", color: "var(--text-primary)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.target.style.color = "var(--red-core)"} onMouseLeave={(e) => e.target.style.color = "var(--text-primary)"}>rajesh.mehta@aadishakti.com</a>
+                    <a href={`mailto:${content.directContactEmail}`} style={{ fontSize: "13px", color: "var(--text-primary)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.target.style.color = "var(--red-core)"} onMouseLeave={(e) => e.target.style.color = "var(--text-primary)"}>{content.directContactEmail}</a>
                   </div>
                 </div>
               </div>

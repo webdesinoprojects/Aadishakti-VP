@@ -1,0 +1,30 @@
+.reconciliation-drawer-layer { position: fixed; inset: 0; z-index: 1100; }
+.reconciliation-drawer-backdrop { position: absolute; inset: 0; width: 100%; border: 0; background: rgba(15, 23, 42, .52); cursor: default; }
+.reconciliation-drawer { position: absolute; inset: 0 0 0 auto; width: min(720px, 100vw); background: var(--admin-surface); box-shadow: -12px 0 36px rgba(15, 23, 42, .2); display: flex; flex-direction: column; animation: reconciliation-slide-in .2s ease-out; }
+.reconciliation-drawer-header { min-height: 88px; padding: 20px 24px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+.reconciliation-drawer-header h2 { margin: 4px 0 0; font-size: 19px; overflow-wrap: anywhere; }
+.reconciliation-eyebrow { color: var(--admin-red); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.reconciliation-icon-button { width: 36px; height: 36px; border: 1px solid var(--admin-border); border-radius: 4px; background: var(--admin-surface); color: var(--admin-text-muted); display: grid; place-items: center; cursor: pointer; flex: 0 0 auto; }
+.reconciliation-drawer-body { flex: 1; min-height: 0; overflow-y: auto; padding: 22px 24px; display: flex; flex-direction: column; gap: 20px; }
+.reconciliation-meta-grid { flex: 0 0 auto; min-height: 112px; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(55px, auto); gap: 1px; overflow: visible; border: 1px solid var(--admin-border); border-radius: 6px; background: var(--admin-border); }
+.reconciliation-meta-grid > div { min-width: 0; min-height: 55px; padding: 11px 15px; background: var(--admin-surface); overflow: visible; }
+.reconciliation-meta-grid dt { margin-bottom: 5px; color: var(--admin-text-muted); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.reconciliation-meta-grid dd { margin: 0; color: var(--admin-text); font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.reconciliation-preview-card { min-height: 500px; border: 1px solid var(--admin-border); border-radius: 6px; background: #f8fafc; overflow: hidden; }
+.reconciliation-preview-heading { height: 48px; padding: 0 15px; border-bottom: 1px solid var(--admin-border); background: var(--admin-surface); display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.reconciliation-document-frame { display: block; width: 100%; height: 620px; border: 0; background: #fff; }
+.reconciliation-document-image { display: block; max-width: 100%; max-height: 720px; margin: 0 auto; object-fit: contain; }
+.reconciliation-preview-empty { min-height: 450px; display: grid; place-items: center; color: var(--admin-text-muted); font-size: 13px; }
+.reconciliation-drawer-footer { padding: 16px 24px; border-top: 1px solid var(--admin-border); display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--admin-surface); }
+.reconciliation-drawer-footer > div { display: flex; gap: 10px; }
+.reconciliation-reject-overlay { z-index: 1200; }
+.reconciliation-reject-context { margin: 0 0 18px; color: var(--admin-text-muted); font-size: 13px; line-height: 1.55; }
+.reconciliation-review-note { max-width: 320px; color: var(--admin-text-muted); font-size: 12px; line-height: 1.45; }
+@keyframes reconciliation-slide-in { from { transform: translateX(100%); } }
+@media (max-width: 640px) {
+  .reconciliation-meta-grid { min-height: 224px; grid-template-columns: 1fr; }
+  .reconciliation-drawer-footer { align-items: stretch; flex-direction: column-reverse; }
+  .reconciliation-drawer-footer > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .reconciliation-drawer-footer .btn { width: 100%; }
+  .reconciliation-document-frame { height: 520px; }
+}

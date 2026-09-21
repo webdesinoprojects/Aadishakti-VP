@@ -1,411 +1,77 @@
-import { useLocation } from "react-router-dom";
-
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
-
-const smoothEase = [0.25, 0.46, 0.45, 0.94];
+import { useCms } from "../context/CmsContext";
+import { DEFAULT_BUSINESSES_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
 
 export default function Businesses() {
   const location = useLocation();
+  const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_BUSINESSES_PAGE, cms?.businessesPage);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const plant = params.get("plant");
-    if (plant) {
-      const el = document.getElementById(plant);
-      if (el) {
-        const offset = 80;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = el.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth",
-        });
-      }
-    }
-  }, [location.search]);
+    const plant = new URLSearchParams(location.search).get("plant");
+    if (!plant) return;
+    const element = document.getElementById(plant);
+    if (!element) return;
+    const position = element.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 80;
+    window.scrollTo({ top: position, behavior: "smooth" });
+  }, [location.search, content.divisions]);
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="BUSINESSES" activePage="BUSINESSES" />
+      <PageHero title={content.heroTitle} activePage="BUSINESSES" image={content.heroImage} />
 
-      <section
-        id="mundra"
-        style={{
-          padding: "80px 0",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          borderBottom: "1px solid var(--steel)",
-          overflow: "hidden",
-          scrollMarginTop: "84px",
-        }}
-      >
-        <div
+      {content.divisions.map((division, divisionIndex) => (
+        <section
+          id={division.id}
+          key={division.id}
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: "url('/plant/Plant Pic 02.jpeg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.6,
-            zIndex: 1,
-            filter: "saturate(1.05) contrast(1.05)",
+            padding: "80px 0", position: "relative", display: "flex", alignItems: "center", minHeight: "560px",
+            background: divisionIndex % 2 ? "#111111" : "#0d0d0d", borderBottom: "1px solid var(--steel)",
+            overflow: "hidden", scrollMarginTop: "84px",
           }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background:
-              "linear-gradient(100deg, rgba(8,8,8,0.74) 0%, rgba(8,8,8,0.55) 40%, rgba(8,8,8,0.35) 100%)",
-            zIndex: 2,
-          }}
-        />
-
-        <div className="container" style={{ position: "relative", zIndex: 3 }}>
+        >
           <div
+            role="img"
+            aria-label={`${division.company} facility`}
+            style={{ position: "absolute", inset: 0, backgroundImage: `url("${division.image}")`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.55, zIndex: 1, filter: "saturate(0.9) contrast(1.08)" }}
+          />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(100deg, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.64) 45%, rgba(8,8,8,0.30) 100%)", zIndex: 2 }} />
 
-            className="grid-2"
-            style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
-          >
-            <div
+          <div className="container" style={{ position: "relative", zIndex: 3 }}>
+            <div className="grid-2" style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}>
+              <div>
+                <SectionLabel text={division.label} light={true} />
+                <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>{division.heading}</h2>
+                <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 600, fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>{division.company}</h3>
+                <p style={{ color: "#E4E4E0", fontSize: "var(--fs-lead)", lineHeight: 1.7, marginBottom: "1.5rem" }}>{division.lead}</p>
+                <p style={{ color: "#D0D0CB", fontSize: "var(--fs-body)", lineHeight: 1.6, marginBottom: "2rem" }}>{division.body}</p>
 
-            >
-              <SectionLabel text="// AGRPL DIVISION" light={true} />
-              <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
-                MUNDRA SMELTER DIVISION
-              </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
-                AADISHAKTI GREEN RECYCLING PVT. LTD.
-              </h3>
-
-              <p style={{ color: "#E4E4E0", fontSize: "var(--fs-lead)", lineHeight: "1.7", marginBottom: "1.5rem" }}>
-                Located in the maritime economic corridor of Mundra Port Special Economic Zone (SEZ), Kutch, Gujarat. Serves as our sovereign gateway to transboundary logistics.
-              </p>
-              <p style={{ color: "#D0D0CB", fontSize: "var(--fs-body)", lineHeight: "1.6", marginBottom: "2rem" }}>
-                Launched in 2023, AGRPL operates high-capacity smelting and refining furnaces. Close port-proximity secures immediate transboundary vessel clearance within 48 hours of docking. Incorporates modern, baghouse air filtration units matching stringent international ecological guidelines.
-              </p>
-
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  ISO 9001:2015 CERTIFIED
-                </span>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  BASEL COMPLIANT SMELTER
-                </span>
-              </div>
-            </div>
-
-            <div
-              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-
-            >
-              <div style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>30,000 MT</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Active Capacity</p>
-              </div>
-              <div style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>120,000 MT</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Capacity by Apr 26</p>
-              </div>
-              <div style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>48% Export</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Volume Share</p>
-              </div>
-              <div style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>Mundra Port</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Primary Node</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="roorkee"
-        style={{
-          padding: "80px 0",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          background: "#111111",
-          borderBottom: "1px solid var(--steel)",
-          overflow: "hidden",
-          scrollMarginTop: "84px",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: "url('/office/WhatsApp Image 2026-03-11 at 16.03.15.jpeg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.6,
-            zIndex: 1,
-            filter: "saturate(1.04) contrast(1.04)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background:
-              "linear-gradient(100deg, rgba(11,11,11,0.74) 0%, rgba(11,11,11,0.54) 42%, rgba(11,11,11,0.34) 100%)",
-            zIndex: 2,
-          }}
-        />
-
-        <div className="container" style={{ position: "relative", zIndex: 3 }}>
-          <div
-
-            className="grid-2"
-            style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
-          >
-            <div
-
-            >
-              <SectionLabel text="// AMRPL DIVISION" light={true} />
-              <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
-                ROORKEE DOMESTIC DIVISION
-              </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
-                AADISHAKTI METAL RECYCLING PVT. LTD.
-              </h3>
-
-              <p style={{ color: "#E4E4E0", fontSize: "var(--fs-lead)", lineHeight: "1.7", marginBottom: "1.5rem" }}>
-                Located in the key industrial estate zone of Roorkee, Haridwar district, Uttarakhand. Serves as our primary domestic distribution division.
-              </p>
-              <p style={{ color: "#D0D0CB", fontSize: "var(--fs-body)", lineHeight: "1.6", marginBottom: "2rem" }}>
-                Acquired in 2014 and restructured in 2023, AMRPL is a fully licensed recycler of hazardous battery wastes under strict regulatory authorization. Outfitted with comprehensive metallurgical pots, casting grids, and high-performance OES spectrographs. Delivers refined ingots directly to North India's major automotive grid grids.
-              </p>
-
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  ISO 14001:2015 REGISTERED
-                </span>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  HAZARDOUS RECYCLING PERMIT
-                </span>
-              </div>
-            </div>
-
-            <div
-              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-
-            >
-              <div style={{ background: "rgba(11,11,11,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>40,000 MT</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Active Capacity</p>
-              </div>
-              <div style={{ background: "rgba(11,11,11,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>100% Audit</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Safety Compliant</p>
-              </div>
-              <div style={{ background: "rgba(11,11,11,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>2014 Acq.</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Group Legacy</p>
-              </div>
-              <div style={{ background: "rgba(11,11,11,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "28px", color: "var(--text-white)", fontWeight: "700" }}>OES Testing</div>
-                <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>Lab Analysis</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── AADISHAKTI METAL WORLD LLP — PIPE & COIL ── */}
-      <section
-        id="pipe-coil"
-        style={{
-          padding: "80px 0",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          background: "#0d0d0d",
-          borderBottom: "1px solid var(--steel)",
-          overflow: "hidden",
-          scrollMarginTop: "84px",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
-            backgroundImage: "url('/plant/R1 (1).jpg')",
-            backgroundSize: "cover", backgroundPosition: "center right",
-            opacity: 0.45, zIndex: 1, filter: "saturate(0.8) contrast(1.1)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
-            background: "linear-gradient(100deg, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.65) 45%, rgba(8,8,8,0.30) 100%)",
-            zIndex: 2,
-          }}
-        />
-
-        <div className="container" style={{ position: "relative", zIndex: 3 }}>
-          <div
-
-            className="grid-2"
-            style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
-          >
-            <div
-
-            >
-              <SectionLabel text="// PIPE & COIL DIVISION" light={true} />
-              <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
-                METAL WORLD DIVISION
-              </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
-                AADISHAKTI METAL WORLD LLP
-              </h3>
-
-              <p style={{ color: "#E4E4E0", fontSize: "var(--fs-lead)", lineHeight: "1.7", marginBottom: "1.5rem" }}>
-                Delhi-based wholesale trading and distribution entity specialising in high-precision Stainless Steel Pipes and Coils for India's industrial and infrastructure sectors.
-              </p>
-              <p style={{ color: "#D0D0CB", fontSize: "var(--fs-body)", lineHeight: "1.6", marginBottom: "2rem" }}>
-                Incorporated in 2025, Aadishakti Metal World LLP supplies SS Pipes (0.23mm–0.55mm thickness) and SS Coils (0.25mm–1.45mm thickness) as per customer specifications. Operating under the leadership of designated partners Amit Goyal, Taruna Goyal, and Sarla Goyal, the entity extends the Aadishakti Group's footprint into the stainless steel distribution space, supported by the group's established logistics network and long-standing industrial relationships.
-              </p>
-
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  SS PIPES &amp; COILS
-                </span>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  WHOLESALE DISTRIBUTOR
-                </span>
-              </div>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#A7A7A2", lineHeight: 1.8 }}>
-                <div>Sales: Mr. Sunil Pathak — DM Sales</div>
-                <div>📞 +91-8743000779 &nbsp;|&nbsp; ✉ sales.delhi@aadishakti.com</div>
-              </div>
-            </div>
-
-            <div
-              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-
-            >
-              {[
-                { val: "SS Pipes", sub: "0.23–0.55mm" },
-                { val: "SS Coils", sub: "0.25–1.45mm" },
-                { val: "2025", sub: "Incorporated" },
-                { val: "New Delhi", sub: "HQ Location" },
-              ].map((s) => (
-                <div key={s.sub} style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "22px", color: "var(--text-white)", fontWeight: "700" }}>{s.val}</div>
-                  <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{s.sub}</p>
+                <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: division.contactLines?.length ? "1.5rem" : 0 }}>
+                  {(division.badges || []).map((badge) => <span key={badge} style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>{badge}</span>)}
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── AADISHAKTI METALS — OXIDE DIVISION ── */}
-      <section
-        id="oxide"
-        style={{
-          padding: "80px 0",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          background: "#111111",
-          borderBottom: "1px solid var(--steel)",
-          overflow: "hidden",
-          scrollMarginTop: "84px",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
-            backgroundImage: "url('/plant/Rotary 1.jpeg')",
-            backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.45, zIndex: 1, filter: "saturate(0.75) contrast(1.1)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
-            background: "linear-gradient(100deg, rgba(11,11,11,0.88) 0%, rgba(11,11,11,0.64) 45%, rgba(11,11,11,0.30) 100%)",
-            zIndex: 2,
-          }}
-        />
+                {!!division.contactLines?.length && (
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#C4C4BF", lineHeight: 1.8 }}>
+                    {division.contactLines.map((line) => <div key={line}>{line}</div>)}
+                  </div>
+                )}
+              </div>
 
-        <div className="container" style={{ position: "relative", zIndex: 3 }}>
-          <div
-
-            className="grid-2"
-            style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}
-          >
-            <div
-
-            >
-              <SectionLabel text="// OXIDE DIVISION" light={true} />
-              <h2 style={{ fontFamily: "var(--font-primary)", fontWeight: "900", fontSize: "var(--fs-h2)", color: "var(--text-white)", textTransform: "uppercase", marginBottom: "1rem" }}>
-                OXIDE MANUFACTURING DIVISION
-              </h2>
-              <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "600", fontSize: "16px", color: "#FF6B55", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "2rem" }}>
-                AADISHAKTI METALS
-              </h3>
-
-              <p style={{ color: "#E4E4E0", fontSize: "var(--fs-lead)", lineHeight: "1.7", marginBottom: "1.5rem" }}>
-                Located at the Raipur Sahkari Industrial Area, Bhagwanpur, Roorkee — India's dedicated lead oxide manufacturing facility within the Aadishakti Group ecosystem.
-              </p>
-              <p style={{ color: "#D0D0CB", fontSize: "var(--fs-body)", lineHeight: "1.6", marginBottom: "2rem" }}>
-                Aadishakti Metals specialises in the manufacture of high-purity Lead Oxides — Red Lead (Pb₃O₄), Grey Lead Oxide / Lead Sub-Oxide (2PbO·Pb), and Litharge — produced using Pure Lead with a minimum purity of 99.98%. The facility employs advanced furnace systems, ball mill oxidation processes, cyclone bag-house filtration, and automated packing lines to ensure consistent product quality for battery, glass, paint, and ceramics industries.
-              </p>
-
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  RED LEAD (Pb₃O₄)
-                </span>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  GREY OXIDE
-                </span>
-                <span style={{ border: "1px solid var(--steel)", background: "rgba(8,8,8,0.72)", padding: "8px 16px", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-white)" }}>
-                  LITHARGE
-                </span>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                {(division.metrics || []).map((metric) => (
+                  <div key={`${metric.value}-${metric.label}`} style={{ background: "rgba(8,8,8,0.58)", backdropFilter: "blur(2px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "clamp(20px, 2vw, 28px)", color: "var(--text-white)", fontWeight: 700 }}>{metric.value}</div>
+                    <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{metric.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div
-              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
-
-            >
-              {[
-                { val: "99.98%", sub: "Lead Purity Input" },
-                { val: "3 Grades", sub: "Oxide Products" },
-                { val: "Roorkee", sub: "Uttarakhand" },
-                { val: "Ball Mill", sub: "Oxidation Process" },
-              ].map((s) => (
-                <div key={s.sub} style={{ background: "rgba(11,11,11,0.58)", backdropFilter: "blur(1px)", border: "1px solid rgba(255,255,255,0.18)", padding: "24px", borderTop: "2px solid var(--red-core)" }}>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "22px", color: "var(--text-white)", fontWeight: "700" }}>{s.val}</div>
-                  <p style={{ color: "#A7A7A2", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{s.sub}</p>
-                </div>
-              ))}
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ))}
     </div>
   );
 }

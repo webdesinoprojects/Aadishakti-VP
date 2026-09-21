@@ -1,61 +1,40 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import vendorApi from '../../services/vendorApi';
+import { usePortalCisResource } from '../../portal/usePortalCisResource';
 
-const normalizeError = (error) => ({
-  status: error?.response?.status || 0,
-  message: error?.response?.data?.error || (error?.code === 'ECONNABORTED'
-    ? 'The CIS service is temporarily unavailable.'
-    : 'Vendor data is temporarily unavailable.'),
+const useVendorResource = (resource, load, parameters = {}, enabled = true) => usePortalCisResource({
+  role: 'vendor',
+  resource,
+  parameters,
+  load,
+  enabled,
+  fallbackMessage: 'Vendor data is temporarily unavailable.',
 });
 
-const useVendorResource = (load, enabled = true) => {
-  const navigate = useNavigate();
-  const [state, setState] = useState({ data: null, loading: enabled, error: null });
-  const [version, setVersion] = useState(0);
-
-  useEffect(() => {
-    if (!enabled) {
-      setState({ data: null, loading: false, error: null });
-      return undefined;
-    }
-    let active = true;
-    setState((current) => ({ ...current, loading: true, error: null }));
-    load()
-      .then((data) => active && setState({ data, loading: false, error: null }))
-      .catch((error) => {
-        if (!active) return;
-        const safeError = normalizeError(error);
-        if (safeError.status === 401) navigate('/login', { replace: true });
-        setState({ data: null, loading: false, error: safeError });
-      });
-    return () => { active = false; };
-  }, [enabled, load, navigate, version]);
-
-  return { ...state, refetch: () => setVersion((value) => value + 1) };
+const listHook = (resource, loader) => ({ page = 1, pageSize = 10, q = '' } = {}) => {
+  const parameters = { page, pageSize, q };
+  return useVendorResource(resource, () => loader({ page, pageSize, q: q || undefined }), parameters);
 };
 
-const listHook = (loader) => ({ page = 1, pageSize = 10, q = '' } = {}) => {
-  const load = useCallback(() => loader({ page, pageSize, q: q || undefined }), [page, pageSize, q]);
-  return useVendorResource(load);
-};
-
-const detailHook = (loader) => (recordRef) => {
+const detailHook = (resource, loader) => (recordRef) => {
   const docEntry = typeof recordRef === 'object' ? recordRef?.id : recordRef;
   const companyCode = typeof recordRef === 'object' ? recordRef?.companyCode : undefined;
-  const load = useCallback(() => loader(docEntry, companyCode), [docEntry, companyCode]);
-  return useVendorResource(load, Boolean(docEntry));
+  return useVendorResource(
+    resource,
+    () => loader(docEntry, companyCode),
+    { docEntry, companyCode },
+    Boolean(docEntry),
+  );
 };
 
-export const useVendorProfile = () => useVendorResource(useCallback(() => vendorApi.getProfile(), []));
-export const useVendorDashboard = () => useVendorResource(useCallback(() => vendorApi.getDashboard(), []));
-export const useVendorPurchaseOrders = listHook(vendorApi.getPurchaseOrders);
-export const useVendorPurchaseOrder = detailHook(vendorApi.getPurchaseOrder);
-export const useVendorInvoices = listHook(vendorApi.getInvoices);
-export const useVendorInvoice = detailHook(vendorApi.getInvoice);
-export const useVendorCreditNote = detailHook(vendorApi.getCreditNote);
-export const useVendorDebitNotes = listHook(vendorApi.getDebitNotes);
-export const useVendorDebitNote = detailHook(vendorApi.getDebitNote);
+export const useVendorProfile = () => useVendorResource('profile', vendorApi.getProfile);
+export const useVendorDashboard = () => useVendorResource('dashboard', vendorApi.getDashboard);
+export const useVendorPurchaseOrders = listHook('purchase-orders', vendorApi.getPurchaseOrders);
+export const useVendorPurchaseOrder = detailHook('purchase-order', vendorApi.getPurchaseOrder);
+export const useVendorInvoices = listHook('invoices', vendorApi.getInvoices);
+export const useVendorInvoice = detailHook('invoice', vendorApi.getInvoice);
+export const useVendorCreditNote = detailHook('credit-note', vendorApi.getCreditNote);
+export const useVendorDebitNotes = listHook('debit-notes', vendorApi.getDebitNotes);
+export const useVendorDebitNote = detailHook('debit-note', vendorApi.getDebitNote);
 
 export const useVendorFinancialDocuments = ({ kind = 'invoice', page = 1, pageSize = 10, q = '' } = {}) => {
   const loaders = {
@@ -63,10 +42,16 @@ export const useVendorFinancialDocuments = ({ kind = 'invoice', page = 1, pageSi
     'credit-note': vendorApi.getCreditNotes,
     'debit-note': vendorApi.getDebitNotes,
   };
-  const load = useCallback(() => (loaders[kind] || loaders.invoice)({ page, pageSize, q: q || undefined }), [kind, page, pageSize, q]);
-  return useVendorResource(load);
+  const loader = loaders[kind] || loaders.invoice;
+  const parameters = { kind, page, pageSize, q };
+  return useVendorResource(
+    'financial-documents',
+    () => loader({ page, pageSize, q: q || undefined }),
+    parameters,
+  );
 };
-export const useVendorGrpos = listHook(vendorApi.getGrpos);
-export const useVendorGrpo = detailHook(vendorApi.getGrpo);
-export const useVendorPayments = listHook(vendorApi.getPayments);
-export const useVendorPayment = detailHook(vendorApi.getPayment);
+
+export const useVendorGrpos = listHook('grpos', vendorApi.getGrpos);
+export const useVendorGrpo = detailHook('grpo', vendorApi.getGrpo);
+export const useVendorPayments = listHook('payments', vendorApi.getPayments);
+export const useVendorPayment = detailHook('payment', vendorApi.getPayment);

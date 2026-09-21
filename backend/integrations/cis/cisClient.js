@@ -57,6 +57,26 @@ export const createCisClient = ({
 
   const tokenCache = new Map();
   const pendingLogins = new Map();
+  const resourceCache = new Map();
+  const pendingResources = new Map();
+
+  const cacheSettings = () => {
+    const config = configProvider(environment);
+    return {
+      ttlMs: Number.isFinite(config.resourceCacheTtlMs) ? config.resourceCacheTtlMs : 120000,
+      staleMs: Number.isFinite(config.resourceCacheStaleMs) ? config.resourceCacheStaleMs : 900000,
+      maxEntries: Number.isFinite(config.resourceCacheMaxEntries) ? config.resourceCacheMaxEntries : 50,
+    };
+  };
+
+  const pruneResourceCache = (currentTime, maxEntries) => {
+    resourceCache.forEach((entry, key) => {
+      if (entry.staleUntil <= currentTime) resourceCache.delete(key);
+    });
+    while (resourceCache.size >= maxEntries) {
+      resourceCache.delete(resourceCache.keys().next().value);
+    }
+  };
 
   const requestAttempt = async ({ url, method, headers, body, timeoutMs }) => {
     const controller = new AbortController();
@@ -148,11 +168,7 @@ export const createCisClient = ({
     return pending;
   };
 
-  const getResource = async ({ companyCode, resource }) => {
-    if (!companyCode || typeof resource !== "string" || !/^[a-z]+$/.test(resource)) {
-      throw new CisIntegrationError("CIS_CONFIGURATION_INVALID", "A valid CIS company and resource are required.");
-    }
-
+  const fetchResource = async ({ companyCode, resource }) => {
     let token = await getToken(companyCode);
     let result = await requestWithRetry({
       endpoint: `api/${resource}`,
@@ -178,6 +194,42 @@ export const createCisClient = ({
     return assertSuccessEnvelope(result.payload);
   };
 
+  const getResource = async ({ companyCode, resource, forceRefresh = false }) => {
+    if (!companyCode || typeof resource !== "string" || !/^[a-z]+$/.test(resource)) {
+      throw new CisIntegrationError("CIS_CONFIGURATION_INVALID", "A valid CIS company and resource are required.");
+    }
+
+    const key = `${companyCode}:${resource}`;
+    const currentTime = now();
+    const cached = resourceCache.get(key);
+    if (!forceRefresh && cached?.expiresAt > currentTime) return cached.value;
+    if (pendingResources.has(key)) return pendingResources.get(key);
+
+    const settings = cacheSettings();
+    const pending = fetchResource({ companyCode, resource })
+      .then((value) => {
+        const completedAt = now();
+        pruneResourceCache(completedAt, settings.maxEntries);
+        resourceCache.set(key, {
+          value,
+          expiresAt: completedAt + settings.ttlMs,
+          staleUntil: completedAt + settings.ttlMs + settings.staleMs,
+        });
+        return value;
+      })
+      .catch((error) => {
+        if (cached?.staleUntil > now()) {
+          logger.warn?.("[CIS Integration] serving stale cached resource", { companyCode, resource });
+          return cached.value;
+        }
+        throw error;
+      })
+      .finally(() => pendingResources.delete(key));
+    pendingResources.set(key, pending);
+    return pending;
+  };
+
   const clearTokens = () => tokenCache.clear();
-  return { getResource, clearTokens };
+  const clearResourceCache = () => resourceCache.clear();
+  return { getResource, clearTokens, clearResourceCache };
 };

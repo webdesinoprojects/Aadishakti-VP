@@ -1,24 +1,17 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
 import { Send, CheckCircle2, Loader2, Paperclip, X } from "lucide-react";
 import { buildApiUrl } from "../config/api";
-import { allCountryOptions } from "../utils/countries";
 import CountrySelect from "../components/CountrySelect";
-
-const ALLOY_ELEMENTS = [
-  { key: "antimony", name: "Antimony (Sb)", defaultVal: "0.001% max" },
-  { key: "arsenic", name: "Arsenic (As)", defaultVal: "0.001% max" },
-  { key: "tin", name: "Tin (Sn)", defaultVal: "0.001% max" },
-  { key: "copper", name: "Copper (Cu)", defaultVal: "0.001% max" },
-  { key: "bismuth", name: "Bismuth (Bi)", defaultVal: "0.015% max" },
-  { key: "silver", name: "Silver (Ag)", defaultVal: "0.003% max" },
-  { key: "iron", name: "Iron (Fe)", defaultVal: "0.001% max" },
-  { key: "lead", name: "Lead (Pb)", defaultVal: "99.970% min" },
-];
+import { useCms } from "../context/CmsContext";
+import { DEFAULT_CUSTOM_ALLOY_CONTENT, normalizeCustomAlloyContent } from "../data/customAlloyContent";
 
 export default function CustomAlloy() {
+  const { cms } = useCms();
+  const content = useMemo(() => normalizeCustomAlloyContent(cms?.customAlloy), [cms?.customAlloy]);
+  const specsTouched = useRef(false);
   const [formData, setFormData] = useState({
     fullName: "",
     workEmail: "",
@@ -31,13 +24,19 @@ export default function CustomAlloy() {
   });
 
   const [specs, setSpecs] = useState(
-    ALLOY_ELEMENTS.reduce((acc, el) => ({ ...acc, [el.key]: el.defaultVal }), {})
+    DEFAULT_CUSTOM_ALLOY_CONTENT.alloyElements.reduce((acc, el) => ({ ...acc, [el.key]: el.defaultVal }), {})
   );
 
   const [uploadedFile, setUploadedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    if (!specsTouched.current) {
+      setSpecs(content.alloyElements.reduce((acc, element) => ({ ...acc, [element.key]: element.defaultVal }), {}));
+    }
+  }, [content.alloyElements]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -59,6 +58,7 @@ export default function CustomAlloy() {
   };
 
   const handleSpecChange = (key, value) => {
+    specsTouched.current = true;
     setSpecs((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -91,6 +91,8 @@ export default function CustomAlloy() {
       data.append("country", "Not Specified"); // to satisfy backend validation
       data.append("inquiryType", "Custom Alloy Quote");
       data.append("products", JSON.stringify(["Custom Alloy"]));
+      data.append("estimatedQuantity", formData.estimatedQuantity);
+      data.append("packagingRequirement", formData.packagingType);
       data.append("additionalDetails", `Custom Specification Request:\n${JSON.stringify(specs, null, 2)}\n\nNotes: ${formData.notes}`);
 
       if (uploadedFile) {
@@ -116,31 +118,31 @@ export default function CustomAlloy() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="CUSTOM ALLOY" activePage="CUSTOM ALLOY" />
+      <PageHero title={content.heroTitle} activePage={content.breadcrumbLabel} image={content.heroImage} />
 
       <section className="section-padding bg-light">
         <div className="container">
           <ScrollReveal>
             <div style={{ maxWidth: "900px", margin: "0 auto" }}>
               <div style={{ textAlign: "center", marginBottom: "40px" }}>
-                <SectionLabel text="// ENGINEERING SPECIFICATIONS" />
+                <SectionLabel text={content.sectionLabel} />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, marginBottom: "16px" }}>
-                  Request a Custom Alloy Quote
+                  {content.heading}
                 </h2>
                 <p style={{ color: "var(--text-muted)", fontSize: "var(--fs-lead)" }}>
-                  Define your required metallurgical composition. Our technical team will review your specifications and return a formal analysis and quotation.
+                  {content.introduction}
                 </p>
               </div>
 
               {success ? (
                 <div className="corporate-card" style={{ padding: "60px 40px", textAlign: "center", background: "#FFFFFF" }}>
                   <CheckCircle2 size={64} color="var(--admin-green)" style={{ margin: "0 auto 24px" }} />
-                  <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "16px" }}>Request Submitted Successfully</h3>
+                  <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: "16px" }}>{content.successTitle}</h3>
                   <p style={{ color: "var(--text-muted)", fontSize: "16px", marginBottom: "32px", maxWidth: "500px", margin: "0 auto" }}>
-                    Thank you for your request. Our metallurgy team will review your specifications and get back to you with a quotation shortly.
+                    {content.successMessage}
                   </p>
                   <button onClick={() => window.location.reload()} className="btn-primary">
-                    Submit Another Request
+                    {content.successButton}
                   </button>
                 </div>
               ) : (
@@ -195,17 +197,15 @@ export default function CustomAlloy() {
                       <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Packaging Preference</label>
                       <select name="packagingType" className="form-input" value={formData.packagingType} onChange={handleFormChange} style={{ background: "var(--bg-secondary)" }}>
                         <option value="">Select packaging type</option>
-                        <option value="Wooden Pallet (Strapped Ingots)">Wooden Pallet — Strapped Ingots (Standard)</option>
-                        <option value="Jumbo Bag / FIBC">Jumbo Bag / FIBC (Bulk Granules, Oxide, Powder)</option>
-                        <option value="HDPE Drum">HDPE Drum (Oxide, Powder, Small Parts)</option>
-                        <option value="Loose / Bulk">Loose / Bulk (Large Volume Orders)</option>
-                        <option value="Custom / As Discussed">Custom / As Per Requirement</option>
+                        {content.packagingOptions.map((option, index) => (
+                          <option key={`${option.value}-${index}`} value={option.value}>{option.label}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
 
                   <h3 style={{ fontSize: "18px", fontWeight: 800, marginBottom: "16px", paddingBottom: "12px", borderBottom: "1px solid var(--border-light)" }}>
-                    Metallurgical Specification
+                    {content.metallurgicalHeading}
                   </h3>
                   <div style={{ overflowX: "auto", marginBottom: "32px" }}>
                     <table className="spec-terminal-table" style={{ width: "100%", minWidth: "400px" }}>
@@ -216,7 +216,7 @@ export default function CustomAlloy() {
                         </tr>
                       </thead>
                       <tbody>
-                        {ALLOY_ELEMENTS.map((el) => (
+                        {content.alloyElements.map((el) => (
                           <tr key={el.key}>
                             <td className="property-name" style={{ verticalAlign: "middle" }}>{el.name}</td>
                             <td style={{ padding: "8px" }}>
@@ -235,13 +235,13 @@ export default function CustomAlloy() {
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Additional Notes / Specific Requirements</label>
-                    <textarea name="notes" className="form-input" value={formData.notes} onChange={handleFormChange} placeholder="Any packaging requirements, delivery timelines, etc." rows={4}></textarea>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>{content.notesLabel}</label>
+                    <textarea name="notes" className="form-input" value={formData.notes} onChange={handleFormChange} placeholder={content.notesPlaceholder} rows={4}></textarea>
                   </div>
 
                   {/* PDF / Document Upload */}
                   <div style={{ marginTop: "24px" }}>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>Upload Specification / Custom Requirement (Optional)</label>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "8px" }}>{content.uploadLabel}</label>
                     <div
                       style={{
                         border: "2px dashed var(--border-light)",
@@ -274,9 +274,9 @@ export default function CustomAlloy() {
                       ) : (
                         <div style={{ width: "100%", textAlign: "center" }}>
                           <p style={{ fontSize: "13px", color: "var(--text-secondary)", margin: 0 }}>
-                            <span style={{ fontWeight: 700, color: "var(--red-core)" }}>Drag & drop or click to upload</span> your specification sheet, RFQ, or custom requirement document
+                            <span style={{ fontWeight: 700, color: "var(--red-core)" }}>{content.uploadPrompt}</span>
                           </p>
-                          <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0" }}>PDF, DOC, DOCX — Max 10MB</p>
+                          <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0" }}>{content.uploadHint}</p>
                         </div>
                       )}
                     </div>
@@ -293,7 +293,7 @@ export default function CustomAlloy() {
                     <button type="submit" className="btn-solid-red" disabled={loading} style={{ width: "240px", height: "46px", whiteSpace: "nowrap" }}>
                       {loading ? <Loader2 className="spinner" size={18} /> : (
                         <>
-                          Submit Request <Send size={18} />
+                          {content.submitButton} <Send size={18} />
                         </>
                       )}
                     </button>

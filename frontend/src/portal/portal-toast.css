@@ -1,0 +1,10 @@
+.portal-toast-region { position: fixed; top: 24px; right: 26px; z-index: 100000; width: min(390px, calc(100vw - 32px)); display: grid; gap: 10px; pointer-events: none; }
+.portal-toast { min-height: 58px; padding: 13px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 11px; border: 1px solid #dbe2ea; border-left: 4px solid #3975d8; border-radius: 7px; background: #fff; color: #253247; box-shadow: 0 12px 32px rgba(15, 23, 42, .16); pointer-events: auto; animation: portal-toast-in .2s ease-out; }
+.portal-toast > span { font-size: 13px; font-weight: 650; line-height: 1.45; overflow-wrap: anywhere; }
+.portal-toast > button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 4px; background: transparent; color: #7b8798; cursor: pointer; }
+.portal-toast.is-success { border-left-color: #16934f; }.portal-toast.is-success > svg { color: #16934f; }
+.portal-toast.is-error { border-left-color: #cf2d22; }.portal-toast.is-error > svg { color: #cf2d22; }
+.portal-toast.is-warning { border-left-color: #d88b0c; }.portal-toast.is-warning > svg { color: #d88b0c; }
+.portal-toast.is-info > svg { color: #3975d8; }
+@keyframes portal-toast-in { from { opacity: 0; transform: translateX(24px); } }
+@media (max-width: 600px) { .portal-toast-region { top: 14px; right: 16px; } }

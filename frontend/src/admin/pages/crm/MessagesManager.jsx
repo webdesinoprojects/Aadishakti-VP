@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, Trash2, Mail, RefreshCw } from 'lucide-react';
+import { Search, Trash2, Mail, RefreshCw, FileSearch } from 'lucide-react';
 import { format } from 'date-fns';
 import TopBar from '../../components/TopBar';
 import ConfirmModal from '../../components/ConfirmModal';
 import { crmAPI } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import { buildApiUrl } from '../../../config/api';
+import CrmDocumentDrawer from './CrmDocumentDrawer';
 import '../../admin.css';
 
 export default function MessagesManager() {
@@ -18,6 +20,7 @@ export default function MessagesManager() {
   const [vendors, setVendors] = useState([]);
   const [selectedVendorId, setSelectedVendorId] = useState('');
   const [chatInput, setChatInput] = useState('');
+  const [previewAttachment, setPreviewAttachment] = useState(null);
 
 
   const loadMessages = useCallback(async () => {
@@ -333,6 +336,18 @@ export default function MessagesManager() {
               <div>
                 {renderMessageBody(selectedMessage)}
               </div>
+              {(selectedMessage.attachmentUrl || selectedMessage.attachmentPath) && (
+                <div style={{ marginTop: "24px", padding: "16px", border: "1px solid var(--border-light)", borderRadius: "8px", background: "var(--bg-secondary)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                    <FileSearch size={20} color="var(--red-core)" />
+                    <div style={{ minWidth: 0 }}>
+                      <strong style={{ display: "block", fontSize: "13px" }}>Submitted specification</strong>
+                      <span style={{ display: "block", marginTop: "3px", color: "var(--text-muted)", fontSize: "12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selectedMessage.attachmentName || selectedMessage.attachmentOriginalName || 'Attached document'}</span>
+                    </div>
+                  </div>
+                  <button type="button" className="btn btn-secondary" onClick={() => setPreviewAttachment(selectedMessage)}><FileSearch size={15} /> Preview</button>
+                </div>
+              )}
               {/* Assignment & Chat Panel */}
               {(selectedMessage.inquiryType === 'Custom Alloy Quote' || selectedMessage.inquiryType === 'Product Inquiry' || selectedMessage.inquiryType === 'Quote') && (
               <div style={{ marginTop: "40px", borderTop: "1px solid var(--border-light)", paddingTop: "32px" }}>
@@ -413,6 +428,25 @@ export default function MessagesManager() {
         </div>
 
       </div>
+
+      <CrmDocumentDrawer
+        open={Boolean(previewAttachment)}
+        onOpenChange={(open) => !open && setPreviewAttachment(null)}
+        eyebrow="Contact enquiry"
+        title={previewAttachment?.attachmentName || previewAttachment?.attachmentOriginalName || 'Submitted specification'}
+        subtitle="Review the customer attachment without leaving the inbox."
+        media={previewAttachment ? {
+          url: previewAttachment.attachmentUrl || buildApiUrl(previewAttachment.attachmentPath),
+          name: previewAttachment.attachmentName || previewAttachment.attachmentOriginalName || 'attachment.pdf',
+          mime_type: previewAttachment.attachmentMimeType,
+        } : null}
+        metadata={previewAttachment ? [
+          { label: 'Sender', value: previewAttachment.fullName },
+          { label: 'Company', value: previewAttachment.companyName },
+          { label: 'Enquiry type', value: previewAttachment.inquiryType },
+          { label: 'Submitted', value: previewAttachment.submittedAt ? format(new Date(previewAttachment.submittedAt), 'MMM d, yyyy, h:mm a') : '-' },
+        ] : []}
+      />
 
       {deleteModal && (
         <ConfirmModal

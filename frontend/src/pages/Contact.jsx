@@ -3,11 +3,14 @@ import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
-import { MapPin, Phone, Mail, Check, Loader2, Paperclip, X } from "lucide-react";
-import { allCountryOptions } from "../utils/countries";
+import { MapPin, Phone, Mail, Loader2, Paperclip, X } from "lucide-react";
 import CountrySelect from "../components/CountrySelect";
+import { useCms } from "../context/CmsContext";
+import { DEFAULT_CONTACT_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
 
 export default function Contact() {
+  const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_CONTACT_PAGE, cms?.contactPage);
   const [formData, setFormData] = useState({
     fullName: "",
     companyName: "",
@@ -82,22 +85,29 @@ export default function Contact() {
     }
 
     try {
-      const payload = {
-        ...formData,
-        phone: `${formData.phoneCode} ${formData.phone}`,
-        products: formData.productsOfInterest,
-        materials: formData.materialTypes
-      };
+      const payload = new FormData();
+      payload.append("fullName", formData.fullName);
+      payload.append("workEmail", formData.workEmail);
+      payload.append("phone", `${formData.phoneCode} ${formData.phone}`);
+      payload.append("companyName", formData.companyName);
+      payload.append("country", formData.country);
+      payload.append("inquiryType", formData.inquiryType);
+      payload.append("products", JSON.stringify(formData.productsOfInterest));
+      payload.append("materials", JSON.stringify(formData.materialTypes));
+      payload.append("estimatedQuantity", formData.estimatedQuantity);
+      payload.append("packagingRequirement", formData.packagingRequirement);
+      payload.append("additionalDetails", formData.additionalDetails);
+      if (formData.specFile) payload.append("attachment", formData.specFile);
+
       const response = await fetch(buildApiUrl("/api/enquiries"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: payload,
       });
 
       let resJson = {};
       try {
         resJson = await response.json();
-      } catch (e) {
+      } catch {
         // Safely ignore empty responses
       }
 
@@ -107,7 +117,7 @@ export default function Contact() {
 
       setSubmitStatus({
         type: "success",
-        msg: "TRANSBOUNDARY ENQUIRY TRANSMITTED SUCCESSFULLY. OUR METALLURGICAL CORNER WILL BE IN TOUCH SHORTLY.",
+        msg: content.successMessage,
       });
 
       // Clear Form
@@ -153,7 +163,7 @@ export default function Contact() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="CONTACT" activePage="CONTACT" />
+      <PageHero title={content.heroTitle} activePage="CONTACT" image={content.heroImage} />
 
       <section className="section-padding" style={{ background: "var(--bg-secondary)" }}>
         <div className="container">
@@ -163,7 +173,7 @@ export default function Contact() {
               {/* LEFT COLUMN: 40% */}
               <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
                 <div>
-                  <SectionLabel text="// CONNECT WITH US" />
+                  <SectionLabel text={content.sectionLabel} />
                   <h2
                     style={{
                       fontFamily: "var(--font-primary)",
@@ -175,10 +185,10 @@ export default function Contact() {
                       marginBottom: "1.5rem",
                     }}
                   >
-                    LET'S TALK BUSINESS
+                    {content.heading}
                   </h2>
                   <p style={{ color: "var(--silver)", fontSize: "var(--fs-body)", lineHeight: "1.6" }}>
-                    Engage with India's premier metallurgical refining conglomerate. Reach out to our plants or corporate headquarters directly.
+                    {content.introduction}
                   </p>
                 </div>
 
@@ -198,17 +208,9 @@ export default function Contact() {
                     </div>
                     <div>
                       <h4 style={{ fontFamily: "var(--font-primary)", fontWeight: "700", fontSize: "14px", color: "var(--text-primary)", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-                        Plant Coordinates
+                        {content.locationsHeading}
                       </h4>
-                      <p style={{ color: "var(--silver)", fontSize: "13px", lineHeight: "1.6", marginBottom: "0.5rem" }}>
-                        <strong>Corporate Office:</strong> 30, Third Floor, Shivaji Marg, Block C, Moti Nagar, New Delhi - 110015
-                      </p>
-                      <p style={{ color: "var(--silver)", fontSize: "13px", lineHeight: "1.6", marginBottom: "0.5rem" }}>
-                        <strong>AGRPL (Mundra Smelter):</strong> Special Economic Zone (SEZ) Corridor, Mundra Port, Kutch, Gujarat - 370421
-                      </p>
-                      <p style={{ color: "var(--silver)", fontSize: "13px", lineHeight: "1.6" }}>
-                        <strong>AMRPL (Roorkee Unit):</strong> Industrial Estate Zone, Roorkee, Haridwar District, Uttarakhand - 247667
-                      </p>
+                      {content.locations.map((location) => <p key={location.label} style={{ color: "var(--silver)", fontSize: "13px", lineHeight: "1.6", marginBottom: "0.5rem" }}><strong>{location.label}:</strong> {location.value}</p>)}
                     </div>
                   </div>
 
@@ -227,17 +229,9 @@ export default function Contact() {
                     </div>
                     <div>
                       <h4 style={{ fontFamily: "var(--font-primary)", fontWeight: "700", fontSize: "14px", color: "var(--text-primary)", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-                        Direct Refineries Phone
+                        {content.phoneHeading}
                       </h4>
-                      <p style={{ color: "var(--silver)", fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
-                        Lead Sales: +91-8743000799
-                      </p>
-                      <p style={{ color: "var(--silver)", fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
-                        Pipe & Coil Division: +91-8743000779
-                      </p>
-                      <p style={{ color: "var(--silver)", fontSize: "13px", fontFamily: "var(--font-mono)" }}>
-                        Roorkee Unit: +91-9045585676
-                      </p>
+                      {content.phoneLines.map((line) => <p key={line} style={{ color: "var(--silver)", fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>{line}</p>)}
                     </div>
                   </div>
 
@@ -256,18 +250,9 @@ export default function Contact() {
                     </div>
                     <div>
                       <h4 style={{ fontFamily: "var(--font-primary)", fontWeight: "700", fontSize: "14px", color: "var(--text-primary)", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-                        Transmission Channels
+                        {content.emailHeading}
                       </h4>
-                      <p style={{ fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
-                        <a href="mailto:gourav.sharma@aadishakti.com" style={{ color: "var(--text-primary)", textDecoration: "underline" }}>gourav.sharma@aadishakti.com</a>
-                        <span style={{ color: "var(--text-muted)", fontSize: "11px", marginLeft: "8px" }}>(Lead Sales)</span>
-                      </p>
-                      <p style={{ fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}>
-                        <a href="mailto:mundra.smelter@aadishakti.com" style={{ color: "var(--silver)" }}>mundra.smelter@aadishakti.com</a>
-                      </p>
-                      <p style={{ fontSize: "13px", fontFamily: "var(--font-mono)" }}>
-                        <a href="mailto:roorkee.smelter@aadishakti.com" style={{ color: "var(--silver)" }}>roorkee.smelter@aadishakti.com</a>
-                      </p>
+                      {content.emails.map((email, index) => <p key={email} style={{ fontSize: "13px", fontFamily: "var(--font-mono)", marginBottom: "0.25rem" }}><a href={`mailto:${email}`} style={{ color: index === 0 ? "var(--text-primary)" : "var(--silver)", textDecoration: index === 0 ? "underline" : "none" }}>{email}</a></p>)}
                     </div>
                   </div>
                 </div>
@@ -282,6 +267,7 @@ export default function Contact() {
                   padding: "40px",
                 }}
               >
+                <SectionLabel text={content.formLabel} />
                 <h3
                   style={{
                     fontFamily: "var(--font-primary)",
@@ -293,7 +279,7 @@ export default function Contact() {
                     marginBottom: "2rem",
                   }}
                 >
-                  TRANSMIT AN INQUIRY
+                  {content.formHeading}
                 </h3>
 
                 {submitStatus && (
@@ -769,6 +755,7 @@ export default function Contact() {
                       id="contact-file-upload"
                       type="file"
                       name="specFile"
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
                       style={{ display: "none" }}
                       onChange={(e) => {
                         const file = e.target.files[0];
@@ -850,7 +837,7 @@ export default function Contact() {
                         TRANSMITTING...
                       </>
                     ) : (
-                      "TRANSMIT BUSINESS ENQUIRY"
+                      content.submitButton
                     )}
                   </button>
                 </form>

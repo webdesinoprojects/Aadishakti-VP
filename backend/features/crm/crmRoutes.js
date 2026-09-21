@@ -126,9 +126,10 @@ adminCrmRoutes.get(
 );
 
 export const enquiryWorkflowRoutes = express.Router();
-enquiryWorkflowRoutes.use(useSupabaseOrContinue, requireAdmin);
 enquiryWorkflowRoutes.post(
   "/:id/assign",
+  useSupabaseOrContinue,
+  requireAdmin,
   requirePermission(ADMIN_PERMISSIONS.CRM_WRITE),
   asyncHandler(async (req, res) => {
     const item = await assignEnquiry(req.params.id, req.body || {});
@@ -144,6 +145,8 @@ crmLookupRoutes.get("/vendors", useSupabaseOrContinue, requireAdmin, requirePerm
 });
 enquiryWorkflowRoutes.post(
   "/:id/chat",
+  useSupabaseOrContinue,
+  requireAdmin,
   requirePermission(ADMIN_PERMISSIONS.CRM_WRITE),
   asyncHandler(async (req, res) => {
     const item = await addEnquiryChat(req.params.id, req.body || {}, req.admin);

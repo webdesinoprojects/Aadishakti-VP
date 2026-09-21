@@ -67,6 +67,9 @@ export const uploadAPI = {
 // ============================================
 
 export const cmsAPI = {
+  getSingleton: (key) => api.get(`/api/admin/cms/singletons/${key}`),
+  updateSingleton: (key, data) => api.put(`/api/admin/cms/singletons/${key}`, data),
+
   // Hero
   getHero: () => api.get('/api/admin/cms/hero'),
   updateHero: (data) => api.put('/api/admin/cms/hero', data),

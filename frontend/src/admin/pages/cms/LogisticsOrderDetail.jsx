@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, ArrowLeft, Image as ImageIcon, Send } from 'lucide-react';
 import { format } from 'date-fns';
@@ -6,6 +6,7 @@ import TopBar from '../../components/TopBar';
 import ImageLightbox from '../../../components/ImageLightbox';
 import { logisticsAPI } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import './logistics-order-detail.css';
 
 export default function LogisticsOrderDetail() {
   const { id } = useParams();
@@ -14,6 +15,8 @@ export default function LogisticsOrderDetail() {
   const [loading, setLoading] = useState(true);
   const [lightboxImages, setLightboxImages] = useState([]);
   const [chatInput, setChatInput] = useState('');
+  const [sendingChat, setSendingChat] = useState(false);
+  const chatLockRef = useRef(false);
   const { error: showError } = useToast();
 
   const fetchOrder = useCallback(async () => {
@@ -32,6 +35,11 @@ export default function LogisticsOrderDetail() {
     fetchOrder();
   }, [fetchOrder]);
 
+  useEffect(() => {
+    const timer = window.setInterval(fetchOrder, 5000);
+    return () => window.clearInterval(timer);
+  }, [fetchOrder]);
+
   const handleReviewPOD = async (action) => {
     try {
       const res = await logisticsAPI.reviewPod(order.id, action);
@@ -41,14 +49,22 @@ export default function LogisticsOrderDetail() {
     }
   };
 
-  const handleSendChat = async () => {
-    if (!chatInput.trim()) return;
+  const handleSendChat = async (event) => {
+    event?.preventDefault();
+    const message = chatInput.trim();
+    if (!message || chatLockRef.current) return;
+    chatLockRef.current = true;
+    setSendingChat(true);
+    setChatInput('');
     try {
-      const res = await logisticsAPI.addChatMessage(order.id, { sender: 'Admin', message: chatInput });
+      const res = await logisticsAPI.addChatMessage(order.id, { sender: 'Admin', message });
       setOrder(res.data.order);
-      setChatInput('');
     } catch (err) {
+      setChatInput(message);
       showError(err.response?.data?.error || err.message || 'Unable to send the message.');
+    } finally {
+      chatLockRef.current = false;
+      setSendingChat(false);
     }
   };
 
@@ -59,7 +75,7 @@ export default function LogisticsOrderDetail() {
     <>
       <TopBar breadcrumb="Operations / Logistics Tracker / Order Details" />
       
-      <div className="admin-page" style={{ maxWidth: "1200px" }}>
+      <div className="admin-page admin-logistics-order-page" style={{ maxWidth: "1200px" }}>
         
         <button 
           onClick={() => navigate('/admin/logistics')}
@@ -68,7 +84,7 @@ export default function LogisticsOrderDetail() {
           <ArrowLeft size={18} /> Back to Logistics Tracker
         </button>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
+        <div className="admin-logistics-order-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
           <div>
             <h1 style={{ fontSize: "28px", fontWeight: 800, marginBottom: "8px" }}>Order {order.id}</h1>
             <p style={{ color: "var(--text-secondary)", fontSize: '15px' }}>
@@ -81,7 +97,7 @@ export default function LogisticsOrderDetail() {
           </div>
         </div>
 
-        <div className="admin-form-grid" style={{ gap: '40px' }}>
+        <div className="admin-form-grid admin-logistics-order-grid" style={{ gap: '40px' }}>
           
           {/* Left Column: Tracking Pipeline */}
           <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid var(--border-light)", padding: "32px" }}>
@@ -155,13 +171,13 @@ export default function LogisticsOrderDetail() {
           </div>
 
           {/* Right Column: Order Chat */}
-          <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid var(--border-light)", display: 'flex', flexDirection: 'column', height: '600px' }}>
+          <div className="admin-logistics-chat" style={{ background: "#fff", borderRadius: "12px", border: "1px solid var(--border-light)", display: 'flex', flexDirection: 'column', height: '600px' }}>
             <div style={{ padding: '24px', borderBottom: '1px solid var(--border-light)' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 800 }}>Vendor Chat</h3>
               <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Communicate with the vendor specifically regarding this order's logistics.</p>
             </div>
             
-            <div style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', background: '#fafafa' }}>
+            <div className="admin-logistics-chat-messages" style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', background: '#fafafa' }}>
               {(order.chatHistory || []).map((chat, i) => (
                 <div key={i} style={{ 
                   alignSelf: chat.sender === 'Admin' ? 'flex-end' : 'flex-start',
@@ -184,21 +200,20 @@ export default function LogisticsOrderDetail() {
               )}
             </div>
 
-            <div style={{ padding: '20px', borderTop: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="admin-logistics-chat-footer" style={{ padding: '20px', borderTop: '1px solid var(--border-light)' }}>
+              <form className="admin-logistics-chat-composer" onSubmit={handleSendChat}>
                 <input 
                   type="text" 
                   className="form-input" 
                   placeholder="Type a message..." 
                   value={chatInput}
                   onChange={e => setChatInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSendChat()}
-                  style={{ flex: 1 }}
+                  disabled={sendingChat}
                 />
-                <button className="btn btn-primary" onClick={handleSendChat}>
+                <button type="submit" className="btn btn-primary" disabled={sendingChat || !chatInput.trim()}>
                   <Send size={18} />
                 </button>
-              </div>
+              </form>
             </div>
           </div>
 

@@ -14,7 +14,7 @@ export default function VendorSidebar() {
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      await portalAuthApi.logout();
+      await portalAuthApi.logout('vendor');
     } finally {
       navigate('/login');
     }

@@ -1,3 +1,4 @@
+import { toFile } from "@imagekit/nodejs";
 import { env } from "../../config/env.js";
 import { getImageKitClient } from "../../infrastructure/imagekit/imagekitClient.js";
 import { badRequest, notFound } from "../../shared/errors.js";
@@ -73,9 +74,11 @@ export const registerMediaAsset = async (input, adminId) => {
 
 export const uploadMediaBuffer = async ({ buffer, originalName, mimeType, folder, tags = [] }) => {
   if (!Buffer.isBuffer(buffer) || buffer.length === 0) throw badRequest("A file is required.");
+  const safeFileName = String(originalName || "upload").replace(/[^a-zA-Z0-9.-]/g, "_");
+  const file = await toFile(buffer, safeFileName, { type: mimeType || "application/octet-stream" });
   const uploaded = await getImageKitClient().files.upload({
-    file: buffer,
-    fileName: String(originalName || "upload").replace(/[^a-zA-Z0-9.-]/g, "_"),
+    file,
+    fileName: safeFileName,
     folder: folder || env.imagekit.uploadFolder,
     tags,
     useUniqueFileName: true,

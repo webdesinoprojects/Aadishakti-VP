@@ -1,0 +1,56 @@
+.portal-account-workspace { display: grid; gap: 22px; margin-top: 24px; color: var(--text-primary); }
+.portal-account-card { overflow: hidden; border: 1px solid var(--border-light, #e2e8f0); border-radius: 9px; background: #fff; box-shadow: 0 3px 12px rgba(15, 23, 42, .04); }
+.portal-account-card-header { min-height: 86px; padding: 20px 24px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border-light, #e2e8f0); }
+.portal-account-card-header > div:nth-child(2) { flex: 1; min-width: 0; }
+.portal-account-card-header h2 { margin: 0 0 5px; font-size: 17px; color: var(--text-primary); }
+.portal-account-card-header p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.portal-account-heading-icon { flex: 0 0 auto; width: 43px; height: 43px; display: grid; place-items: center; border-radius: 8px; }
+.portal-account-heading-icon.is-blue { background: #eaf2ff; color: #2866c7; }
+.portal-account-heading-icon.is-amber { background: #fff5dd; color: #bd7200; }
+.portal-account-heading-icon.is-green { background: #eaf8ef; color: #168247; }
+.portal-account-change-count, .portal-account-history-count { flex: 0 0 auto; padding: 6px 10px; border-radius: 999px; background: #eaf2ff; color: #2866c7; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.portal-account-history-count { background: #f2f4f7; color: #687386; }
+.portal-account-form { padding: 22px 24px 0; }
+.portal-account-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.portal-account-password-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.portal-account-grid label, .portal-account-password-grid label { min-width: 0; display: grid; gap: 8px; color: var(--text-primary); font-size: 12px; font-weight: 700; }
+.portal-account-grid label > span, .portal-account-password-grid label > span { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.portal-account-grid label small { padding: 3px 6px; border-radius: 999px; background: #eaf2ff; color: #2866c7; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.portal-account-grid input, .portal-account-password-grid input { box-sizing: border-box; width: 100%; min-width: 0; height: 46px; padding: 0 13px; border: 1px solid #d7dce4; border-radius: 5px; background: #fff; color: var(--text-primary); font: inherit; font-size: 13px; outline: none; }
+.portal-account-grid input:focus, .portal-account-password-grid input:focus { border-color: #2866c7; box-shadow: 0 0 0 3px rgba(40, 102, 199, .09); }
+.portal-account-grid label.is-changed input { border-color: #78a5e6; background: #f9fbff; }
+.portal-account-form-footer { margin-top: 22px; min-height: 70px; padding: 14px 0; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-top: 1px solid var(--border-light, #e2e8f0); }
+.portal-account-form-footer p { margin: 0; display: flex; align-items: center; gap: 7px; color: var(--text-muted); font-size: 11px; line-height: 1.5; }
+.portal-account-form-footer p svg { flex: 0 0 auto; color: #2866c7; }
+.portal-account-form-footer > div { display: flex; align-items: center; gap: 9px; }
+.portal-account-primary, .portal-account-secondary, .portal-account-password-toggle { min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 5px; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
+.portal-account-primary { border: 1px solid #2866c7; background: #2866c7; color: #fff; }
+.portal-account-primary.is-dark { border-color: #263244; background: #263244; }
+.portal-account-secondary { border: 1px solid #d9dee6; background: #fff; color: #536074; }
+.portal-account-password-toggle { padding: 0; border: 0; background: transparent; color: #677386; }
+.portal-account-primary:disabled, .portal-account-secondary:disabled { opacity: .45; cursor: not-allowed; }
+.portal-account-decision { margin: 18px 18px 0; padding: 14px 16px; display: flex; align-items: flex-start; gap: 11px; border: 1px solid; border-radius: 6px; }
+.portal-account-decision > svg { flex: 0 0 auto; margin-top: 1px; }.portal-account-decision > div { flex: 1; min-width: 0; }
+.portal-account-decision strong { display: block; margin-bottom: 4px; font-size: 12px; }.portal-account-decision p { margin: 0; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.portal-account-decision time { flex: 0 0 auto; font-size: 10px; color: inherit; opacity: .75; }
+.portal-account-decision.is-rejected { border-color: #fecaca; background: #fff5f4; color: #a9251c; }
+.portal-account-decision.is-approved { border-color: #bbebcd; background: #f0fbf4; color: #147c41; }
+.portal-account-table-shell { width: 100%; overflow-x: auto; scrollbar-width: none; }.portal-account-table-shell::-webkit-scrollbar { display: none; }
+.portal-account-table-shell table { width: 100%; min-width: 680px; border-collapse: collapse; }
+.portal-account-table-shell th { padding: 14px 18px; background: #f7f9fb; color: #677386; font-size: 10px; font-weight: 800; letter-spacing: .04em; text-align: left; text-transform: uppercase; }
+.portal-account-table-shell td { padding: 15px 18px; border-top: 1px solid #edf0f4; color: var(--text-secondary, #475569); font-size: 12px; }
+.portal-account-table-shell td strong { color: var(--text-primary); }
+.portal-account-status { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 999px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.portal-account-status.is-approved { background: #e5f8ec; color: #147c41; }
+.portal-account-status.is-rejected { background: #ffebe9; color: #b42c22; }
+.portal-account-status.is-pending { background: #fff3d6; color: #9c6200; }
+.portal-account-muted { color: #9aa2ae; }
+.portal-account-empty { min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; color: #98a1ae; text-align: center; }
+.portal-account-empty strong { color: var(--text-primary); font-size: 13px; }.portal-account-empty span { font-size: 11px; }
+
+@media (max-width: 850px) {
+  .portal-account-grid, .portal-account-password-grid { grid-template-columns: minmax(0, 1fr); }
+  .portal-account-form-footer { align-items: stretch; flex-direction: column; }
+  .portal-account-form-footer > div { justify-content: flex-end; }
+  .portal-account-decision { align-items: flex-start; flex-wrap: wrap; }.portal-account-decision time { width: 100%; padding-left: 31px; }
+}

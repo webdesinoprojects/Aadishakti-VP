@@ -11,7 +11,8 @@ import GalleryManager from './pages/cms/GalleryManager';
 import NewsManager from './pages/cms/NewsManager';
 import CareersManager from './pages/cms/CareersManager';
 import TeamManager from './pages/cms/TeamManager';
-import InvestorsManager from './pages/cms/InvestorsManager';
+import CustomAlloyEditor from './pages/cms/CustomAlloyEditor';
+import PublicPagesManager from './pages/cms/PublicPagesManager';
 import MessagesManager from './pages/crm/MessagesManager';
 import ApplicationsManager from './pages/crm/ApplicationsManager';
 import LogisticsManager from './pages/cms/LogisticsManager';
@@ -84,7 +85,10 @@ function AdminApp() {
                       <Route path="cms/news" element={<NewsManager />} />
                       <Route path="cms/careers" element={<CareersManager />} />
                       <Route path="cms/team" element={<TeamManager />} />
-                      <Route path="cms/investors" element={<InvestorsManager />} />
+                      <Route path="cms/investors" element={<Navigate to="/admin/cms/pages/investors" replace />} />
+                      <Route path="cms/custom-alloy" element={<CustomAlloyEditor />} />
+                      <Route path="cms/pages" element={<PublicPagesManager />} />
+                      <Route path="cms/pages/:pageKey" element={<PublicPagesManager />} />
                       <Route path="logistics" element={<LogisticsManager />} />
                       <Route path="operations/registrations" element={<RegistrationsManager />} />
                       <Route path="operations/accounts" element={<PortalAccountsManager />} />

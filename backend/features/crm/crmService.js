@@ -40,6 +40,8 @@ const enquiryFromDb = (row) => ({
   packagingRequirement: row.packaging_requirement,
   additionalDetails: row.additional_details,
   attachmentUrl: row.media_assets?.url || null,
+  attachmentName: row.media_assets?.name || null,
+  attachmentMimeType: row.media_assets?.mime_type || null,
   status: displayStatus(row.status),
   notes: row.notes,
   assignedVendorId: row.assigned_vendor_id,
@@ -49,7 +51,7 @@ const enquiryFromDb = (row) => ({
   updatedAt: row.updated_at,
 });
 
-const enquiryColumns = "*,media_assets!enquiries_specification_media_id_fkey(url)";
+const enquiryColumns = "*,media_assets!enquiries_specification_media_id_fkey(url,name,mime_type)";
 
 export const submitEnquiry = async (input, file) => {
   requireFields(input, [
@@ -142,12 +144,13 @@ const applicationFromDb = (row) => ({
   description: row.description,
   resumeUrl: row.media_assets?.url || null,
   resumeOriginalName: row.resume_original_name,
+  resumeMimeType: row.media_assets?.mime_type || null,
   status: displayStatus(row.status),
   notes: row.notes,
   submittedAt: row.submitted_at,
   updatedAt: row.updated_at,
 });
-const applicationColumns = "*,media_assets!job_applications_resume_media_id_fkey(url)";
+const applicationColumns = "*,media_assets!job_applications_resume_media_id_fkey(url,name,mime_type)";
 
 export const submitApplication = async (input, file) => {
   requireFields(input, [

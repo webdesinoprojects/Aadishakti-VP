@@ -8,7 +8,7 @@ import {
   Receipt, 
   CreditCard, 
   Leaf, 
-  RotateCcw, 
+  ShieldAlert,
   LifeBuoy, 
   User, 
   LogOut,
@@ -22,7 +22,7 @@ export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {
 
   const handleLogout = async () => {
     try {
-      await portalAuthApi.logout();
+      await portalAuthApi.logout('customer');
     } finally {
       navigate('/login');
     }
@@ -37,7 +37,7 @@ export default function CustomerSidebar({ isCollapsed, setIsCollapsed }) {
     { name: 'Invoices', icon: Receipt, path: '/customer/invoices' },
     { name: 'Payments', icon: CreditCard, path: '/customer/payments' },
     { name: 'Sustainability Reports', icon: Leaf, path: '/customer/sustainability' },
-    { name: 'Returns & Claims', icon: RotateCcw, path: '/customer/returns' },
+    { name: 'Quality Claims', icon: ShieldAlert, path: '/customer/claims' },
     { name: 'Support', icon: LifeBuoy, path: '/customer/support' },
     { name: 'My Profile', icon: User, path: '/customer/profile' },
   ];

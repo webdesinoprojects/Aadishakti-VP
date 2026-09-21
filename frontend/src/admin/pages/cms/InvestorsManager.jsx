@@ -11,7 +11,7 @@ export default function InvestorsManager() {
   useEffect(() => { (async () => {
     try { const res = await cmsAPI.getInvestors(); setForm(res.data || {}); }
     catch { error('Failed to load investors content'); }
-  })(); }, []);
+  })(); }, [error]);
 
   const save = async () => {
     setSaving(true);

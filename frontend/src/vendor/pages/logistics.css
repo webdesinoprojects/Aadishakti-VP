@@ -1,0 +1,101 @@
+.vendor-logistics-list-card { padding: 0; overflow: hidden; }
+.vendor-logistics-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 24px 28px; border-bottom: 1px solid var(--border-light); }
+.vendor-logistics-list-heading h3 { margin: 0 0 5px; font-size: 19px; color: var(--text-primary); }
+.vendor-logistics-list-heading p { margin: 0; color: var(--text-muted); font-size: 13px; }
+.vendor-logistics-list-heading > span { padding: 7px 12px; border-radius: 999px; background: #fff0ee; color: var(--red-core); font-size: 12px; font-weight: 700; }
+.vendor-logistics-table-wrap { overflow-x: auto; scrollbar-width: none; }
+.vendor-logistics-table-wrap::-webkit-scrollbar { display: none; }
+.vendor-logistics-table td { vertical-align: middle; }
+.vendor-logistics-table-status { display: inline-flex; padding: 6px 10px; border-radius: 999px; background: #eef4ff; color: #2458b8; font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: .03em; }
+.vendor-logistics-manage { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 13px; border: 1px solid #d8dee8; border-radius: 5px; background: #fff; color: var(--text-primary); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.vendor-logistics-manage:hover { color: var(--red-core); border-color: var(--red-core); }
+.vendor-logistics-empty { min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; color: var(--text-muted); }
+.vendor-logistics-empty strong { color: var(--text-primary); font-size: 14px; }
+.vendor-logistics-empty span { font-size: 12px; }
+
+.vendor-logistics-drawer { max-width: 680px; overflow: hidden; }
+.vendor-logistics-drawer-header { position: relative; flex: 0 0 auto; padding: 28px 82px 22px 30px; border-bottom: 1px solid var(--border-light); background: #fff; }
+.vendor-logistics-eyebrow { display: block; margin-bottom: 7px; color: var(--red-core); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.vendor-logistics-drawer-header h2 { margin: 0 0 6px; color: var(--text-primary); font-size: 25px; line-height: 1.2; }
+.vendor-logistics-drawer-header p { margin: 0; color: var(--text-muted); font-size: 13px; overflow-wrap: anywhere; }
+.vendor-logistics-drawer-header p span { padding: 0 4px; }
+.vendor-logistics-status { display: inline-flex; margin-top: 14px; padding: 6px 10px; border-radius: 999px; background: #fff0ee; color: var(--red-core); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.vendor-logistics-status.is-complete { background: #e9f9ef; color: #138442; }
+.vendor-logistics-close { position: absolute; top: 25px; right: 28px; width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--border-light); border-radius: 6px; background: #fff; color: #677386; cursor: pointer; }
+.vendor-logistics-close:hover { color: var(--red-core); border-color: #f3b7ae; }
+.vendor-logistics-tabs { flex: 0 0 auto; display: grid; grid-template-columns: 1fr 1fr; padding: 0 30px; border-bottom: 1px solid var(--border-light); background: #fff; }
+.vendor-logistics-tabs button { min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #6c7686; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.vendor-logistics-tabs button.is-active { color: var(--red-core); border-bottom-color: var(--red-core); }
+.vendor-logistics-tabs button span { min-width: 20px; padding: 3px 6px; border-radius: 999px; background: #f2f4f7; font-size: 10px; }
+.vendor-logistics-notice { flex: 0 0 auto; margin: 14px 30px 0; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-radius: 6px; background: #eaf8ef; color: #19723e; font-size: 12px; font-weight: 650; }
+.vendor-logistics-notice.is-error { background: #fff0ee; color: #b72916; }
+.vendor-logistics-notice button { border: 0; background: transparent; color: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
+.vendor-logistics-scroll { flex: 1 1 auto; overflow-y: auto; padding: 24px 30px 36px; background: #f6f7f9; scrollbar-width: none; }
+.vendor-logistics-scroll::-webkit-scrollbar, .vendor-logistics-messages::-webkit-scrollbar { display: none; }
+.vendor-logistics-card { margin-bottom: 18px; padding: 22px; border: 1px solid #e0e4ea; border-radius: 8px; background: #fff; }
+.vendor-logistics-card:last-child { margin-bottom: 0; }
+.vendor-logistics-card-heading { display: flex; align-items: flex-start; gap: 13px; margin-bottom: 22px; }
+.vendor-logistics-card-icon { flex: 0 0 auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; background: #fff0ee; color: var(--red-core); }
+.vendor-logistics-card-heading h3 { margin: 1px 0 4px; font-size: 16px; color: var(--text-primary); }
+.vendor-logistics-card-heading p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.vendor-logistics-timeline { padding: 2px 0 0 8px; }
+.vendor-logistics-stage { position: relative; display: grid; grid-template-columns: 34px 1fr; gap: 12px; min-height: 72px; color: #9299a5; }
+.vendor-logistics-stage:not(:last-child)::before { content: ''; position: absolute; left: 14px; top: 26px; bottom: 0; width: 2px; background: #e3e6eb; }
+.vendor-logistics-stage.is-complete:not(:last-child)::before { background: #f0b9b1; }
+.vendor-logistics-stage-marker { position: relative; z-index: 1; width: 30px; height: 30px; display: grid; place-items: center; border: 2px solid #e3e6eb; border-radius: 50%; background: #fff; color: #949ba7; font-size: 11px; font-weight: 800; }
+.vendor-logistics-stage.is-complete .vendor-logistics-stage-marker { border-color: var(--red-core); background: var(--red-core); color: #fff; }
+.vendor-logistics-stage-content { padding: 4px 0 20px; min-width: 0; }
+.vendor-logistics-stage-content strong, .vendor-logistics-stage-content small { display: block; }
+.vendor-logistics-stage-content strong { color: inherit; font-size: 14px; }
+.vendor-logistics-stage.is-complete .vendor-logistics-stage-content strong { color: var(--text-primary); }
+.vendor-logistics-stage-content small { margin-top: 5px; font-size: 11px; }
+.vendor-logistics-proof-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.vendor-logistics-proof-links a { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 4px; background: #f3f5f7; color: #4e5a6c; font-size: 10px; font-weight: 700; text-decoration: none; }
+
+.vendor-logistics-form > label { display: grid; gap: 7px; margin-bottom: 15px; color: var(--text-primary); font-size: 12px; font-weight: 700; }
+.vendor-logistics-form select { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #d9dde4; border-radius: 5px; background: #fff; color: var(--text-primary); font: inherit; font-size: 13px; outline: none; }
+.vendor-logistics-form select:focus { border-color: var(--red-core); box-shadow: 0 0 0 3px rgba(204, 34, 0, .08); }
+.vendor-logistics-dropzone { width: 100%; min-height: 96px; padding: 16px; display: flex; align-items: center; gap: 13px; border: 1px dashed #cfd5de; border-radius: 7px; background: #fafbfc; color: var(--text-primary); text-align: left; cursor: pointer; }
+.vendor-logistics-dropzone:hover, .vendor-logistics-dropzone.is-dragging { border-color: var(--red-core); background: #fff8f7; }
+.vendor-logistics-dropzone:disabled { opacity: .6; cursor: wait; }
+.vendor-logistics-upload-icon { flex: 0 0 auto; width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid #e1e5eb; border-radius: 50%; background: #fff; color: var(--red-core); }
+.vendor-logistics-dropzone strong, .vendor-logistics-dropzone small { display: block; }
+.vendor-logistics-dropzone strong { margin-bottom: 5px; font-size: 13px; }
+.vendor-logistics-dropzone small { color: var(--text-muted); font-size: 11px; font-weight: 400; }
+.vendor-logistics-file-list { display: grid; gap: 8px; margin-top: 9px; }
+.vendor-logistics-file { min-height: 50px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 9px 11px; border: 1px solid #e2e5ea; border-radius: 6px; background: #fff; color: var(--red-core); }
+.vendor-logistics-file > span { min-width: 0; }
+.vendor-logistics-file strong, .vendor-logistics-file small { display: block; }
+.vendor-logistics-file strong { color: var(--text-primary); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vendor-logistics-file small { margin-top: 3px; color: var(--text-muted); font-size: 10px; }
+.vendor-logistics-file button { border: 0; background: transparent; color: #8992a0; cursor: pointer; }
+.vendor-logistics-primary { width: 100%; min-height: 44px; margin-top: 15px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--red-core); border-radius: 5px; background: var(--red-core); color: #fff; font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; }
+.vendor-logistics-primary:disabled { opacity: .48; cursor: not-allowed; }
+.vendor-logistics-pod-status { margin: -7px 0 14px; padding: 10px 12px; border-radius: 5px; background: #fff7e2; color: #9b6200; font-size: 12px; }
+.vendor-logistics-pod-status.is-accepted { background: #eaf8ef; color: #19723e; }
+.vendor-logistics-pod-status.is-rejected { background: #fff0ee; color: #b72916; }
+
+.vendor-logistics-chat { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; background: #f6f7f9; }
+.vendor-logistics-chat-intro { flex: 0 0 auto; display: flex; align-items: flex-start; gap: 12px; padding: 22px 30px; border-bottom: 1px solid #e3e6eb; background: #fff; color: var(--red-core); }
+.vendor-logistics-chat-intro h3 { margin: 0 0 4px; color: var(--text-primary); font-size: 16px; }
+.vendor-logistics-chat-intro p { margin: 0; color: var(--text-muted); font-size: 12px; }
+.vendor-logistics-messages { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 24px 30px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
+.vendor-logistics-message { align-self: flex-start; max-width: 82%; padding: 11px 13px; border: 1px solid #e0e4e9; border-radius: 9px 9px 9px 2px; background: #fff; color: var(--text-primary); box-shadow: 0 2px 6px rgba(18, 31, 53, .04); }
+.vendor-logistics-message.is-vendor { align-self: flex-end; border-color: var(--red-core); border-radius: 9px 9px 2px 9px; background: var(--red-core); color: #fff; }
+.vendor-logistics-message small { display: block; margin-bottom: 5px; color: #7c8695; font-size: 9px; font-weight: 650; }
+.vendor-logistics-message.is-vendor small { color: rgba(255, 255, 255, .74); }
+.vendor-logistics-message p { margin: 0; font-size: 13px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.vendor-logistics-chat-empty { flex: 1; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #98a0ac; text-align: center; }
+.vendor-logistics-chat-empty strong { color: var(--text-primary); font-size: 14px; }
+.vendor-logistics-chat-empty span { max-width: 260px; font-size: 12px; line-height: 1.5; }
+.vendor-logistics-composer { flex: 0 0 auto; display: grid; grid-template-columns: 1fr 46px; align-items: end; gap: 10px; padding: 16px 20px; border-top: 1px solid #dfe3e9; background: #fff; }
+.vendor-logistics-composer textarea { min-height: 46px; max-height: 110px; resize: vertical; padding: 12px 13px; border: 1px solid #d7dce4; border-radius: 6px; color: var(--text-primary); font: inherit; font-size: 13px; line-height: 1.5; outline: none; }
+.vendor-logistics-composer textarea:focus { border-color: var(--red-core); box-shadow: 0 0 0 3px rgba(204, 34, 0, .08); }
+.vendor-logistics-composer button { width: 46px; height: 46px; display: grid; place-items: center; border: 0; border-radius: 6px; background: var(--red-core); color: #fff; cursor: pointer; }
+.vendor-logistics-composer button:disabled { opacity: .45; cursor: not-allowed; }
+.vendor-layout:has(.vendor-logistics-drawer) .vendor-assistant-widget { display: none; }
+
+@media (max-width: 1180px) {
+  .vendor-logistics-drawer { max-width: 620px; }
+  .vendor-logistics-list-heading { padding-inline: 22px; }
+}

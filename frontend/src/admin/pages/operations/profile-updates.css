@@ -1,0 +1,7 @@
+.profile-review-overlay { z-index: 1300; }
+.profile-review-copy { margin: 0 0 18px; color: var(--admin-text-muted); font-size: 13px; line-height: 1.55; }
+.profile-review-field { display: grid; gap: 8px; }
+.profile-review-field > span { color: var(--admin-text); font-size: 12px; font-weight: 700; }
+.profile-review-field textarea { width: 100%; min-height: 120px; padding: 12px 13px; resize: vertical; border: 1px solid var(--admin-border); border-radius: 5px; color: var(--admin-text); background: #fff; font: inherit; font-size: 13px; line-height: 1.5; outline: none; }
+.profile-review-field textarea:focus { border-color: var(--admin-red); box-shadow: 0 0 0 3px rgba(213, 35, 8, .08); }
+.profile-review-field small { color: var(--admin-text-muted); font-size: 10px; text-align: right; }

@@ -6,6 +6,7 @@ import { asyncHandler } from "../../shared/asyncHandler.js";
 import { badRequest } from "../../shared/errors.js";
 import { createRateLimit } from "../../middleware/rateLimit.js";
 import { askPortalAssistant } from "./portalAssistantService.js";
+import { streamVendorWorkflowEvents } from "./vendorWorkflowEvents.js";
 import {
   createSupportTicket,
   getVendorPerformance,
@@ -20,6 +21,7 @@ import {
   replyToSupportTicket,
   submitCustomerRequest,
   submitPartnerDocument,
+  submitPartnerDocuments,
   submitReceipt,
   submitVendorQuotation,
   submitVendorPod,
@@ -30,7 +32,7 @@ import {
 const extensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".pdf", ".doc", ".docx", ".xls", ".xlsx"]);
 const documentUpload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024, files: 3 },
+  limits: { fileSize: 10 * 1024 * 1024, files: 5 },
   fileFilter: (_req, file, callback) => {
     const allowed = extensions.has(path.extname(file.originalname).toLowerCase());
     callback(allowed ? null : badRequest("Unsupported document type."), allowed);
@@ -49,7 +51,16 @@ const buildRouter = (role) => {
   const { requirePortalRole } = createPortalAuth();
   router.use(requirePortalRole(role));
   router.get("/documents", asyncHandler(async (req, res) => res.json(await listPartnerDocuments(req.portalAccount))));
-  router.post("/documents", documentUpload.single("document"), asyncHandler(async (req, res) => res.status(201).json(await submitPartnerDocument(req.portalAccount, req.body || {}, req.file))));
+  router.post("/documents", documentUpload.fields([
+    { name: "documents", maxCount: 5 },
+    { name: "document", maxCount: 1 },
+  ]), asyncHandler(async (req, res) => {
+    const files = [...(req.files?.documents || []), ...(req.files?.document || [])];
+    const result = files.length === 1
+      ? [await submitPartnerDocument(req.portalAccount, req.body || {}, files[0])]
+      : await submitPartnerDocuments(req.portalAccount, req.body || {}, files);
+    res.status(201).json(result);
+  }));
   router.get("/receipts", asyncHandler(async (req, res) => res.json(await listReceipts(req.portalAccount))));
   router.post("/receipts", documentUpload.single("document"), asyncHandler(async (req, res) => res.status(201).json(await submitReceipt(req.portalAccount, req.body || {}, req.file))));
   router.get("/logistics", asyncHandler(async (req, res) => res.json(await listPartnerLogistics(req.portalAccount))));
@@ -62,6 +73,7 @@ const buildRouter = (role) => {
 };
 
 export const vendorWorkflowRoutes = buildRouter("vendor");
+vendorWorkflowRoutes.get("/events", (req, res) => streamVendorWorkflowEvents(req.portalAccount.id, req, res));
 vendorWorkflowRoutes.get("/rfqs", asyncHandler(async (req, res) => res.json(await listVendorRfqs(req.portalAccount))));
 vendorWorkflowRoutes.get("/quotations", asyncHandler(async (req, res) => res.json(await listVendorQuotations(req.portalAccount))));
 vendorWorkflowRoutes.post("/rfqs/:assignmentId/quotation", documentUpload.single("document"), asyncHandler(async (req, res) => res.status(201).json(await submitVendorQuotation(req.portalAccount, req.params.assignmentId, req.body || {}, req.file))));

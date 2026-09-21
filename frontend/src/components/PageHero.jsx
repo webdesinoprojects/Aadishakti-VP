@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ASSETS } from "../assets/assetMap";
 import { useCms } from "../context/CmsContext";
 
-export default function PageHero({ title, activePage }) {
+export default function PageHero({ title, activePage, image }) {
   const { cms } = useCms();
   const heroBgByPage = {
     "ABOUT US": ASSETS.founders.anilGoel,
@@ -15,7 +15,7 @@ export default function PageHero({ title, activePage }) {
     SOURCING: ASSETS.mundraPlant[8],
   };
 
-  const heroImage = cms?.pageHeroImages?.[activePage] || heroBgByPage[activePage] || ASSETS.heroFallback;
+  const heroImage = image || cms?.pageHeroImages?.[activePage] || heroBgByPage[activePage] || ASSETS.heroFallback;
 
   return (
     <div

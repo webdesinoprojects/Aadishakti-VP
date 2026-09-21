@@ -2,35 +2,8 @@ import { motion } from "framer-motion";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
-import { ASSETS } from "../assets/assetMap";
-
-const principles = [
-  { title: "Chemical Accuracy", desc: "Rigid laboratory analytics via OES spectrometers to deliver lead ingots of certified purity up to 99.985% Pb." },
-  { title: "Safe Compliance",   desc: "Complete Basel Convention alignment. Safe recycling of hazardous wastes under regulatory authorisation." },
-  { title: "Sovereign Volume",  desc: "Smelting capacity scaling up to 120,000 MTPA by April 2026 to capture domestic and export dominance." },
-];
-
-const founders = [
-  {
-    name: "Amit Goyal",
-    img:  ASSETS.founders.amitGoyal,
-    role: "CO-FOUNDER & DIRECTOR",
-    bio:  "\"We engineered Aadishakti to finalise the loop of industrial metal recovery. Our secondary refineries deliver premium lead elements while protecting ecological grids from raw mining hazards.\"",
-  },
-  {
-    name: "Anil Goel",
-    img:  ASSETS.founders.anilGoel,
-    role: "CO-FOUNDER & DIRECTOR",
-    bio:  "\"Accuracy and volume are not contradictory metrics. Our upcoming automated smelting expansion in Mundra sets India's modern benchmark for clean metallurgical production.\"",
-  },
-];
-
-const timeline = [
-  { year: "2004", title: "First Operations",        desc: "Established administrative and sourcing desk in New Delhi." },
-  { year: "2014", title: "AMRPL — Roorkee",          desc: "Acquired first secondary processing plant to service domestic battery manufacturers." },
-  { year: "2023", title: "AGRPL — Mundra Flagship",  desc: "Launched major smelting hub at Mundra SEZ for transboundary scrap intake." },
-  { year: "2026", title: "120,000 MT Scale-Up",      desc: "Automated smelter complex expansion slated for April 2026 completion." },
-];
+import { useCms } from "../context/CmsContext";
+import { DEFAULT_ABOUT_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
 
 const certifications = [
   {
@@ -60,40 +33,40 @@ const certifications = [
 ];
 
 export default function About() {
+  const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_ABOUT_PAGE, cms?.aboutPage);
+  const leaders = Array.isArray(cms?.team) && cms.team.length ? cms.team : content.leadership;
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="ABOUT US" activePage="ABOUT US" />
+      <PageHero title={content.heroTitle} activePage="ABOUT US" image={content.heroImage} />
 
       {/* SECTION 1 — WHO WE ARE */}
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// WHO WE ARE" />
+            <SectionLabel text={content.overviewLabel} />
             <div className="grid-2" style={{ gridTemplateColumns: "1.2fr 0.8fr", gap: "60px", alignItems: "center" }}>
               <div>
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900, textTransform: "uppercase", marginBottom: "1.5rem" }}>
-                  A ₹1000+ Crore Industrial Conglomerate
+                  {content.overviewHeading}
                 </h2>
                 <p style={{ fontSize: "var(--fs-lead)", color: "var(--text-secondary)", lineHeight: 1.75, marginBottom: "1.5rem" }}>
-                  Through strategic smelting facilities in Mundra (AGRPL) and Roorkee (AMRPL), Aadishakti Group
-                  has constructed a sovereign non-ferrous lead recycling ecosystem across India.
+                  {content.overviewLead}
                 </p>
                 <p style={{ color: "var(--text-muted)", fontSize: "var(--fs-body)", lineHeight: 1.7 }}>
-                  We import bulk battery waste residues (ISRI codes), refining them into 99.97%+ purified Refined
-                  Lead Ingots, Calcium-Antimony Alloys, and Lead Monoxides. We serve domestic automobile battery
-                  manufacturers and transboundary exporters with certified compliance.
+                  {content.overviewBody}
                 </p>
               </div>
 
               <div style={{ height: "340px", overflow: "hidden", position: "relative" }}>
                 <img
-                  src={ASSETS.mundraPlant[0]}
+                  src={content.overviewImage}
                   alt="Mundra Smelter"
                   loading="lazy"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
                 <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", background: "rgba(10,10,10,0.84)", borderTop: "1px solid rgba(255,255,255,0.08)", padding: "10px 16px", fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--red-core)", letterSpacing: "0.12em" }}>
-                  MUNDRA PROCESSING HUB (AGRPL)
+                  {content.overviewImageCaption}
                 </div>
               </div>
             </div>
@@ -105,15 +78,15 @@ export default function About() {
       <section className="section-padding bg-diagonal-hatch">
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// OUR PHILOSOPHY" />
-            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>The Metallurgical Principles</h2>
+            <SectionLabel text={content.principlesLabel} />
+            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>{content.principlesHeading}</h2>
             <div className="grid-3">
-              {principles.map((pr) => (
+              {content.principles.map((pr) => (
                 <div key={pr.title} className="corporate-card" style={{ background: "#FFFFFF" }}>
                   <h4 style={{ fontWeight: 700, fontSize: "var(--fs-h3)", color: "var(--text-primary)", marginBottom: "1rem", textTransform: "uppercase" }}>
                     {pr.title}
                   </h4>
-                  <p style={{ color: "var(--text-muted)", fontSize: "var(--fs-body)", lineHeight: 1.6 }}>{pr.desc}</p>
+                  <p style={{ color: "var(--text-muted)", fontSize: "var(--fs-body)", lineHeight: 1.6 }}>{pr.description}</p>
                 </div>
               ))}
             </div>
@@ -125,18 +98,18 @@ export default function About() {
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// BOARD OF DIRECTORS" />
-            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>Leadership Team</h2>
+            <SectionLabel text={content.leadershipLabel} />
+            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>{content.leadershipHeading}</h2>
 
             <div className="grid-2" style={{ gap: "40px" }}>
-              {founders.map((fd) => (
+              {leaders.map((fd) => (
                 <div
                   key={fd.name}
                   className="about-founder-card"
                   style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-light)", padding: "36px", textAlign: "center", transition: "all var(--transition-normal)" }}
                 >
                   <div style={{ width: "140px", height: "140px", borderRadius: "50%", border: "2px solid var(--gold)", overflow: "hidden", margin: "0 auto 24px auto" }}>
-                    <img src={fd.img} alt={fd.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={fd.image || fd.photo} alt={fd.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                   <h3 style={{ fontWeight: 800, fontSize: "26px", color: "var(--text-primary)", marginBottom: "0.5rem" }}>{fd.name}</h3>
                   <div style={{ fontFamily: "var(--font-primary)", fontWeight: 600, fontSize: "11px", color: "var(--red-core)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "20px" }}>
@@ -157,10 +130,10 @@ export default function About() {
       <section className="section-padding bg-steel-grid">
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// COMPANY HISTORY" />
-            <h2 className="section-title-large" style={{ marginBottom: "1rem" }}>The Chronological Roadmap</h2>
+            <SectionLabel text={content.timelineLabel} />
+            <h2 className="section-title-large" style={{ marginBottom: "1rem" }}>{content.timelineHeading}</h2>
             <p style={{ color: "var(--text-muted)", maxWidth: "600px", marginBottom: "4rem" }}>
-              Critical milestones that scaled Aadishakti into a top secondary metallurgical group.
+              {content.timelineIntroduction}
             </p>
 
             <div style={{ position: "relative" }}>
@@ -168,7 +141,7 @@ export default function About() {
               <div className="about-timeline-line" />
 
               <div className="grid-4" style={{ gap: "24px", paddingBottom: "16px" }}>
-                {timeline.map((tm, idx) => (
+                {content.timeline.map((tm, idx) => (
                   <motion.div
                     key={tm.year}
                     className="about-timeline-item"
@@ -187,7 +160,7 @@ export default function About() {
                       <h4 style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-primary)", textTransform: "uppercase", marginBottom: "0.5rem" }}>
                         {tm.title}
                       </h4>
-                      <p style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: 1.5 }}>{tm.desc}</p>
+                      <p style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: 1.5 }}>{tm.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -201,17 +174,17 @@ export default function About() {
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
           <ScrollReveal>
-            <SectionLabel text="// QUALITY ASSURANCE" />
-            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>Our Certifications</h2>
+            <SectionLabel text={content.certificationsLabel} />
+            <h2 className="section-title-large" style={{ marginBottom: "3rem" }}>{content.certificationsHeading}</h2>
             <div className="grid-4" style={{ gap: "20px" }}>
-              {certifications.map((cert) => (
+              {content.certifications.map((cert, index) => (
                 <div key={cert.name} className="cert-card">
-                  <div style={{ marginBottom: "16px" }}>{cert.icon}</div>
+                  <div style={{ marginBottom: "16px" }}>{certifications[index]?.icon || certifications[0].icon}</div>
                   <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 800, fontSize: "18px", color: "var(--text-primary)", marginBottom: "6px" }}>
                     {cert.name}
                   </h3>
                   <div style={{ fontFamily: "var(--font-primary)", fontWeight: 600, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "8px" }}>
-                    {cert.desc}
+                    {cert.description}
                   </div>
                   <p style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.5 }}>{cert.scope}</p>
                 </div>

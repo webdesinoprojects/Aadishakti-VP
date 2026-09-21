@@ -1,31 +1,71 @@
-import { useState, useEffect } from 'react';
-import { Search, MapPin, RefreshCw } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { Search, MapPin, Plus, RefreshCw } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBar from '../../components/TopBar';
-import { logisticsAPI } from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
+import { logisticsAPI, portalAccountsAPI, portalWorkflowsAPI } from '../../utils/api';
+import LogisticsCreateDialog from './LogisticsCreateDialog';
 
 export default function LogisticsManager() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
+  const [vendors, setVendors] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [quotations, setQuotations] = useState([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [createOpen, setCreateOpen] = useState(Boolean(searchParams.get('quote')));
+  const [creating, setCreating] = useState(false);
+  const { success, error } = useToast();
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     setLoading(true);
     try {
       const res = await logisticsAPI.list();
       setOrders(res.data || []);
     } catch (err) {
-      console.error(err);
+      error(err.response?.data?.error || 'Unable to load logistics orders.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
 
   useEffect(() => {
     loadOrders();
-  }, []);
+  }, [loadOrders]);
+  useEffect(() => {
+    Promise.all([
+      portalAccountsAPI.list({ role: 'vendor', status: 'active' }),
+      portalAccountsAPI.list({ role: 'customer', status: 'active' }),
+      portalWorkflowsAPI.quotations(),
+    ]).then(([vendorResponse, customerResponse, quotationResponse]) => {
+      setVendors(vendorResponse.data || []);
+      setCustomers(customerResponse.data || []);
+      setQuotations((quotationResponse.data || []).filter((item) => item.status === 'accepted'));
+    }).catch((requestError) => error(requestError.response?.data?.error || 'Unable to load active portal accounts and accepted quotations.'))
+      .finally(() => setCatalogLoading(false));
+  }, [error]);
+
+  const closeCreate = () => {
+    setCreateOpen(false);
+    if (searchParams.has('quote')) setSearchParams({}, { replace: true });
+  };
+  const createOrder = async (form) => {
+    setCreating(true);
+    try {
+      const response = await logisticsAPI.create(form);
+      const order = response.data.order;
+      success(`Logistics order ${order.id} assigned to vendor and customer.`);
+      closeCreate();
+      await loadOrders();
+      navigate(`/admin/logistics/${encodeURIComponent(order.id)}`);
+    } catch (requestError) {
+      error(requestError.response?.data?.error || 'Unable to create logistics order.');
+    } finally { setCreating(false); }
+  };
 
   let filtered = orders;
   if (filter !== 'All') {
@@ -42,17 +82,20 @@ export default function LogisticsManager() {
       <TopBar breadcrumb="Operations / Logistics Tracker" />
       
       <div className="admin-page">
-        <div className="admin-page-heading" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+        <div className="admin-page-heading" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "32px" }}>
           <div>
             <h1 style={{ fontSize: "28px", fontWeight: 800, marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}><MapPin /> Logistics & Tracking</h1>
             <p style={{ color: "var(--text-secondary)" }}>Track active orders, monitor vendor shipments, and review Proof of Deliveries.</p>
           </div>
-          <button onClick={loadOrders} className="btn-icon" title="Refresh">
-            <RefreshCw size={20} className={loading ? "spin" : ""} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button className="btn btn-primary" onClick={() => setCreateOpen(true)}><Plus size={17} /> Create order</button>
+            <button onClick={loadOrders} className="btn-icon" title="Refresh" aria-label="Refresh logistics orders">
+              <RefreshCw size={20} className={loading ? "spin" : ""} />
+            </button>
+          </div>
         </div>
 
-        <div className="admin-filter-row" style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+        <div className="admin-filter-row" style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginBottom: "20px" }}>
           <div style={{ position: 'relative', flex: 1, maxWidth: "400px" }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
@@ -133,6 +176,7 @@ export default function LogisticsManager() {
 
           </div>
       </div>
+      {createOpen && <LogisticsCreateDialog quotationId={searchParams.get('quote') || ''} quotations={quotations} vendors={vendors} customers={customers} orders={orders} loading={catalogLoading} busy={creating} onClose={closeCreate} onCreate={createOrder} />}
     </>
   );
 }

@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import TopBar from '../../components/TopBar';
 import { CheckCircle, XCircle, ArrowRight, X } from 'lucide-react';
 import { operationsAPI } from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
+import ProfileUpdateReviewDialog from './ProfileUpdateReviewDialog';
+import './profile-updates.css';
 
 const fieldLabel = (key) => ({
   email: 'Email Address', phone: 'Phone', mobile: 'Mobile', taxReference: 'Tax Reference',
@@ -18,19 +21,28 @@ const ProfileValues = ({ data = {}, compare = {} }) => {
 export default function VendorApprovalsManager() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [requests, setRequests] = useState([]);
+  const [reviewTarget, setReviewTarget] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const { success, error: showError } = useToast();
 
   useEffect(() => {
     operationsAPI.getProfileUpdates({})
       .then((response) => setRequests(response.data || []))
-      .catch((error) => console.error('Failed to load profile updates', error));
-  }, []);
+      .catch((error) => showError(error.response?.data?.error || 'Failed to load profile updates.'));
+  }, [showError]);
 
-  const handleAction = async (id, action) => {
+  const handleAction = async (request, action, reviewNote) => {
+    setBusy(true);
     try {
-      const response = await operationsAPI.reviewProfileUpdate(id, { action });
-      setRequests(prev => prev.map(request => request.id === id ? response.data : request));
+      const response = await operationsAPI.reviewProfileUpdate(request.id, { action, reviewNote });
+      setRequests(prev => prev.map(item => item.id === request.id ? response.data : item));
+      setSelectedRequest((current) => current?.id === request.id ? response.data : current);
+      setReviewTarget(null);
+      success(action === 'reject' ? 'Request rejected. The reason is now visible to the partner.' : 'Request approved. The decision is now visible to the partner.');
     } catch (error) {
-      console.error('Failed to review profile update', error);
+      showError(error.response?.data?.error || 'Failed to review profile update.');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -67,12 +79,12 @@ export default function VendorApprovalsManager() {
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <button 
-                      onClick={(e) => { e.stopPropagation(); handleAction(req.id, 'reject'); }}
+                      onClick={(e) => { e.stopPropagation(); setReviewTarget({ request: req, action: 'reject' }); }}
                       style={{ background: '#fff', color: '#dc2626', border: '1px solid #dc2626', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '13px' }}>
                       <XCircle size={16} /> Reject
                     </button>
                     <button 
-                      onClick={(e) => { e.stopPropagation(); handleAction(req.id, 'approve'); }}
+                      onClick={(e) => { e.stopPropagation(); setReviewTarget({ request: req, action: 'approve' }); }}
                       style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '13px' }}>
                       <CheckCircle size={16} /> Approve Changes
                     </button>
@@ -107,6 +119,7 @@ export default function VendorApprovalsManager() {
               <th style={{ padding: '12px' }}>Partner</th>
               <th style={{ padding: '12px' }}>Date</th>
               <th style={{ padding: '12px' }}>Status</th>
+              <th style={{ padding: '12px' }}>Review note</th>
             </tr>
           </thead>
           <tbody>
@@ -122,6 +135,7 @@ export default function VendorApprovalsManager() {
                 <td style={{ padding: '12px' }}>{req.vendorId}</td>
                 <td style={{ padding: '12px' }}>{new Date(req.createdAt).toLocaleDateString()}</td>
                 <td style={{ padding: '12px', color: req.status === 'Approved' ? '#22c55e' : '#dc2626', fontWeight: '600' }}>{req.status}</td>
+                <td style={{ padding: '12px', color: '#64748b' }}>{req.reviewNote || '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -159,6 +173,8 @@ export default function VendorApprovalsManager() {
             <div style={{ fontSize: '15px' }}>{new Date(selectedRequest.createdAt).toLocaleString()}</div>
           </div>
 
+          {selectedRequest.reviewNote && <div style={{ marginBottom: '24px', padding: '14px 16px', borderLeft: `3px solid ${selectedRequest.status === 'Rejected' ? '#dc2626' : '#22c55e'}`, background: selectedRequest.status === 'Rejected' ? '#fef2f2' : '#f0fdf4' }}><strong style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>Message to partner</strong><span style={{ color: '#475569', fontSize: '13px', lineHeight: 1.5 }}>{selectedRequest.reviewNote}</span></div>}
+
           <h3 style={{ fontSize: '14px', textTransform: 'uppercase', color: '#64748b', marginBottom: '16px', letterSpacing: '0.05em' }}>Current Data</h3>
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}><ProfileValues data={selectedRequest.oldData} /></div>
 
@@ -168,16 +184,17 @@ export default function VendorApprovalsManager() {
           {selectedRequest.status === 'Pending' && (
             <div style={{ display: 'flex', gap: '12px', marginTop: '40px' }}>
               <button 
-                onClick={() => { handleAction(selectedRequest.id, 'reject'); setSelectedRequest(null); }}
+                onClick={() => setReviewTarget({ request: selectedRequest, action: 'reject' })}
                 style={{ flex: 1, padding: '12px', background: '#fff', border: '1px solid #dc2626', color: '#dc2626', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' }}>Reject</button>
               <button 
-                onClick={() => { handleAction(selectedRequest.id, 'approve'); setSelectedRequest(null); }}
+                onClick={() => setReviewTarget({ request: selectedRequest, action: 'approve' })}
                 style={{ flex: 1, padding: '12px', background: '#22c55e', border: 'none', color: '#fff', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' }}>Approve</button>
             </div>
           )}
         </div>
       </>
     )}
+    <ProfileUpdateReviewDialog target={reviewTarget} busy={busy} onClose={() => !busy && setReviewTarget(null)} onSubmit={handleAction} />
     </>
   );
 }

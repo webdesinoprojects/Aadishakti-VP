@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { portalAuthApi } from "../services/portalAuthApi";
+import { clearPortalRoleCache, setPortalSessionIdentity } from "./portalQueryClient";
 
 export const usePortalSession = (requiredRole) => {
   const [session, setSession] = useState(null);
@@ -11,13 +12,17 @@ export const usePortalSession = (requiredRole) => {
 
     const loadSession = async () => {
       try {
-        const response = await portalAuthApi.getSession();
+        sessionStorage.setItem('portal_active_role', requiredRole);
+        const response = await portalAuthApi.getSession(requiredRole);
         const nextSession = response.data?.session || null;
+        if (nextSession?.role === requiredRole) setPortalSessionIdentity(requiredRole, nextSession);
+        else clearPortalRoleCache(requiredRole);
         if (active) {
           setSession(nextSession?.role === requiredRole ? nextSession : null);
           setError(nextSession?.role === requiredRole ? null : { status: 403 });
         }
       } catch (requestError) {
+        clearPortalRoleCache(requiredRole);
         if (active) {
           setSession(null);
           setError({ status: requestError.response?.status || 0 });

@@ -1,12 +1,15 @@
-import { motion } from "framer-motion";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import ScrollReveal from "../components/ScrollReveal";
 import { Building2 } from "lucide-react";
-import { productsData } from "../data/products";
+import { useCms } from "../context/CmsContext";
+import { buildProductCatalog } from "../data/productCatalog";
 
 export default function Products() {
+  const { cms } = useCms();
+  const products = useMemo(() => buildProductCatalog(cms?.products), [cms?.products]);
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
       <PageHero title="PRODUCTS" activePage="PRODUCTS" />
@@ -21,7 +24,7 @@ export default function Products() {
             </h2>
             
             <div className="grid-3" style={{ gap: "32px" }}>
-              {productsData.map((prod) => (
+              {products.map((prod) => (
                 <div key={prod.key} className="corporate-card" style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
                   <div style={{ height: "240px", overflow: "hidden", position: "relative" }}>
                     <Link to={`/products/${prod.key}`}>

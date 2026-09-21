@@ -2,25 +2,13 @@ import { Link } from "react-router-dom";
 import { Fragment } from "react";
 import { ASSETS } from "../assets/assetMap";
 import SectionLabel from "./SectionLabel";
+import { useCms } from "../context/CmsContext";
+import { DEFAULT_FOOTER_CONTENT, mergeCmsContent } from "../data/publicCmsDefaults";
 
-
-const quickLinks = [
-  { to: "/",               label: "Home" },
-  { to: "/about",          label: "Corporate Overview" },
-  { to: "/products",       label: "Products Catalog" },
-  { to: "/sustainability",  label: "Sustainability" },
-  { to: "/investors",      label: "Investor Relations" },
-  { to: "/careers",        label: "Careers" },
-];
-
-const entities = [
-  { to: "/businesses?plant=mundra",  code: "AGRPL", name: "Mundra Plant", loc: "Kutch, Gujarat" },
-  { to: "/businesses?plant=roorkee", code: "AMRPL", name: "Roorkee Plant", loc: "Haridwar, Uttarakhand" },
-  { to: "/sourcing",                 code: "IMP",   name: "Sourcing Desk", loc: "Battery Scrap Procurement" },
-  { to: "/about",                    code: "HQ",    name: "Corporate HQ", loc: "New Delhi 110015" },
-];
 
 export default function Footer() {
+  const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_FOOTER_CONTENT, cms?.footerContent);
   const year = new Date().getFullYear();
 
   return (
@@ -60,20 +48,20 @@ export default function Footer() {
         {/* Content */}
         <div className="container" style={{ position: "relative", zIndex: 2, padding: "64px 0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "28px" }}>
           <div style={{ maxWidth: "600px" }}>
-            <SectionLabel text="// PARTNER WITH US" light={true} />
+            <SectionLabel text={content.ctaLabel} light={true} />
             <h2 style={{ fontWeight: 900, fontSize: "clamp(22px, 2.8vw, 36px)", color: "#FFFFFF", lineHeight: 1.2, marginBottom: "12px" }}>
-              Ready to source from India&apos;s leading secondary lead group?
+              {content.ctaHeading}
             </h2>
             <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", lineHeight: 1.65, margin: 0 }}>
-              Two world-class refineries. LME-grade purity. ISO 9001:2015 certified. Built for partnership.
+              {content.ctaText}
             </p>
           </div>
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", flexShrink: 0 }}>
             <Link to="/contact" className="btn-solid-red" style={{ height: "46px", paddingInline: "28px", fontSize: "12px" }}>
-              Get In Touch &rarr;
+              {content.primaryButton}
             </Link>
             <Link to="/sourcing" style={{ height: "46px", paddingInline: "24px", fontSize: "12px", display: "inline-flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.4)", color: "#FFFFFF", fontFamily: "var(--font-primary)", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s ease", borderRadius: "2px" }}>
-              Sell Scrap &rarr;
+              {content.secondaryButton}
             </Link>
           </div>
         </div>
@@ -101,12 +89,12 @@ export default function Footer() {
               borderLeft: "2px solid var(--red-core)", paddingLeft: "14px",
               margin: "0 0 28px 0",
             }}>
-              &ldquo;Forging geological weight, absolute metallurgy, and ecological circular recovery.&rdquo;
+              {content.brandStatement}
             </p>
 
             {/* Cert chips */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", marginBottom: "28px" }}>
-              {["ISO 9001:2015", "ISO 14001:2015", "BIS Certified", "Basel Compliant"].map((c) => (
+              {content.certifications.map((c) => (
                 <span key={c} style={{
                   fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--text-secondary)",
                   border: "1px solid var(--border-light)", padding: "4px 10px", letterSpacing: "0.08em",
@@ -120,7 +108,7 @@ export default function Footer() {
             {/* Social row */}
             <div style={{ display: "flex", gap: "10px" }}>
               <a
-                href="https://www.linkedin.com/company/aadishakti-group-aadishakti-metal-recycling-pvt-ltd"
+                href={content.linkedinUrl}
                 target="_blank" rel="noreferrer" aria-label="LinkedIn"
                 className="footer-social-btn"
                 style={{ width: "38px", height: "38px", border: "1px solid var(--border-light)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", background: "transparent", transition: "all 0.22s ease" }}
@@ -130,7 +118,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="X / Twitter"
+                href={content.xUrl} target="_blank" rel="noreferrer" aria-label="X / Twitter"
                 className="footer-social-btn"
                 style={{ width: "38px", height: "38px", border: "1px solid var(--border-light)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", background: "transparent", transition: "all 0.22s ease" }}
               >
@@ -148,7 +136,7 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul style={{ listStyle: "none" }}>
-              {quickLinks.map((link) => (
+              {content.quickLinks.map((link) => (
                 <li key={link.to} style={{ borderBottom: "1px solid var(--border-light)" }}>
                   <Link
                     to={link.to}
@@ -170,7 +158,7 @@ export default function Footer() {
               Our Entities
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-              {entities.map((e) => (
+              {content.entities.map((e) => (
                 <Link
                   key={e.to}
                   to={e.to}
@@ -188,7 +176,7 @@ export default function Footer() {
                     <span style={{ fontSize: "13px", fontWeight: 700, color: "#AAAAAA" }}>{e.name}</span>
                   </div>
                   <p style={{ fontSize: "11px", color: "#444444", fontFamily: "var(--font-mono)", letterSpacing: "0.04em", paddingLeft: "0" }}>
-                    {e.loc}
+                    {e.location}
                   </p>
                 </Link>
               ))}
@@ -210,8 +198,7 @@ export default function Footer() {
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
                 <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-                  30, Third Floor, Shivaji Marg,<br />
-                  Moti Nagar, New Delhi&nbsp;110&nbsp;015
+                  {content.address}
                 </p>
               </div>
 
@@ -220,8 +207,8 @@ export default function Footer() {
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--red-core)" strokeWidth="2" style={{ flexShrink: 0 }}>
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                 </svg>
-                <a href="tel:+918743000799" style={{ fontFamily: "var(--font-mono)", fontSize: "13px", color: "#000000", transition: "color 0.2s" }} className="footer-contact-link">
-                  +91&thinsp;8743&thinsp;000&thinsp;799
+                <a href={`tel:${content.phone.replace(/[^+\d]/g, '')}`} style={{ fontFamily: "var(--font-mono)", fontSize: "13px", color: "#000000", transition: "color 0.2s" }} className="footer-contact-link">
+                  {content.phone}
                 </a>
               </div>
 
@@ -231,18 +218,18 @@ export default function Footer() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <a href="mailto:gourav.sharma@aadishakti.com" style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--red-core)", transition: "color 0.2s" }} className="footer-contact-link">
-                  gourav.sharma@aadishakti.com
+                <a href={`mailto:${content.email}`} style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--red-core)", transition: "color 0.2s" }} className="footer-contact-link">
+                  {content.email}
                 </a>
               </div>
 
               {/* GSTIN / CIN strip */}
               <div style={{ marginTop: "8px", padding: "14px 16px", background: "var(--bg-secondary)", border: "1px solid var(--border-light)", display: "flex", flexDirection: "column", gap: "6px" }}>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--text-secondary)", letterSpacing: "0.08em" }}>
-                  CIN: L27109DL1994PTC058925
+                  CIN: {content.cin}
                 </div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--text-secondary)", letterSpacing: "0.08em" }}>
-                  Established 2004 &middot; New Delhi, India
+                  {content.established}
                 </div>
               </div>
             </address>
@@ -263,7 +250,7 @@ export default function Footer() {
             &copy; {year} Aadishakti Group. All Rights Reserved.
           </p>
           <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center" }}>
-            {["ISO 9001:2015", "ISO 14001:2015", "BIS IS 27:1992", "Made in India"].map((item, i, arr) => (
+            {content.bottomBadges.map((item, i, arr) => (
               <Fragment key={item}>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {item}

@@ -82,7 +82,7 @@ test("portal login issues an HttpOnly cookie and resolves session server-side", 
     assert.equal(login.status, 200);
     assert.equal(login.headers.get("cache-control"), "no-store");
     const loginBody = await login.json();
-    assert.deepEqual(loginBody, { session: { role: "customer", displayName: "Customer Test" } });
+    assert.deepEqual(loginBody, { session: { accountId: "customer-demo", role: "customer", displayName: "Customer Test" } });
     assert.doesNotMatch(JSON.stringify(loginBody), /ATTACKER-CHOSEN-CARD|SERVER-CUSTOMER-CARD/);
     const setCookie = login.headers.get("set-cookie");
     assert.match(setCookie, /HttpOnly/i);
@@ -92,7 +92,7 @@ test("portal login issues an HttpOnly cookie and resolves session server-side", 
     const cookie = setCookie.split(";", 1)[0];
     const session = await fetch(`${server.baseUrl}/api/portal/auth/session`, { headers: { Cookie: cookie } });
     assert.equal(session.status, 200);
-    assert.deepEqual(await session.json(), { session: { role: "customer", displayName: "Customer Test" } });
+    assert.deepEqual(await session.json(), { session: { accountId: "customer-demo", role: "customer", displayName: "Customer Test" } });
 
     const customer = await fetch(`${server.baseUrl}/api/portal/customer/session`, { headers: { Cookie: cookie } });
     assert.equal(customer.status, 200);

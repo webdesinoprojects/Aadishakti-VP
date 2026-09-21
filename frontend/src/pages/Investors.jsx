@@ -4,8 +4,12 @@ import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from "recharts";
 import { Loader2, ShieldCheck } from "lucide-react";
+import { useCms } from "../context/CmsContext";
+import { DEFAULT_INVESTORS_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
 
 export default function Investors() {
+  const { cms } = useCms();
+  const content = mergeCmsContent(DEFAULT_INVESTORS_PAGE, cms?.investorsPage);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +33,7 @@ export default function Investors() {
 
   return (
     <div style={{ position: "relative", zIndex: 5 }}>
-      <PageHero title="INVESTOR RELATION DESK" activePage="INVESTORS" />
+      <PageHero title={content.heroTitle} activePage="INVESTORS" image={content.heroImage} />
 
       <section className="section-padding" style={{ background: "var(--bg-primary)" }}>
         <div className="container">
@@ -47,22 +51,17 @@ export default function Investors() {
           ) : (
             <div>
               {/* SECTION 1: KEY FINANCIALS (4 KPI Cards) */}
-              <SectionLabel text="// FINANCIAL METRICS" />
-              <h2 className="section-title-large" style={{ marginBottom: "4rem" }}>KEY PERFORMANCE INDICATORS</h2>
+              <SectionLabel text={content.metricsLabel} />
+              <h2 className="section-title-large" style={{ marginBottom: "4rem" }}>{content.metricsHeading}</h2>
               
               <div className="grid-4" style={{ marginBottom: "5rem" }}>
-                {[
-                  { label: "Revenue Target FY26", num: "₹1,200 Cr", trend: "↑ 54%", active: true },
-                  { label: "Smelting Target FY26", num: "120,000 MT", trend: "↑ 71%", active: true },
-                  { label: "Active Revenue FY24", num: "₹780 Cr", trend: "↑ 50%", active: false },
-                  { label: "Operating EBITDA FY24", num: "₹118 Cr", trend: "→ Stable", active: false },
-                ].map((kpi, idx) => (
-                  <div key={idx} className="corporate-card" style={{ borderLeftColor: kpi.active ? "var(--red-core)" : "var(--steel)" }}>
+                {content.kpis.map((kpi, idx) => (
+                  <div key={idx} className="corporate-card" style={{ borderLeftColor: kpi.highlighted ? "var(--red-core)" : "var(--steel)" }}>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--muted)", fontWeight: "700", textTransform: "uppercase" }}>
                       {kpi.label}
                     </span>
                     <h3 style={{ fontFamily: "var(--font-primary)", fontSize: "36px", color: "var(--text-primary)", fontWeight: "700", marginTop: "8px", marginBottom: "8px", letterSpacing: "-0.02em" }}>
-                      {kpi.num}
+                      {kpi.value}
                     </h3>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: kpi.trend.includes("↑") ? "var(--red-core)" : "var(--silver)" }}>
                       {kpi.trend}
@@ -77,7 +76,7 @@ export default function Investors() {
                 {/* Revenue Chart (BarChart) */}
                 <div style={{ background: "#FFFFFF", border: "1px solid var(--border-light)", padding: "32px", borderTop: "2px solid var(--red-core)" }}>
                   <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "700", fontSize: "20px", color: "var(--white)", textTransform: "uppercase", marginBottom: "2rem" }}>
-                    PROJECTIONS REVENUE GROWTH
+                    {content.revenueChartTitle}
                   </h3>
                   <div style={{ width: "100%", height: "240px" }}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -99,7 +98,7 @@ export default function Investors() {
                 {/* Production Volume Chart (LineChart) */}
                 <div style={{ background: "#FFFFFF", border: "1px solid var(--border-light)", padding: "32px", borderTop: "2px solid var(--red-core)" }}>
                   <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "700", fontSize: "20px", color: "var(--white)", textTransform: "uppercase", marginBottom: "2rem" }}>
-                    SMELTER PRODUCTION TREND
+                    {content.productionChartTitle}
                   </h3>
                   <div style={{ width: "100%", height: "240px" }}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -122,16 +121,16 @@ export default function Investors() {
 
               {/* SECTION 3: GOVERNANCE & BADGES */}
               <div className="dominance-card" style={{ borderLeftColor: "var(--red-core)" }}>
-                <SectionLabel text="// COMPLIANCE AUDIT" />
+                <SectionLabel text={content.governanceLabel} />
                 <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: "700", fontSize: "22px", color: "var(--white)", textTransform: "uppercase", marginBottom: "1.5rem" }}>
-                  CORPORATE GOVERNANCE & TRANSPARENCY
+                  {content.governanceHeading}
                 </h3>
                 <p style={{ color: "var(--silver)", fontSize: "14px", lineHeight: "1.7", marginBottom: "2rem" }}>
-                  Aadishakti Group operates in full integration with Central and State Pollution Control Board mandates. Our smelters maintain zero hazardous emissions and Basel convention clearing certificates. Financial projections are audited routinely by third-party accounting networks, ensuring transparent capital growth.
+                  {content.governanceText}
                 </p>
 
                 <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                  {["ISO 9001:2015 REGISTERED", "ISO 14001:2015 REGISTERED", "ISO 45001:2018 REGISTERED", "BASEL COMPLIANT"].map((text) => (
+                  {content.certifications.map((text) => (
                     <div
                       key={text}
                       style={{

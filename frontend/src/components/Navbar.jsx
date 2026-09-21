@@ -2,6 +2,7 @@ import { useEffect, useState, Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ASSETS } from "../assets/assetMap";
 import { useCms } from "../context/CmsContext";
+import { DEFAULT_SITE_NAVIGATION, mergeCmsContent } from "../data/publicCmsDefaults";
 
 const companyLinks = [
   { to: "/about",                    label: "About Us" },
@@ -29,32 +30,15 @@ const galleryLinks = [
   { to: "/gallery?category=celebration", label: "Celebration" },
 ];
 
-const megaContent = {
-  esg: {
-    "Environment & Climate": { img: ASSETS.mundraPlant[4] || ASSETS.megaMenuPhoto, eyebrow: "ZERO LIQUID DISCHARGE", title: "Minimizing our environmental footprint through advanced recycling." },
-    "Corporate Social Responsibility": { img: ASSETS.gallery[3] || ASSETS.megaMenuPhoto, eyebrow: "COMMUNITY FIRST", title: "Empowering local communities around our Mundra and Roorkee facilities." },
-    "Governance & Policies": { img: ASSETS.roorkeeOffice[1] || ASSETS.megaMenuPhoto, eyebrow: "TRANSPARENCY", title: "Upholding the highest standards of ethics and compliance." },
-    "Sustainability Reports": { img: ASSETS.heroBg3 || ASSETS.megaMenuPhoto, eyebrow: "ESG REPORTING", title: "Detailed disclosures of our environmental and social performance." }
-  },
-  media: {
-    "Blogs": { img: ASSETS.gallery[0] || ASSETS.megaMenuPhoto, eyebrow: "LATEST INSIGHTS", title: "Read our latest technical blogs on lead recycling." },
-    "News": { img: ASSETS.gallery[1] || ASSETS.megaMenuPhoto, eyebrow: "COMPANY NEWS", title: "Stay updated with Aadishakti's latest announcements." }
-  },
-  gallery: {
-    "Office": { img: ASSETS.roorkeeOffice[0] || ASSETS.megaMenuPhoto, eyebrow: "CORPORATE HUB", title: "A glimpse inside our modern corporate headquarters." },
-    "Plants": { img: ASSETS.mundraPlant[0] || ASSETS.megaMenuPhoto, eyebrow: "REFINING INFRASTRUCTURE", title: "State-of-the-art lead smelting and refining facilities." },
-    "Events": { img: ASSETS.gallery[3] || ASSETS.megaMenuPhoto, eyebrow: "TEAM ENGAGEMENT", title: "Highlights from our recent team building and conferences." },
-    "Celebration": { img: ASSETS.gallery[0] || ASSETS.megaMenuPhoto, eyebrow: "FESTIVITIES", title: "Celebrating success and culture at Aadishakti." }
-  },
-  careers: {
-    "Factory": { img: ASSETS.mundraPlant[4] || ASSETS.megaMenuPhoto, eyebrow: "PLANT OPERATIONS", title: "Drive industrial excellence at our Mundra and Roorkee plants." },
-    "Office": { img: ASSETS.roorkeeOffice[1] || ASSETS.megaMenuPhoto, eyebrow: "CORPORATE ROLES", title: "Shape the future of sustainable recycling from our HQ." }
-  }
-};
-
 export default function Navbar() {
   const { cms } = useCms();
-  const navCtaText = cms?.nav?.ctaText || "GET IN TOUCH";
+  const navigation = mergeCmsContent(DEFAULT_SITE_NAVIGATION, cms?.siteNavigation);
+  const navCtaText = navigation.ctaText;
+  const liveCompanyLinks = navigation.companyLinks || companyLinks;
+  const liveEsgLinks = navigation.esgLinks || esgLinks;
+  const liveMediaLinks = navigation.mediaLinks || mediaLinks;
+  const liveGalleryLinks = navigation.galleryLinks || galleryLinks;
+  const liveCareerLinks = navigation.careerLinks || [];
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
@@ -82,7 +66,6 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line
     setMobileOpen(false);
     setCompanyOpen(false);
     setEsgOpen(false);
@@ -101,6 +84,10 @@ export default function Navbar() {
   const mediaActive = location.pathname.startsWith("/media");
   const galleryActive = location.pathname.startsWith("/gallery");
   const careersActive = location.pathname.startsWith("/careers");
+  const esgPreview = liveEsgLinks.find((item) => item.label === hoveredEsg) || liveEsgLinks[0] || {};
+  const mediaPreview = liveMediaLinks.find((item) => item.label === hoveredMedia) || liveMediaLinks[0] || {};
+  const galleryPreview = liveGalleryLinks.find((item) => item.label === hoveredGallery) || liveGalleryLinks[0] || {};
+  const careersPreview = liveCareerLinks.find((item) => item.label === hoveredCareers) || liveCareerLinks[0] || {};
 
   return (
     <header className={`top-nav ${scrolled ? "scrolled" : ""}`}>
@@ -123,7 +110,7 @@ export default function Navbar() {
             </button>
             <div className={`mega-dropdown ${companyOpen ? "open" : ""}`}>
               <div className="mega-left">
-                {companyLinks.map((item, idx) => (
+                {liveCompanyLinks.map((item, idx) => (
                   <Fragment key={item.to + item.label}>
                     {idx === 1 && <div className="drop-divider" />}
                     <Link to={item.to} className={`drop-item ${item.sub ? "sub" : ""}`}>{item.label}</Link>
@@ -131,13 +118,13 @@ export default function Navbar() {
                 ))}
               </div>
               <div className="mega-right">
-                <img src={ASSETS.megaMenuPhoto} alt="Aadishakti Plant" loading="lazy" />
+                <img src={navigation.companyPreviewImage || ASSETS.megaMenuPhoto} alt="Aadishakti Plant" loading="lazy" />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
-                    Est. 2004 · ISO 9001:2015
+                    {navigation.companyPreviewEyebrow}
                   </div>
                   <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                    Two world-class plants. One standard of excellence.
+                    {navigation.companyPreviewText}
                   </p>
                 </div>
               </div>
@@ -157,18 +144,18 @@ export default function Navbar() {
             </button>
             <div className={`mega-dropdown ${esgOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px' }}>
               <div className="mega-left">
-                {esgLinks.map((item) => (
+                {liveEsgLinks.map((item) => (
                   <Link key={item.to} to={item.to} className="drop-item" onMouseEnter={() => setHoveredEsg(item.label)}>{item.label}</Link>
                 ))}
               </div>
               <div className="mega-right">
-                <img src={megaContent.esg[hoveredEsg].img} alt={hoveredEsg} loading="lazy" />
+                <img src={esgPreview.previewImage || ASSETS.megaMenuPhoto} alt={esgPreview.label || hoveredEsg} loading="lazy" />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
-                    {megaContent.esg[hoveredEsg].eyebrow}
+                    {esgPreview.previewEyebrow}
                   </div>
                   <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                    {megaContent.esg[hoveredEsg].title}
+                    {esgPreview.previewText}
                   </p>
                 </div>
               </div>
@@ -188,18 +175,18 @@ export default function Navbar() {
             </button>
             <div className={`mega-dropdown ${mediaOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px' }}>
               <div className="mega-left">
-                {mediaLinks.map((item) => (
+                {liveMediaLinks.map((item) => (
                   <Link key={item.to} to={item.to} className="drop-item" onMouseEnter={() => setHoveredMedia(item.label)}>{item.label}</Link>
                 ))}
               </div>
               <div className="mega-right">
-                <img src={megaContent.media[hoveredMedia].img} alt={hoveredMedia} loading="lazy" />
+                <img src={mediaPreview.previewImage || ASSETS.megaMenuPhoto} alt={mediaPreview.label || hoveredMedia} loading="lazy" />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
-                    {megaContent.media[hoveredMedia].eyebrow}
+                    {mediaPreview.previewEyebrow}
                   </div>
                   <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                    {megaContent.media[hoveredMedia].title}
+                    {mediaPreview.previewText}
                   </p>
                 </div>
               </div>
@@ -216,18 +203,18 @@ export default function Navbar() {
             </button>
             <div className={`mega-dropdown ${galleryOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px' }}>
               <div className="mega-left">
-                {galleryLinks.map((item) => (
+                {liveGalleryLinks.map((item) => (
                   <Link key={item.to} to={item.to} className="drop-item" onMouseEnter={() => setHoveredGallery(item.label)}>{item.label}</Link>
                 ))}
               </div>
               <div className="mega-right">
-                <img src={megaContent.gallery[hoveredGallery].img} alt={hoveredGallery} loading="lazy" />
+                <img src={galleryPreview.previewImage || ASSETS.megaMenuPhoto} alt={galleryPreview.label || hoveredGallery} loading="lazy" />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
-                    {megaContent.gallery[hoveredGallery].eyebrow}
+                    {galleryPreview.previewEyebrow}
                   </div>
                   <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                    {megaContent.gallery[hoveredGallery].title}
+                    {galleryPreview.previewText}
                   </p>
                 </div>
               </div>
@@ -244,17 +231,18 @@ export default function Navbar() {
             </button>
             <div className={`mega-dropdown ${careersOpen ? "open" : ""}`} style={{ width: '420px', gridTemplateColumns: '1fr 220px', left: 'auto', right: 0 }}>
               <div className="mega-left">
-                <Link to="/careers?category=factory" className="drop-item" onMouseEnter={() => setHoveredCareers("Factory")}>Factory</Link>
-                <Link to="/careers?category=office" className="drop-item" onMouseEnter={() => setHoveredCareers("Office")}>Office</Link>
+                {liveCareerLinks.map((item) => (
+                  <Link key={item.to} to={item.to} className="drop-item" onMouseEnter={() => setHoveredCareers(item.label)}>{item.label}</Link>
+                ))}
               </div>
               <div className="mega-right">
-                <img src={megaContent.careers[hoveredCareers].img} alt={hoveredCareers} loading="lazy" />
+                <img src={careersPreview.previewImage || ASSETS.megaMenuPhoto} alt={careersPreview.label || hoveredCareers} loading="lazy" />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--red-core)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>
-                    {megaContent.careers[hoveredCareers].eyebrow}
+                    {careersPreview.previewEyebrow}
                   </div>
                   <p style={{ fontFamily: "var(--font-primary)", fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                    {megaContent.careers[hoveredCareers].title}
+                    {careersPreview.previewText}
                   </p>
                 </div>
               </div>
@@ -290,7 +278,7 @@ export default function Navbar() {
         </button>
         {mobileCo && (
           <div className="mobile-submenu">
-            {companyLinks.map((item) => (
+            {liveCompanyLinks.map((item) => (
               <Link key={item.to + item.label} to={item.to} className={`mobile-sub ${item.sub ? "sub" : ""}`}>{item.sub ? `→ ${item.label}` : item.label}</Link>
             ))}
           </div>
@@ -304,7 +292,7 @@ export default function Navbar() {
         </button>
         {mobileEsg && (
           <div className="mobile-submenu">
-            {esgLinks.map((item) => (
+            {liveEsgLinks.map((item) => (
               <Link key={item.to + item.label} to={item.to} className="mobile-sub">{item.label}</Link>
             ))}
           </div>
@@ -318,7 +306,7 @@ export default function Navbar() {
         </button>
         {mobileMedia && (
           <div className="mobile-submenu">
-            {mediaLinks.map((item) => (
+            {liveMediaLinks.map((item) => (
               <Link key={item.to + item.label} to={item.to} className="mobile-sub">{item.label}</Link>
             ))}
           </div>
@@ -329,7 +317,7 @@ export default function Navbar() {
         </button>
         {mobileGallery && (
           <div className="mobile-submenu">
-            {galleryLinks.map((item) => (
+            {liveGalleryLinks.map((item) => (
               <Link key={item.to + item.label} to={item.to} className="mobile-sub">{item.label}</Link>
             ))}
           </div>
@@ -340,8 +328,7 @@ export default function Navbar() {
         </button>
         {mobileCareers && (
           <div className="mobile-submenu">
-            <Link to="/careers?category=factory" className="mobile-sub">Factory</Link>
-            <Link to="/careers?category=office" className="mobile-sub">Office</Link>
+            {liveCareerLinks.map((item) => <Link key={item.to} to={item.to} className="mobile-sub">{item.label}</Link>)}
           </div>
         )}
 

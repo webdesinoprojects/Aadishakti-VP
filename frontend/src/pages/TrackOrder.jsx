@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { buildApiUrl } from '../config/api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ScrollReveal from '../components/ScrollReveal';
@@ -14,13 +15,13 @@ export default function TrackOrder() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchTracking = async (idToFetch) => {
+  const fetchTracking = useCallback(async (idToFetch) => {
     if (!idToFetch) return;
     setLoading(true);
     setError('');
     setOrder(null);
     try {
-      const res = await fetch(`http://localhost:5000/api/track/${idToFetch}`);
+      const res = await fetch(buildApiUrl(`/api/track/${encodeURIComponent(idToFetch)}`));
       if (!res.ok) throw new Error('Order not found or invalid Tracking ID.');
       const data = await res.json();
       setOrder(data);
@@ -30,13 +31,13 @@ export default function TrackOrder() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setSearchParams]);
 
   useEffect(() => {
     if (initialId && !order) {
       fetchTracking(initialId);
     }
-  }, [initialId]);
+  }, [fetchTracking, initialId, order]);
 
   const handleSearch = (e) => {
     e.preventDefault();

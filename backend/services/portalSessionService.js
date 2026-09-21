@@ -37,6 +37,16 @@ export const getPortalSessionConfig = (environment = process.env) => {
   };
 };
 
+const portalRoles = new Set(["customer", "vendor"]);
+
+export const getPortalCookieName = (role, environment = process.env) => {
+  const normalizedRole = String(role || "").trim().toLowerCase();
+  if (!portalRoles.has(normalizedRole)) {
+    throw new PortalSessionConfigurationError("A valid portal role is required for this session.");
+  }
+  return `${getPortalSessionConfig(environment).cookieName}_${normalizedRole}`;
+};
+
 export const createPortalSession = (account, environment = process.env) => {
   const config = getPortalSessionConfig(environment);
   return jwt.sign(

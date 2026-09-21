@@ -56,6 +56,9 @@ export const getCisConfig = (environment = process.env) => {
     retryAttempts: parseBoundedInteger(environment.CIS_RETRY_ATTEMPTS, 1, 0, 2),
     retryDelayMs: parseBoundedInteger(environment.CIS_RETRY_DELAY_MS, 1000, 100, 5000),
     tokenExpirySkewMs: parseBoundedInteger(environment.CIS_TOKEN_EXPIRY_SKEW_MS, 60000, 5000, 300000),
+    resourceCacheTtlMs: parseBoundedInteger(environment.CIS_RESOURCE_CACHE_TTL_MS, 120000, 10000, 900000),
+    resourceCacheStaleMs: parseBoundedInteger(environment.CIS_RESOURCE_CACHE_STALE_MS, 900000, 60000, 3600000),
+    resourceCacheMaxEntries: parseBoundedInteger(environment.CIS_RESOURCE_CACHE_MAX_ENTRIES, 50, 10, 500),
     credentials,
   };
 };

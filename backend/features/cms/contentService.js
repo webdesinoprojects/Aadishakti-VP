@@ -67,6 +67,7 @@ const productFromDb = (row) => ({
   code: row.code,
   purity: row.purity,
   description: row.description,
+  packaging: row.packaging,
   specifications: row.specifications,
   features: row.features,
   image: row.image_url,
@@ -85,7 +86,7 @@ const productPayload = (input, adminId, partial = false) => {
     payload.slug = slugify(input.slug || input.name);
     if (!payload.slug) throw badRequest("A valid product slug is required.");
   }
-  const fields = [["code", "code"], ["purity", "purity"], ["description", "description"], ["image", "image_url"], ["datasheet", "datasheet_url"]];
+  const fields = [["code", "code"], ["purity", "purity"], ["description", "description"], ["packaging", "packaging"], ["image", "image_url"], ["datasheet", "datasheet_url"]];
   for (const [source, target] of fields) if (!partial || input[source] !== undefined) payload[target] = text(input[source]);
   if (!partial || input.specifications !== undefined) payload.specifications = asArray(input.specifications);
   if (!partial || input.features !== undefined) payload.features = asArray(input.features);

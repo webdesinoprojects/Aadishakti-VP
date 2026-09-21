@@ -1,257 +1,82 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Archive, Edit, Package, Plus, Search, X } from 'lucide-react';
 import TopBar from '../../components/TopBar';
 import ConfirmModal from '../../components/ConfirmModal';
 import ImageUploader from '../../components/ImageUploader';
 import { cmsAPI } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
+import './products-manager.css';
 
-const ProductsManager = () => {
+const blankProduct = () => ({ name: '', slug: '', code: '', purity: '', description: '', packaging: '', image: '', datasheet: '', specifications: [], features: [], status: 'published', sortOrder: 0 });
+const normalizeProduct = (product) => ({ ...blankProduct(), ...product, specifications: (product.specifications || []).map((item) => ({ parameter: item.parameter ?? item.elem ?? '', value: item.value ?? item.val ?? '' })), features: product.features || [] });
+
+function ProductForm({ value, editing, busy, onChange, onCancel, onSave }) {
+  const set = (key, next) => onChange({ ...value, [key]: next });
+  const setSpec = (index, key, next) => set('specifications', value.specifications.map((item, itemIndex) => itemIndex === index ? { ...item, [key]: next } : item));
+  return <section className="product-editor">
+    <header><div><span>{editing ? 'Edit catalog item' : 'New catalog item'}</span><h2>{editing ? value.name : 'Add product'}</h2></div><button type="button" onClick={onCancel} aria-label="Close editor"><X size={20} /></button></header>
+    <div className="product-editor-body">
+      <div className="product-editor-grid">
+        <label><span>Product name *</span><input value={value.name} onChange={(event) => set('name', event.target.value)} /></label>
+        <label><span>URL slug</span><input value={value.slug} onChange={(event) => set('slug', event.target.value)} placeholder="generated-from-name" /></label>
+        <label><span>Grade / standard</span><input value={value.code} onChange={(event) => set('code', event.target.value)} /></label>
+        <label><span>Purity / formula</span><input value={value.purity} onChange={(event) => set('purity', event.target.value)} /></label>
+        <label><span>Publishing status</span><select value={value.status} onChange={(event) => set('status', event.target.value)}><option value="published">Published</option><option value="draft">Draft</option><option value="archived">Archived</option></select></label>
+        <label><span>Display order</span><input type="number" min="0" value={value.sortOrder} onChange={(event) => set('sortOrder', event.target.value)} /></label>
+        <label className="is-wide"><span>Overview</span><textarea rows="4" value={value.description} onChange={(event) => set('description', event.target.value)} /></label>
+        <label className="is-wide"><span>Packaging</span><textarea rows="3" value={value.packaging} onChange={(event) => set('packaging', event.target.value)} /></label>
+        <label className="is-wide"><span>Applications (one per line)</span><textarea rows="4" value={value.features.join('\n')} onChange={(event) => set('features', event.target.value.split('\n'))} /></label>
+        <label className="is-wide"><span>Datasheet URL</span><input value={value.datasheet} onChange={(event) => set('datasheet', event.target.value)} placeholder="Optional PDF URL" /></label>
+      </div>
+      <section className="product-spec-editor"><div><h3>Technical specifications</h3><button type="button" onClick={() => set('specifications', [...value.specifications, { parameter: '', value: '' }])}><Plus size={15} /> Add row</button></div>{value.specifications.map((item, index) => <div className="product-spec-row" key={`${index}-${item.parameter}`}><input value={item.parameter} onChange={(event) => setSpec(index, 'parameter', event.target.value)} placeholder="Parameter" /><input value={item.value} onChange={(event) => setSpec(index, 'value', event.target.value)} placeholder="Value" /><button type="button" onClick={() => set('specifications', value.specifications.filter((_item, itemIndex) => itemIndex !== index))} aria-label="Remove specification"><X size={16} /></button></div>)}</section>
+      <section className="product-image-editor"><h3>Product image</h3><ImageUploader currentImage={value.image} onUpload={(url) => set('image', url)} onRemove={() => set('image', '')} /></section>
+    </div>
+    <footer><button className="btn btn-secondary" type="button" disabled={busy} onClick={onCancel}>Cancel</button><button className="btn btn-primary" type="button" disabled={busy || !value.name.trim()} onClick={onSave}>{busy ? 'Saving...' : editing ? 'Save changes' : 'Create product'}</button></footer>
+  </section>;
+}
+
+export default function ProductsManager() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    image: '',
-    features: [],
-  });
-  const [deleteModal, setDeleteModal] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [formData, setFormData] = useState(null);
+  const [archiveTarget, setArchiveTarget] = useState(null);
+  const [search, setSearch] = useState('');
+  const [busy, setBusy] = useState(false);
   const { success, error } = useToast();
 
-
-
   const loadProducts = useCallback(async () => {
+    try { const response = await cmsAPI.getProducts(); setProducts(response.data || []); }
+    catch (requestError) { error(requestError.response?.data?.error || 'Failed to load products.'); }
+    finally { setLoading(false); }
+  }, [error]);
+  useEffect(() => { loadProducts(); }, [loadProducts]);
+
+  const save = async () => {
+    if (!formData?.name.trim()) return error('Product name is required.');
+    const payload = { ...formData, features: formData.features.map((item) => item.trim()).filter(Boolean), specifications: formData.specifications.filter((item) => item.parameter.trim() || item.value.trim()), sortOrder: Number(formData.sortOrder) || 0 };
+    setBusy(true);
     try {
-      const response = await cmsAPI.getProducts();
-      setProducts(response.data || []);
-    } catch (err) {
-      console.error('Error loading products:', err);
-      error('Failed to load products');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadProducts();
-  }, [loadProducts]);
-
-  const handleSave = async () => {
-    if (!formData.name.trim()) {
-      error('Product name is required');
-      return;
-    }
-
-    try {
-      if (editingId) {
-        await cmsAPI.updateProduct(editingId, formData);
-        setProducts((prev) =>
-          prev.map((p) => (p.id === editingId ? { ...p, ...formData } : p))
-        );
-        success('Product updated');
-      } else {
-        const res = await cmsAPI.createProduct(formData);
-        setProducts((prev) => [...prev, res.data]);
-        success('Product created');
-      }
-      setShowForm(false);
-      setEditingId(null);
-      setFormData({ name: '', description: '', image: '', features: [] });
-    } catch (err) {
-      console.error('Error saving product:', err);
-      error('Failed to save product');
-    }
+      const response = editingId ? await cmsAPI.updateProduct(editingId, payload) : await cmsAPI.createProduct(payload);
+      setProducts((current) => editingId ? current.map((item) => item.id === editingId ? response.data : item) : [...current, response.data]);
+      success(editingId ? 'Product updated on the public catalog.' : 'Product added to the public catalog.');
+      setEditingId(null); setFormData(null);
+    } catch (requestError) { error(requestError.response?.data?.error || 'Failed to save product.'); }
+    finally { setBusy(false); }
   };
 
-  const handleEdit = (product) => {
-    setFormData(product);
-    setEditingId(product.id);
-    setShowForm(true);
+  const archive = async () => {
+    setBusy(true);
+    try { const response = await cmsAPI.updateProduct(archiveTarget.id, { status: 'archived' }); setProducts((current) => current.map((item) => item.id === archiveTarget.id ? response.data : item)); success('Product archived and removed from the public catalog.'); setArchiveTarget(null); }
+    catch (requestError) { error(requestError.response?.data?.error || 'Failed to archive product.'); }
+    finally { setBusy(false); }
   };
 
-  const handleDelete = async () => {
-    if (!deleteModal) return;
-    try {
-      await cmsAPI.deleteProduct(deleteModal.id);
-      setProducts((prev) => prev.filter((p) => p.id !== deleteModal.id));
-      success('Product deleted');
-      setDeleteModal(null);
-    } catch (err) {
-      console.error('Error deleting product:', err);
-      error('Failed to delete product');
-    }
-  };
-
-  const filteredProducts = products.filter((p) =>
-    p.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <>
-      <TopBar breadcrumb="CMS / Products" />
-      <div className="admin-content">
-        <div className="card">
-          <div className="card-header">
-            <h1 className="card-title">Products Manager</h1>
-            <p className="card-subtitle">Manage your products</p>
-          </div>
-
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center' }}>
-            <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
-              <Search
-                size={16}
-                style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--admin-text-muted)',
-                }}
-              />
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ paddingLeft: '40px' }}
-              />
-            </div>
-            <button className="btn btn-primary" onClick={() => {
-              setEditingId(null);
-              setFormData({ name: '', description: '', image: '', features: [] });
-              setShowForm(true);
-            }}>
-              <Plus size={18} /> Add Product
-            </button>
-          </div>
-
-          {/* Form */}
-          {showForm && (
-            <div style={{
-              background: 'var(--admin-sidebar-bg)',
-              padding: '20px',
-              borderRadius: '8px',
-              marginBottom: '20px',
-              border: '1px solid var(--admin-border)'
-            }}>
-              <h3 style={{ marginBottom: '16px', color: 'white' }}>{editingId ? 'Edit Product' : 'New Product'}</h3>
-              
-              <div className="form-group">
-                <label style={{ color: 'white' }}>Product Name</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-
-              <div className="form-group">
-                <label style={{ color: 'white' }}>Description</label>
-                <textarea
-                  className="form-input"
-                  rows="4"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                />
-              </div>
-
-              <div className="form-group">
-                <label style={{ color: 'white' }}>Product Image</label>
-                <ImageUploader
-                  currentImage={formData.image}
-                  onUpload={(url) => setFormData({ ...formData, image: url })}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-                <button className="btn btn-primary" onClick={handleSave}>
-                  Save Product
-                </button>
-                <button className="btn btn-secondary" onClick={() => {
-                  setShowForm(false);
-                  setEditingId(null);
-                }}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Products Grid */}
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '60px', color: 'var(--admin-text-muted)' }}>
-              Loading products...
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px', color: 'var(--admin-text-muted)' }}>
-              No products found
-            </div>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: '20px'
-            }}>
-              {filteredProducts.map((product) => (
-                <div key={product.id} style={{
-                  border: '1px solid var(--admin-border)',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  transition: 'all 0.2s'
-                }}>
-                  {product.image && (
-                    <img src={product.image} alt={product.name} style={{
-                      width: '100%',
-                      height: '150px',
-                      objectFit: 'cover'
-                    }} />
-                  )}
-                  <div style={{ padding: '16px' }}>
-                    <h4 style={{ marginBottom: '8px' }}>{product.name}</h4>
-                    <p style={{ fontSize: '13px', color: 'var(--admin-text-muted)', marginBottom: '12px' }}>
-                      {product.description?.substring(0, 100)}...
-                    </p>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button
-                        className="btn btn-secondary"
-                        onClick={() => handleEdit(product)}
-                        style={{ flex: 1 }}
-                      >
-                        <Edit size={16} /> Edit
-                      </button>
-                      <button
-                        className="btn btn-secondary"
-                        onClick={() => setDeleteModal({ id: product.id })}
-                        style={{ flex: 1 }}
-                      >
-                        <Trash2 size={16} /> Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <ConfirmModal
-        isOpen={!!deleteModal}
-        onClose={() => setDeleteModal(null)}
-        onConfirm={handleDelete}
-        title="Delete Product"
-        message="Are you sure you want to delete this product?"
-        confirmText="Delete"
-        type="danger"
-      />
-    </>
-  );
-};
-
-export default ProductsManager;
+  const visible = useMemo(() => products.filter((item) => `${item.name} ${item.code}`.toLowerCase().includes(search.toLowerCase())), [products, search]);
+  return <><TopBar breadcrumb="CMS / Products" /><div className="admin-content product-manager-page">
+    <div className="product-manager-heading"><div><h1>Products Manager</h1><p>Every published item appears on the public Products page and has its own detail page.</p></div><button className="btn btn-primary" onClick={() => { setEditingId(null); setFormData(blankProduct()); }}><Plus size={17} />Add product</button></div>
+    <div className="product-manager-toolbar"><Search size={17} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search catalog..." /><span>{products.length} products</span></div>
+    {formData && <ProductForm value={formData} editing={Boolean(editingId)} busy={busy} onChange={setFormData} onCancel={() => { setEditingId(null); setFormData(null); }} onSave={save} />}
+    {loading ? <div className="product-manager-empty">Loading products...</div> : <div className="product-manager-grid">{visible.map((product) => <article className="product-manager-card" key={product.id}>{product.image ? <img src={product.image} alt={product.name} /> : <div className="product-manager-no-image"><Package size={30} /></div>}<div><span className={`product-manager-status is-${product.status}`}>{product.status}</span><h2>{product.name}</h2><small>{product.code || 'No grade supplied'}</small><p>{product.description || 'No description supplied.'}</p><footer><button className="btn btn-secondary" onClick={() => { setEditingId(product.id); setFormData(normalizeProduct(product)); }}><Edit size={15} />Edit</button>{product.status !== 'archived' && <button className="btn btn-secondary" onClick={() => setArchiveTarget(product)}><Archive size={15} />Archive</button>}</footer></div></article>)}{!visible.length && <div className="product-manager-empty">No matching products found.</div>}</div>}
+  </div><ConfirmModal isOpen={Boolean(archiveTarget)} onClose={() => !busy && setArchiveTarget(null)} onConfirm={archive} title="Archive product" message="This product will no longer appear on the public website. Its CMS record will be preserved." confirmText={busy ? 'Archiving...' : 'Archive'} type="danger" /></>;
+}

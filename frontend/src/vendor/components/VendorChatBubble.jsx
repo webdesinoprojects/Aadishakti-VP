@@ -47,7 +47,8 @@ export default function VendorChatBubble() {
   };
 
   return (
-    <div 
+    <div
+      className="vendor-assistant-widget"
       style={{ 
         position: 'fixed', 
         bottom: '30px', 

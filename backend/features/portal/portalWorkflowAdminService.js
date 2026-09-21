@@ -1,5 +1,6 @@
 import { getSupabaseAdminClient, throwOnSupabaseError } from "../../infrastructure/supabase/supabaseClients.js";
 import { badRequest, notFound } from "../../shared/errors.js";
+import { notifyVendorWorkflowChanged } from "./vendorWorkflowEvents.js";
 
 const clean = (value) => String(value ?? "").trim();
 const requireText = (value, label) => {
@@ -24,7 +25,9 @@ export const listAdminPartnerDocuments = () => list("partner_documents", "*,acco
 export const reviewPartnerDocument = (id, input, adminId) => {
   const status = clean(input.status).toLowerCase();
   if (!new Set(["approved", "rejected", "expired"]).has(status)) throw badRequest("Invalid document review status.");
-  return update("partner_documents", id, { status, review_note: clean(input.reviewNote), reviewed_by: adminId, reviewed_at: new Date().toISOString() });
+  const reviewNote = clean(input.reviewNote);
+  if (status === "rejected" && !reviewNote) throw badRequest("A rejection reason is required.");
+  return update("partner_documents", id, { status, review_note: reviewNote, reviewed_by: adminId, reviewed_at: new Date().toISOString() });
 };
 
 export const listAdminReceipts = () => list("portal_receipts", "*,account:portal_accounts(id,role,display_name,email),media:media_assets(url,name,mime_type)");
@@ -38,13 +41,16 @@ export const listAdminCustomerRequests = () => list("customer_requests", "*,acco
 export const reviewCustomerRequest = (id, input, adminId) => {
   const status = clean(input.status).toLowerCase();
   if (!new Set(["in_review", "approved", "rejected", "fulfilled", "closed"]).has(status)) throw badRequest("Invalid customer request status.");
-  return update("customer_requests", id, {
+  const reviewNote = clean(input.reviewNote);
+  if (status === "rejected" && !reviewNote) throw badRequest("A rejection reason is required.");
+  const payload = {
     status,
-    review_note: clean(input.reviewNote),
-    fulfilled_media_id: input.fulfilledMediaId || null,
+    review_note: reviewNote,
     reviewed_by: adminId,
     reviewed_at: new Date().toISOString(),
-  });
+  };
+  if (input.fulfilledMediaId !== undefined) payload.fulfilled_media_id = input.fulfilledMediaId || null;
+  return update("customer_requests", id, payload);
 };
 
 export const listAdminSupportTickets = () => list("portal_support_tickets", "*,account:portal_accounts(id,role,display_name,email),messages:portal_support_messages(*,media:media_assets(url,name))");
@@ -64,9 +70,27 @@ export const replyAsAdmin = async (ticketId, input, adminId) => {
   return data;
 };
 
+const normalizeVendorIds = (input) => Array.isArray(input.vendorAccountIds)
+  ? [...new Set(input.vendorAccountIds.map(clean).filter(Boolean))]
+  : [];
+
+const validateRfqVendors = async (vendorIds, companyCode) => {
+  if (!vendorIds.length) throw badRequest("Select at least one vendor before publishing or assigning an RFQ.");
+  const { data, error } = await getSupabaseAdminClient().from("portal_accounts")
+    .select("id,role,status,mappings:portal_account_companies(company_code)")
+    .in("id", vendorIds);
+  throwOnSupabaseError(error, "validate RFQ vendors");
+  const eligible = (data || []).filter((account) => account.role === "vendor"
+    && account.status === "active"
+    && (!companyCode || account.mappings?.some((mapping) => mapping.company_code === companyCode)));
+  if (eligible.length !== vendorIds.length) throw badRequest("Select only active vendors mapped to the RFQ company.");
+};
+
 export const createRfq = async (input, adminId) => {
   const companyCode = clean(input.companyCode).toUpperCase() || null;
   if (companyCode && !new Set(["AGRPL", "AM", "AMRPL"]).has(companyCode)) throw badRequest("Invalid CIS company.");
+  const vendorIds = normalizeVendorIds(input);
+  await validateRfqVendors(vendorIds, companyCode);
   const { data, error } = await getSupabaseAdminClient().from("rfqs").insert({
     title: requireText(input.title, "RFQ title"),
     description: clean(input.description),
@@ -75,20 +99,33 @@ export const createRfq = async (input, adminId) => {
     unit: clean(input.unit),
     company_code: companyCode,
     response_due_at: input.responseDueAt || null,
-    status: clean(input.status) || "published",
+    status: "published",
     created_by: adminId,
   }).select("*").single();
   throwOnSupabaseError(error, "create RFQ");
+  try {
+    await assignRfq(data.id, { vendorAccountIds: vendorIds });
+  } catch (assignmentError) {
+    const { error: cleanupError } = await getSupabaseAdminClient().from("rfqs").delete().eq("id", data.id);
+    if (cleanupError) throw new Error(`RFQ ${data.rfq_reference} was created but vendor assignment failed. Review it in the RFQ register.`);
+    throw assignmentError;
+  }
   return data;
 };
 
 export const listAdminRfqs = () => list("rfqs", "*,assignments:rfq_assignments(*,vendor:portal_accounts(id,display_name,email),quotation:vendor_quotations(*))");
 export const assignRfq = async (rfqId, input) => {
-  const vendorIds = Array.isArray(input.vendorAccountIds) ? [...new Set(input.vendorAccountIds.map(clean).filter(Boolean))] : [];
-  if (!vendorIds.length) throw badRequest("At least one vendor account is required.");
+  const vendorIds = normalizeVendorIds(input);
+  const { data: rfq, error: rfqError } = await getSupabaseAdminClient().from("rfqs")
+    .select("id,company_code,status").eq("id", rfqId).maybeSingle();
+  throwOnSupabaseError(rfqError, "load RFQ");
+  if (!rfq) throw notFound("RFQ");
+  if (rfq.status !== "published") throw badRequest("Only published RFQs can be assigned to vendors.");
+  await validateRfqVendors(vendorIds, rfq.company_code);
   const rows = vendorIds.map((vendorId) => ({ rfq_id: rfqId, vendor_account_id: vendorId }));
   const { data, error } = await getSupabaseAdminClient().from("rfq_assignments").upsert(rows, { onConflict: "rfq_id,vendor_account_id" }).select("*");
   throwOnSupabaseError(error, "assign RFQ");
+  for (const assignment of data || []) notifyVendorWorkflowChanged(assignment.vendor_account_id);
   return data || [];
 };
 
@@ -97,7 +134,11 @@ export const reviewQuotation = async (id, input) => {
   const status = clean(input.status).toLowerCase();
   if (!new Set(["under_review", "accepted", "rejected"]).has(status)) throw badRequest("Invalid quotation status.");
   const quotation = await update("vendor_quotations", id, { status });
-  await getSupabaseAdminClient().from("rfq_assignments").update({ status: status === "accepted" ? "awarded" : status === "rejected" ? "not_awarded" : "responded" }).eq("id", quotation.rfq_assignment_id);
+  const { data: assignment, error } = await getSupabaseAdminClient().from("rfq_assignments")
+    .update({ status: status === "accepted" ? "awarded" : status === "rejected" ? "not_awarded" : "responded" })
+    .eq("id", quotation.rfq_assignment_id).select("vendor_account_id").single();
+  throwOnSupabaseError(error, "update RFQ assignment status");
+  notifyVendorWorkflowChanged(assignment.vendor_account_id);
   return quotation;
 };
 

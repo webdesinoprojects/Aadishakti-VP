@@ -1,0 +1,113 @@
+.custom-alloy-admin {
+  display: grid;
+  gap: 20px;
+  padding-bottom: 100px;
+}
+
+.custom-alloy-admin-heading,
+.custom-alloy-section-title,
+.custom-alloy-savebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.custom-alloy-admin-heading h1 {
+  margin: 0 0 4px;
+  font-size: 28px;
+}
+
+.custom-alloy-admin-heading p,
+.custom-alloy-savebar span {
+  margin: 0;
+  color: var(--admin-text-muted);
+  font-size: 13px;
+}
+
+.custom-alloy-section {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.custom-alloy-section .form-group {
+  min-width: 0;
+}
+
+.custom-alloy-list {
+  display: grid;
+  gap: 12px;
+}
+
+.custom-alloy-row {
+  display: grid;
+  align-items: end;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 7px;
+  background: var(--admin-bg);
+}
+
+.custom-alloy-row .form-group {
+  margin-bottom: 0;
+}
+
+.custom-alloy-element-row {
+  grid-template-columns: 20px minmax(130px, .7fr) minmax(180px, 1.2fr) minmax(150px, 1fr) 42px;
+}
+
+.custom-alloy-package-row {
+  grid-template-columns: 20px minmax(180px, .8fr) minmax(240px, 1.5fr) 42px;
+}
+
+.custom-alloy-grip {
+  align-self: center;
+  color: var(--admin-text-muted);
+}
+
+.custom-alloy-delete {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+}
+
+.custom-alloy-empty,
+.custom-alloy-loading {
+  padding: 44px;
+  text-align: center;
+  color: var(--admin-text-muted);
+}
+
+.custom-alloy-savebar {
+  position: sticky;
+  bottom: 18px;
+  z-index: 5;
+  max-width: 1200px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, .96);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(18, 24, 40, .12);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 900px) {
+  .custom-alloy-element-row,
+  .custom-alloy-package-row {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-alloy-grip {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .custom-alloy-admin-heading,
+  .custom-alloy-section-title,
+  .custom-alloy-savebar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

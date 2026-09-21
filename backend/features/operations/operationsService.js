@@ -2,7 +2,8 @@ import crypto from "crypto";
 import { badRequest, notFound } from "../../shared/errors.js";
 import { getSupabaseAdminClient, throwOnSupabaseError } from "../../infrastructure/supabase/supabaseClients.js";
 import { uploadMediaBuffer } from "../media/mediaService.js";
-import { findOperationRow, insertOperationRow, listOperationRows, updateOperationRow } from "./operationsRepository.js";
+import { findPortalAccountById } from "../portal/portalAccountRepository.js";
+import { findOperationRow, insertOperationRow, insertOperationRows, listOperationRows, updateOperationRow } from "./operationsRepository.js";
 
 const text = (value) => String(value ?? "").trim();
 const titleStatus = (value) => String(value || "").replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -144,8 +145,14 @@ export const reviewProfileUpdate = async (id, input, adminId) => {
   const action = text(input.action || input.status).toLowerCase();
   if (!new Set(["approved", "approve", "rejected", "reject"]).has(action)) throw badRequest("Profile update action must approve or reject.");
   const status = action.startsWith("approve") ? "approved" : "rejected";
+  const reviewNote = text(input.reviewNote);
+  if (status === "rejected" && !reviewNote) throw badRequest("A rejection reason is required.");
+  if (reviewNote.length > 2000) throw badRequest("The review note must be 2,000 characters or fewer.");
+  const current = await findOperationRow("profile_update_requests", id);
+  if (!current) throw notFound("Profile update request");
+  if (current.status !== "pending") throw badRequest("This profile update request has already been reviewed.");
   const row = await updateOperationRow("profile_update_requests", id, {
-    status, review_note: text(input.reviewNote), reviewed_by: adminId, reviewed_at: new Date().toISOString(),
+    status, review_note: reviewNote, reviewed_by: adminId, reviewed_at: new Date().toISOString(),
   });
   if (!row) throw notFound("Profile update request");
   return profileUpdateFromDb(row);
@@ -180,6 +187,26 @@ export const submitReconciliation = async (input, file, account) => {
   return reconciliationFromDb(row);
 };
 
+export const submitReconciliations = async (input, files, account) => {
+  if (!Array.isArray(files) || files.length === 0) throw badRequest("At least one statement document is required.");
+  const quarter = requireText(input.quarter, "Quarter");
+  const mediaItems = await Promise.all(files.map((file) => uploadMediaBuffer({
+    buffer: file.buffer,
+    originalName: file.originalname,
+    mimeType: file.mimetype,
+    folder: "/aadishakti/reconciliations",
+    tags: ["reconciliation", account.role],
+  })));
+  const rows = await insertOperationRows("reconciliations", files.map((file, index) => ({
+    partner_id: account.cardCode || account.sapCardCode || account.id,
+    partner_role: account.role,
+    quarter,
+    document_media_id: mediaItems[index].id,
+    original_name: file.originalname,
+  })), reconciliationColumns);
+  return rows.map(reconciliationFromDb);
+};
+
 export const listReconciliations = async (query = {}) =>
   (await listOperationRows("reconciliations", { columns: reconciliationColumns, status: query.status })).map(reconciliationFromDb);
 
@@ -195,9 +222,14 @@ export const reviewReconciliation = async (id, input, adminId) => {
   const action = text(input.action || "verify").toLowerCase();
   if (!new Set(["verify", "verified", "reject", "rejected"]).has(action)) throw badRequest("Reconciliation action must verify or reject.");
   const verified = action.startsWith("verif");
+  const reviewNote = text(input.reviewNote);
+  if (!verified && !reviewNote) throw badRequest("A rejection reason is required.");
+  const current = await findOperationRow("reconciliations", id);
+  if (!current) throw notFound("Reconciliation");
+  if (current.is_locked) throw badRequest("This reconciliation is verified and permanently locked.");
   const row = await updateOperationRow("reconciliations", id, {
     status: verified ? "verified" : "rejected",
-    review_note: text(input.reviewNote),
+    review_note: reviewNote,
     verified_by: adminId,
     verified_at: new Date().toISOString(),
     is_locked: verified,
@@ -209,6 +241,7 @@ export const reviewReconciliation = async (id, input, adminId) => {
 const logisticsFromDb = (row) => ({
   id: row.id, enquiryId: row.enquiry_reference, vendorId: row.vendor_id, vendorName: row.vendor_name,
   vendorAccountId: row.vendor_account_id, customerAccountId: row.customer_account_id,
+  sourceQuotationId: row.source_quotation_id,
   customerName: row.customer_name, product: row.product, amount: row.amount, status: row.status,
   tracking: row.tracking, chatHistory: row.chat_history, podStatus: row.pod_status,
   podImage: row.pod_image_url, paymentProof: row.payment_proof_url, createdAt: row.created_at, updatedAt: row.updated_at,
@@ -221,18 +254,46 @@ export const getLogisticsOrder = async (id) => {
   return logisticsFromDb(row);
 };
 export const createLogisticsOrder = async (input, adminId) => {
+  const client = getSupabaseAdminClient();
+  const customer = await findPortalAccountById(requireText(input.customerAccountId, "Customer account"));
+  if (customer?.role !== "customer" || customer.status !== "active") throw badRequest("Select an active customer account.");
+
+  let quotation = null;
+  if (text(input.sourceQuotationId)) {
+    const { data, error } = await client.from("vendor_quotations")
+      .select("id,status,assignment:rfq_assignments(vendor_account_id,rfq:rfqs(rfq_reference,product,company_code))")
+      .eq("id", input.sourceQuotationId).maybeSingle();
+    throwOnSupabaseError(error, "load source quotation");
+    if (!data || data.status !== "accepted") throw badRequest("Select an accepted quotation.");
+    quotation = data;
+    if (text(input.vendorAccountId) && input.vendorAccountId !== quotation.assignment?.vendor_account_id) {
+      throw badRequest("The selected vendor does not match the accepted quotation.");
+    }
+    const companyCode = quotation.assignment?.rfq?.company_code;
+    if (companyCode && !customer.mappings?.some((mapping) => mapping.company_code === companyCode)) {
+      throw badRequest(`The customer is not mapped to ${companyCode}.`);
+    }
+  }
+
+  const vendorAccountId = quotation?.assignment?.vendor_account_id || requireText(input.vendorAccountId, "Vendor account");
+  const vendor = await findPortalAccountById(vendorAccountId);
+  if (vendor?.role !== "vendor" || vendor.status !== "active") throw badRequest("Select an active vendor account.");
+  const primaryVendorMapping = vendor.mappings?.find((mapping) => mapping.is_primary) || vendor.mappings?.[0];
+  const amount = text(input.amount);
+  if (amount && (!Number.isFinite(Number(amount)) || Number(amount) < 0)) throw badRequest("Order amount must be a non-negative number.");
   const now = new Date().toISOString();
-  const id = `ORD-${crypto.randomInt(10000, 100000)}`;
+  const id = `ORD-${crypto.randomInt(10000000, 100000000)}`;
   const row = await insertOperationRow("logistics_orders", {
     id,
-    enquiry_reference: text(input.enquiryId) || null,
-    vendor_id: text(input.vendorId) || null,
-    vendor_account_id: text(input.vendorAccountId) || null,
-    customer_account_id: text(input.customerAccountId) || null,
-    vendor_name: text(input.vendorName),
-    customer_name: text(input.customerName),
-    product: text(input.product),
-    amount: text(input.amount || "0"),
+    enquiry_reference: quotation?.assignment?.rfq?.rfq_reference || text(input.enquiryId) || null,
+    ...(quotation ? { source_quotation_id: quotation.id } : {}),
+    vendor_id: primaryVendorMapping?.sap_card_code || null,
+    vendor_account_id: vendor.id,
+    customer_account_id: customer.id,
+    vendor_name: vendor.display_name,
+    customer_name: customer.display_name,
+    product: requireText(input.product || quotation?.assignment?.rfq?.product, "Product"),
+    amount,
     tracking: [
       { stage: "Order Confirmed", timestamp: now, proofImages: [], completed: true },
       { stage: "Packed", timestamp: null, proofImages: [], completed: false },

@@ -20,6 +20,12 @@ export const insertOperationRow = async (table, payload, columns = "*") => {
   return data;
 };
 
+export const insertOperationRows = async (table, payloads, columns = "*") => {
+  const { data, error } = await getSupabaseAdminClient().from(table).insert(payloads).select(columns);
+  throwOnSupabaseError(error, `create ${table}`);
+  return data || [];
+};
+
 export const updateOperationRow = async (table, id, payload, columns = "*") => {
   const { data, error } = await getSupabaseAdminClient().from(table).update(payload).eq("id", id).select(columns).maybeSingle();
   throwOnSupabaseError(error, `update ${table}`);
@@ -30,4 +36,3 @@ export const upsertLogisticsOrders = async (rows) => {
   const { error } = await getSupabaseAdminClient().from("logistics_orders").upsert(rows, { onConflict: "id" });
   throwOnSupabaseError(error, "import logistics orders");
 };
-

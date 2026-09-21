@@ -24,6 +24,7 @@ import {
   submitPartnerRegistration,
   submitProfileUpdate,
   submitReconciliation,
+  submitReconciliations,
   updateLogisticsOrder,
 } from "./operationsService.js";
 
@@ -39,10 +40,10 @@ const useSupabaseOrContinue = (_req, _res, next) => {
 };
 const adminId = (req) => req.admin.id || req.admin.sub;
 
-const documentExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".pdf", ".doc", ".docx"]);
+const documentExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".pdf", ".doc", ".docx", ".xls", ".xlsx"]);
 const documentUpload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024, files: 3 },
+  limits: { fileSize: 10 * 1024 * 1024, files: 5 },
   fileFilter: (_req, file, callback) => {
     const allowed = documentExtensions.has(path.extname(file.originalname).toLowerCase());
     callback(allowed ? null : badRequest("Unsupported document type."), allowed);
@@ -134,10 +135,16 @@ portalOperationsRoutes.post(
 );
 portalOperationsRoutes.post(
   "/reconciliations",
-  documentUpload.single("document"),
+  documentUpload.fields([
+    { name: "documents", maxCount: 5 },
+    { name: "document", maxCount: 1 },
+  ]),
   asyncHandler(async (req, res) => {
-    const item = await submitReconciliation(req.body || {}, req.file, req.portalAccount);
-    res.status(201).json({ data: item });
+    const files = [...(req.files?.documents || []), ...(req.files?.document || [])];
+    const items = files.length === 1
+      ? [await submitReconciliation(req.body || {}, files[0], req.portalAccount)]
+      : await submitReconciliations(req.body || {}, files, req.portalAccount);
+    res.status(201).json({ data: items });
   }),
 );
 
