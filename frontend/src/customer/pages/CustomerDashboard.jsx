@@ -3,20 +3,29 @@ import { Link } from 'react-router-dom';
 import CustomerDataState from '../components/CustomerDataState';
 import CustomerPageHeader from '../components/CustomerPageHeader';
 import { useCustomerDashboard } from '../hooks/useCustomerApi';
-import { formatAmount, formatSapDate, UNAVAILABLE_VALUE, UNKNOWN_TRANSACTION_CURRENCY_NOTE } from '../utils/customerFormatters';
+import {
+  formatAmount,
+  formatCompactCurrency,
+  formatSapDate,
+  UNAVAILABLE_VALUE,
+  UNKNOWN_TRANSACTION_CURRENCY_NOTE,
+} from '../utils/customerFormatters';
 
 const formatCount = (value) => typeof value === 'number' ? value : UNAVAILABLE_VALUE;
 
-function StatCard({ title, value, subtitle, icon: Icon }) {
+function StatCard({ title, value, exactValue, subtitle, icon: Icon, tone = 'default', featured = false }) {
   return (
-    <div className="customer-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: value === UNAVAILABLE_VALUE ? '18px' : '28px', fontWeight: 700 }}>{value}</h3>
-        <Icon size={24} color="var(--text-muted)" />
+    <article className={`customer-dashboard-stat customer-dashboard-stat--${tone}${featured ? ' is-featured' : ''}`}>
+      <div className="customer-dashboard-stat-heading">
+        <p>{title}</p>
+        <span className="customer-dashboard-stat-icon"><Icon size={20} /></span>
       </div>
-      <p style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>{title}</p>
-      <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{subtitle}</p>
-    </div>
+      <strong className={`customer-dashboard-stat-value${value === UNAVAILABLE_VALUE ? ' is-unavailable' : ''}`}>
+        {value}
+      </strong>
+      {exactValue && <p className="customer-dashboard-stat-exact">Exact: {exactValue}</p>}
+      <p className="customer-dashboard-stat-note">{subtitle}</p>
+    </article>
   );
 }
 
@@ -31,7 +40,7 @@ export default function CustomerDashboard() {
   ].filter(Boolean);
 
   return (
-    <div style={{ padding: '40px' }}>
+    <div className="customer-dashboard-page">
       <CustomerPageHeader title="Customer Dashboard" subtitle="Live records exposed for your account by CIS." />
 
       {unavailableSections.length > 0 && (
@@ -40,20 +49,36 @@ export default function CustomerDashboard() {
         </p>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+      <section className="customer-dashboard-grid" aria-label="Account summary">
         <StatCard
           title="Total Due"
-          value={formatAmount(data.kpis.outstandingInvoiceAmount, data.currency)}
+          value={formatCompactCurrency(data.kpis.outstandingInvoiceAmount, data.currency)}
+          exactValue={data.completeness.outstandingInvoiceAmount
+            ? formatAmount(data.kpis.outstandingInvoiceAmount, data.currency)
+            : null}
           subtitle={data.completeness.outstandingInvoiceAmount ? 'Supplied directly by CIS' : 'Total due unavailable from CIS'}
           icon={CircleDollarSign}
+          tone="financial"
+          featured
         />
         <StatCard
           title="Overdue Amount"
-          value={formatAmount(data.kpis.overdueInvoiceAmount, data.currency)}
+          value={formatCompactCurrency(data.kpis.overdueInvoiceAmount, data.currency)}
+          exactValue={data.completeness.overdueInvoiceAmount
+            ? formatAmount(data.kpis.overdueInvoiceAmount, data.currency)
+            : null}
           subtitle={data.completeness.overdueInvoiceAmount ? 'Supplied directly by CIS' : 'Overdue amount unavailable from CIS'}
           icon={TriangleAlert}
+          tone="overdue"
+          featured
         />
-        <StatCard title="Sales Orders" value={UNAVAILABLE_VALUE} subtitle="No Sales Order API is supplied by CIS" icon={PackageX} />
+        <StatCard
+          title="Sales Orders"
+          value={UNAVAILABLE_VALUE}
+          subtitle="No Sales Order API is supplied by CIS"
+          icon={PackageX}
+          tone="muted"
+        />
         <StatCard
           title="Current Open AR Invoices"
           value={formatCount(data.kpis.openInvoices)}
@@ -72,15 +97,17 @@ export default function CustomerDashboard() {
           subtitle={data.availability.payments ? 'Not-cancelled records exposed by CIS' : 'Payment data unavailable'}
           icon={CreditCard}
         />
-      </div>
+      </section>
 
-      <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '30px' }}>
-        {UNKNOWN_TRANSACTION_CURRENCY_NOTE}
-      </p>
+      <p className="customer-dashboard-currency-note">{UNKNOWN_TRANSACTION_CURRENCY_NOTE}</p>
 
-      <div className="customer-card" style={{ padding: 0 }}>
-        <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Recent Current Open Invoices</h3>
+      <div className="customer-card customer-dashboard-recent">
+        <div className="customer-dashboard-recent-heading">
+          <div>
+            <p>Invoices</p>
+            <h3>Recent Current Open Invoices</h3>
+          </div>
+          <Link to="/customer/invoices">View all invoices →</Link>
         </div>
         <table className="customer-table">
           <thead><tr><th>Invoice Number</th><th>Date</th><th>Due Date</th><th>Amount</th></tr></thead>
@@ -100,11 +127,6 @@ export default function CustomerDashboard() {
             )}
           </tbody>
         </table>
-        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)' }}>
-          <Link to="/customer/invoices" style={{ color: 'var(--red-core)', fontWeight: 600, textDecoration: 'none' }}>
-            View current open invoices →
-          </Link>
-        </div>
       </div>
     </div>
   );
