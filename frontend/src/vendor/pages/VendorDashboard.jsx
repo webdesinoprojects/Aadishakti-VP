@@ -12,18 +12,18 @@ import {
 
 const count = (value) => typeof value === 'number' ? value : UNAVAILABLE_VALUE;
 
-function Kpi({ label, value, detail, note, icon: Icon, to, linkLabel = 'View records' }) {
+function Kpi({ label, value, detail, note, icon: Icon, to, linkLabel = 'View records', tone = 'default' }) {
   return (
-    <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
-      <Icon size={100} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-14px', color: 'var(--red-core)', opacity: 0.06 }} />
-      <div style={{ position: 'relative' }}>
-        <div className="vendor-kpi-value">{value}</div>
-        {detail && <div className="vendor-kpi-detail">Exact: {detail}</div>}
+    <article className={`vendor-kpi-card vendor-kpi-card--${tone}`}>
+      <div className="vendor-kpi-heading">
         <div className="vendor-kpi-label">{label}</div>
-        <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '8px' }}>{note}</div>
-        <Link to={to} className="vendor-kpi-link">{linkLabel}</Link>
+        <span className="vendor-kpi-icon"><Icon size={20} /></span>
       </div>
-    </div>
+      <div className={`vendor-kpi-value${value === UNAVAILABLE_VALUE ? ' is-unavailable' : ''}`}>{value}</div>
+      {detail && <div className="vendor-kpi-detail">Exact: {detail}</div>}
+      <div className="vendor-kpi-note">{note}</div>
+      <Link to={to} className="vendor-kpi-link">{linkLabel}</Link>
+    </article>
   );
 }
 
@@ -61,11 +61,15 @@ export default function VendorDashboard() {
       <section className="vendor-kpi-grid">
         <Kpi
           label="Current Account Balance"
-          value={formatVendorAmount(profile.data?.accountBalance, profile.data?.currency)}
+          value={formatCompactVendorAmount(profile.data?.accountBalance, profile.data?.currency)}
+          detail={profile.data?.accountBalance !== null && profile.data?.accountBalance !== undefined
+            ? formatVendorAmount(profile.data.accountBalance, profile.data.currency)
+            : null}
           note="Vendor master balance supplied by CIS"
           icon={CircleDollarSign}
           to="/vendor/profile"
           linkLabel="View profile"
+          tone="balance"
         />
         <Kpi
           label="Total Due"
@@ -77,6 +81,7 @@ export default function VendorDashboard() {
           icon={CircleDollarSign}
           to="/vendor/profile"
           linkLabel="View profile"
+          tone="due"
         />
         <Kpi
           label="Overdue Amount"
@@ -87,6 +92,7 @@ export default function VendorDashboard() {
           note="Vendor overdue amount supplied directly by CIS"
           icon={TriangleAlert}
           to="/vendor/invoices"
+          tone="overdue"
         />
         <Kpi
           label="Overdue Open AP Invoices"
@@ -94,6 +100,7 @@ export default function VendorDashboard() {
           note="Count based on CIS invoice due dates"
           icon={ClockAlert}
           to="/vendor/invoices"
+          tone="warning"
         />
         <Kpi label="Current Open Purchase Orders" value={count(data.kpis.openPurchaseOrders)} note="Not full history" icon={ShoppingCart} to="/vendor/orders" />
         <Kpi label="Current Open AP Invoices" value={count(data.kpis.openApInvoices)} note="Not full history" icon={Receipt} to="/vendor/invoices" />

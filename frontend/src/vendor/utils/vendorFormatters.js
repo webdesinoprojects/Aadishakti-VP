@@ -33,6 +33,18 @@ export const formatCompactVendorAmount = (value, currency) => {
       return `${sign}₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(absoluteValue / 100_000)} L`;
     }
   }
+  if (code) {
+    try {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: code,
+        notation: 'compact',
+        maximumFractionDigits: 2,
+      }).format(value).replace(/(\d)([A-Za-z])/, '$1 $2');
+    } catch {
+      // Fall through to the standard amount formatter.
+    }
+  }
   return formatVendorAmount(value, code);
 };
 
