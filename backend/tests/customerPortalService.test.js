@@ -53,6 +53,8 @@ test("Customer profile is exact-filtered by server account and normalized", asyn
           licTradNum: null,
           currency: "INR",
           balance: "125.5",
+          totalDue: "975.25",
+          overDueAmount: "225.75",
           groupName: "Domestic",
           slpName: "Manager",
           secret: "do-not-leak",
@@ -64,6 +66,8 @@ test("Customer profile is exact-filtered by server account and normalized", asyn
   assert.deepEqual(requests, [{ companyCode: "AGRPL", resource: "customer" }]);
   assert.equal(profile.accountReference, "CUSTOMER-A");
   assert.equal(profile.accountBalance, 125.5);
+  assert.equal(profile.totalDue, 975.25);
+  assert.equal(profile.overdueAmount, 225.75);
   assert.equal(profile.phone, null);
   assert.doesNotMatch(JSON.stringify(profile), /secret|Other Customer/);
 });
@@ -141,6 +145,13 @@ test("Customer dashboard keeps successful sections when one CIS resource fails",
         if (resource === "delivery") throw new CisIntegrationError("CIS_UPSTREAM_ERROR", "failed");
         if (resource === "arinvoice") return [document(), document({ docEntry: "2", docNum: "1002" })];
         if (resource === "incomingpayment") return [payment()];
+        if (resource === "customer") return [{
+          cardCode: "CUSTOMER-A",
+          cardName: "Customer A",
+          currency: "INR",
+          totalDue: "875.50",
+          overDueAmount: "125.25",
+        }];
         return [];
       },
     },
@@ -151,7 +162,11 @@ test("Customer dashboard keeps successful sections when one CIS resource fails",
   assert.equal(dashboard.availability.deliveries, false);
   assert.equal(dashboard.availability.payments, true);
   assert.equal(dashboard.kpis.openInvoices, 2);
-  assert.equal(dashboard.kpis.outstandingInvoiceAmount, null);
+  assert.equal(dashboard.kpis.outstandingInvoiceAmount, 875.5);
+  assert.equal(dashboard.kpis.overdueInvoiceAmount, 125.25);
+  assert.equal(dashboard.completeness.outstandingInvoiceAmount, true);
+  assert.equal(dashboard.completeness.overdueInvoiceAmount, true);
+  assert.equal(dashboard.currency, "INR");
   assert.equal(dashboard.recentInvoices.length, 2);
 });
 

@@ -42,6 +42,8 @@ test("CIS mappers parse documented string fields and minimize output", () => {
     licTradNum: null,
     currency: "INR",
     balance: "125.50",
+    totalDue: "975.25",
+    overDueAmount: "225.75",
     groupName: "Domestic",
     slpName: "Owner",
     privateField: "must-not-leak",
@@ -55,6 +57,8 @@ test("CIS mappers parse documented string fields and minimize output", () => {
     taxReference: null,
     currency: "INR",
     accountBalance: 125.5,
+    totalDue: 975.25,
+    overdueAmount: 225.75,
     groupName: "Domestic",
     relationshipManager: "Owner",
   });

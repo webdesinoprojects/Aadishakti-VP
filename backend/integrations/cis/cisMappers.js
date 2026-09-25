@@ -45,6 +45,8 @@ export const toCisBusinessPartnerProfile = (record = {}) => ({
   taxReference: optionalString(record.licTradNum),
   currency: optionalString(record.currency),
   accountBalance: optionalNumber(record.balance),
+  totalDue: optionalNumber(record.totalDue),
+  overdueAmount: optionalNumber(record.overDueAmount),
   groupName: optionalString(record.groupName),
   relationshipManager: optionalString(record.slpName),
 });

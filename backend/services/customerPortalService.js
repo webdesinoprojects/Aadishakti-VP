@@ -71,16 +71,24 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
   const getOrder = async () => { throw new CustomerPortalFeatureUnavailableError(); };
 
   const getInvoices = async (account, options) => {
-    const invoices = await loadInvoices(account);
+    const [invoices, profileResult] = await Promise.all([
+      loadInvoices(account),
+      getProfile(account).then(
+        (profile) => ({ profile }),
+        () => ({ profile: null }),
+      ),
+    ]);
+    const profile = profileResult.profile;
     return paginatePortalRecords(invoices, options, {
       supported: true,
       scope: "current-open",
       summary: {
         openCount: invoices.length,
-        outstandingAmount: null,
-        outstandingAmountComplete: false,
-        overdueAmount: null,
-        overdueAmountComplete: false,
+        outstandingAmount: profile?.totalDue ?? null,
+        outstandingAmountComplete: profile?.totalDue !== null && profile?.totalDue !== undefined,
+        overdueAmount: profile?.overdueAmount ?? null,
+        overdueAmountComplete: profile?.overdueAmount !== null && profile?.overdueAmount !== undefined,
+        currency: profile?.currency ?? null,
       },
     });
   };
@@ -129,17 +137,19 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
   );
 
   const getDashboard = async (account) => {
-    const [invoiceResult, deliveryResult, paymentResult] = await Promise.allSettled([
+    const [invoiceResult, deliveryResult, paymentResult, profileResult] = await Promise.allSettled([
       loadInvoices(account),
       loadDeliveries(account),
       loadPayments(account),
+      getProfile(account),
     ]);
-    const results = [invoiceResult, deliveryResult, paymentResult];
+    const results = [invoiceResult, deliveryResult, paymentResult, profileResult];
     if (results.every((result) => result.status === "rejected")) throw invoiceResult.reason;
 
     const invoices = invoiceResult.status === "fulfilled" ? invoiceResult.value : null;
     const deliveries = deliveryResult.status === "fulfilled" ? deliveryResult.value : null;
     const payments = paymentResult.status === "fulfilled" ? paymentResult.value : null;
+    const profile = profileResult.status === "fulfilled" ? profileResult.value : null;
 
     return {
       capabilities: { orders: false, transactionDetails: false, lineItems: false },
@@ -153,12 +163,16 @@ export const createCustomerPortalService = ({ cisClient = createCisClient() } = 
         totalOrders: null,
         openOrders: null,
         openInvoices: invoices?.length ?? null,
-        outstandingInvoiceAmount: null,
-        overdueInvoiceAmount: null,
+        outstandingInvoiceAmount: profile?.totalDue ?? null,
+        overdueInvoiceAmount: profile?.overdueAmount ?? null,
         currentDeliveryDocuments: deliveries?.length ?? null,
         incomingPayments: payments?.length ?? null,
       },
-      completeness: { outstandingInvoiceAmount: false, overdueInvoiceAmount: false },
+      completeness: {
+        outstandingInvoiceAmount: profile?.totalDue !== null && profile?.totalDue !== undefined,
+        overdueInvoiceAmount: profile?.overdueAmount !== null && profile?.overdueAmount !== undefined,
+      },
+      currency: profile?.currency ?? null,
       recentOrders: [],
       recentInvoices: invoices ? [...invoices].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5) : [],
       charts: { monthlyOrderValue: [], orderStatus: [] },

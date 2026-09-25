@@ -1,4 +1,4 @@
-import { CreditCard, PackageX, Receipt, Truck } from 'lucide-react';
+import { CircleDollarSign, CreditCard, PackageX, Receipt, TriangleAlert, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CustomerDataState from '../components/CustomerDataState';
 import CustomerPageHeader from '../components/CustomerPageHeader';
@@ -41,6 +41,18 @@ export default function CustomerDashboard() {
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+        <StatCard
+          title="Total Due"
+          value={formatAmount(data.kpis.outstandingInvoiceAmount, data.currency)}
+          subtitle={data.completeness.outstandingInvoiceAmount ? 'Supplied directly by CIS' : 'Total due unavailable from CIS'}
+          icon={CircleDollarSign}
+        />
+        <StatCard
+          title="Overdue Amount"
+          value={formatAmount(data.kpis.overdueInvoiceAmount, data.currency)}
+          subtitle={data.completeness.overdueInvoiceAmount ? 'Supplied directly by CIS' : 'Overdue amount unavailable from CIS'}
+          icon={TriangleAlert}
+        />
         <StatCard title="Sales Orders" value={UNAVAILABLE_VALUE} subtitle="No Sales Order API is supplied by CIS" icon={PackageX} />
         <StatCard
           title="Current Open AR Invoices"
