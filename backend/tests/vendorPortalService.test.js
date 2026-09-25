@@ -83,6 +83,8 @@ test("Vendor profile is read-only, normalized, and does not leak raw fields", as
         licTradNum: null,
         currency: "INR",
         balance: "0",
+        totalDue: "214815365.49",
+        overDueAmount: "214815365.49",
         groupName: "Supplier",
         slpName: null,
         bankAccount: "must-not-leak",
@@ -92,6 +94,8 @@ test("Vendor profile is read-only, normalized, and does not leak raw fields", as
   const profile = await service.getProfile(vendor);
   assert.equal(profile.accountReference, "VENDOR-A");
   assert.equal(profile.accountBalance, 0);
+  assert.equal(profile.totalDue, 214815365.49);
+  assert.equal(profile.overdueAmount, 214815365.49);
   assert.doesNotMatch(JSON.stringify(profile), /bankAccount/);
 });
 

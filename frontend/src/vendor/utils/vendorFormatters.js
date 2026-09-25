@@ -18,6 +18,24 @@ export const formatVendorAmount = (value, currency) => {
   return new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 };
 
+export const formatCompactVendorAmount = (value, currency) => {
+  if (!finite(value)) return UNAVAILABLE_VALUE;
+  const code = typeof currency === 'string' && /^[A-Z]{3}$/.test(currency.trim().toUpperCase())
+    ? currency.trim().toUpperCase()
+    : null;
+  if (code === 'INR') {
+    const absoluteValue = Math.abs(value);
+    const sign = value < 0 ? '-' : '';
+    if (absoluteValue >= 10_000_000) {
+      return `${sign}₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(absoluteValue / 10_000_000)} Cr`;
+    }
+    if (absoluteValue >= 100_000) {
+      return `${sign}₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(absoluteValue / 100_000)} L`;
+    }
+  }
+  return formatVendorAmount(value, code);
+};
+
 export const formatVendorDate = (value) => {
   if (typeof value !== 'string') return UNAVAILABLE_VALUE;
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());

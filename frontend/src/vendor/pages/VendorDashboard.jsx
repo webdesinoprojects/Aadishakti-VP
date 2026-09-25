@@ -1,17 +1,24 @@
-import { CircleDollarSign, ClockAlert, FileCheck2, Receipt, ShoppingCart, Wallet } from 'lucide-react';
+import { CircleDollarSign, ClockAlert, FileCheck2, Receipt, ShoppingCart, TriangleAlert, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import VendorDataState from '../components/VendorDataState';
 import { useVendorDashboard, useVendorProfile } from '../hooks/useVendorApi';
-import { formatVendorAmount, formatVendorDate, UNAVAILABLE_VALUE, UNKNOWN_CURRENCY_NOTE } from '../utils/vendorFormatters';
+import {
+  formatCompactVendorAmount,
+  formatVendorAmount,
+  formatVendorDate,
+  UNAVAILABLE_VALUE,
+  UNKNOWN_CURRENCY_NOTE,
+} from '../utils/vendorFormatters';
 
 const count = (value) => typeof value === 'number' ? value : UNAVAILABLE_VALUE;
 
-function Kpi({ label, value, note, icon: Icon, to, linkLabel = 'View records' }) {
+function Kpi({ label, value, detail, note, icon: Icon, to, linkLabel = 'View records' }) {
   return (
     <div className="vendor-kpi-card" style={{ position: 'relative', overflow: 'hidden' }}>
       <Icon size={100} strokeWidth={1} style={{ position: 'absolute', bottom: '-20px', right: '-14px', color: 'var(--red-core)', opacity: 0.06 }} />
       <div style={{ position: 'relative' }}>
         <div className="vendor-kpi-value">{value}</div>
+        {detail && <div className="vendor-kpi-detail">Exact: {detail}</div>}
         <div className="vendor-kpi-label">{label}</div>
         <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '8px' }}>{note}</div>
         <Link to={to} className="vendor-kpi-link">{linkLabel}</Link>
@@ -61,6 +68,27 @@ export default function VendorDashboard() {
           linkLabel="View profile"
         />
         <Kpi
+          label="Total Due"
+          value={formatCompactVendorAmount(profile.data?.totalDue, profile.data?.currency)}
+          detail={profile.data?.totalDue !== null && profile.data?.totalDue !== undefined
+            ? formatVendorAmount(profile.data.totalDue, profile.data.currency)
+            : null}
+          note="Vendor total due supplied directly by CIS"
+          icon={CircleDollarSign}
+          to="/vendor/profile"
+          linkLabel="View profile"
+        />
+        <Kpi
+          label="Overdue Amount"
+          value={formatCompactVendorAmount(profile.data?.overdueAmount, profile.data?.currency)}
+          detail={profile.data?.overdueAmount !== null && profile.data?.overdueAmount !== undefined
+            ? formatVendorAmount(profile.data.overdueAmount, profile.data.currency)
+            : null}
+          note="Vendor overdue amount supplied directly by CIS"
+          icon={TriangleAlert}
+          to="/vendor/invoices"
+        />
+        <Kpi
           label="Overdue Open AP Invoices"
           value={count(data.kpis.overdueOpenApInvoices)}
           note="Count based on CIS invoice due dates"
@@ -72,10 +100,6 @@ export default function VendorDashboard() {
         <Kpi label="Current Open GRPOs" value={count(data.kpis.openGrpos)} note="Header summaries only" icon={FileCheck2} to="/vendor/grn" />
         <Kpi label="Outgoing Payments" value={count(data.kpis.outgoingPayments)} note="Not-cancelled records" icon={Wallet} to="/vendor/payments" />
       </section>
-
-      <p className="vendor-dashboard-finance-note">
-        CIS does not supply paid-to-date or remaining invoice amounts, so no outstanding invoice amount is estimated.
-      </p>
 
       <section className="vendor-dashboard-content" style={{ gridTemplateColumns: '1fr' }}>
         <div className="vendor-panel" style={{ overflowX: 'auto' }}>
