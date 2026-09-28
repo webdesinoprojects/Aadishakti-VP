@@ -295,10 +295,12 @@ export default function Home() {
                     src={logo.image}
                     alt={logo.name} 
                     style={{ 
+                      width: "150px",
+                      maxWidth: "150px",
                       objectFit: "contain", 
                       mixBlendMode: "multiply", 
                       filter: "contrast(1.1) grayscale(0.2)",
-                      height: logo.height || "45px"
+                      height: logo.height || "48px"
                     }}
                   />
                 </div>
@@ -377,12 +379,12 @@ export default function Home() {
               <div className="entity-card-overlay" />
               <div className="entity-card-glass">
                 <h3 style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(28px, 3vw, 42px)", color: "#FFFFFF", marginBottom: "4px", lineHeight: 1 }}>{entity.code}</h3>
-                <h4 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: "14px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>{entity.subtitle}</h4>
+                <h4 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: "14px", color: "#FFFFFF", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>{entity.subtitle}</h4>
                 <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: "16px" }}>{entity.description}</p>
                 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
                   {entity.tags.map((tag) => <span key={tag} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.25)", padding: "4px 10px", letterSpacing: "0.1em" }}>{tag}</span>)}
                 </div>
-                <Link to={entity.link} style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "var(--red-core)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{entity.button}</Link>
+                <Link to={entity.link} style={{ fontFamily: "var(--font-primary)", fontWeight: 700, fontSize: "12px", color: "#FFFFFF", letterSpacing: "0.1em", textTransform: "uppercase" }}>{entity.button}</Link>
               </div>
             </div>
           ))}
@@ -421,12 +423,11 @@ export default function Home() {
       <section className="section-padding bg-steel-grid">
         <div className="container">
           <ScrollReveal>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "36px" }}>
+            <div style={{ marginBottom: "36px" }}>
               <div>
                 <SectionLabel text={content.productsLabel} />
                 <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>{content.productsHeading}</h2>
               </div>
-              <Link to="/products" className="btn-solid-red">{content.productsButton}</Link>
             </div>
 
             <div className="grid-4" style={{ gap: "16px" }}>
@@ -465,6 +466,9 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "36px" }}>
+              <Link to="/products" className="btn-solid-red">{content.productsButton}</Link>
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -472,25 +476,6 @@ export default function Home() {
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 7 â€” STATS STRIP (solid red)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      <section style={{ background: "var(--red-core)", padding: "64px 0", marginBottom: "16px" }}>
-        <div className="container">
-          <ScrollReveal>
-            <div className="grid-4 no-gap stats-bento">
-              {content.stats.map((s) => (
-                <div key={s.label} className="stats-strip-item">
-                  <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(36px, 4vw, 56px)", color: "#FFFFFF", lineHeight: 1 }}>
-                    <AnimatedNumber value={s.value} suffix={s.suffix} />
-                  </div>
-                  <div style={{ marginTop: "8px", fontFamily: "var(--font-primary)", fontWeight: 500, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.72)" }}>
-                    {s.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           SECTION 8 â€” SUSTAINABILITY (dark photo)
           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}

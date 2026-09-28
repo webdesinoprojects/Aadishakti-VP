@@ -29,7 +29,6 @@ export const PUBLIC_PAGE_DEFINITIONS = {
       { title: 'Business entity cards', fields: [list('entities', 'Entity cards', [text('code', 'Code'), text('subtitle', 'Subtitle'), text('description', 'Description', 'textarea'), text('image', 'Background', 'image'), text('tags', 'Tags', 'lines'), text('link', 'Destination'), text('button', 'Button label')])] },
       { title: 'Core strengths', fields: [text('strengthsLabel', 'Section label'), text('strengthsHeading', 'Heading'), text('strengthsButton', 'Button label'), list('strengths', 'Strengths', [text('title', 'Title'), text('description', 'Description', 'textarea')])] },
       { title: 'Product showcase', fields: [text('productsLabel', 'Section label'), text('productsHeading', 'Heading'), text('productsButton', 'Button label'), text('productApplicationsLabel', 'Applications label')] },
-      { title: 'Statistics strip', fields: [list('stats', 'Statistics', [text('value', 'Value'), text('suffix', 'Suffix'), text('label', 'Label')])] },
       { title: 'Sustainability feature', fields: [text('sustainabilityLabel', 'Section label'), text('sustainabilityHeading', 'Heading'), text('sustainabilityQuote', 'Quote', 'textarea'), text('sustainabilityButton', 'Button label'), text('sustainabilityImage', 'Background image', 'image'), list('sustainabilityStats', 'Sustainability statistics', [text('value', 'Value'), text('label', 'Label')])] },
       { title: 'Investor preview', fields: [text('investorsLabel', 'Section label'), text('investorsHeading', 'Heading'), text('investorsTopButton', 'Top button'), text('investorsBottomButton', 'Bottom button'), list('investorCards', 'Investor cards', [text('label', 'Label'), text('value', 'Value'), text('description', 'Description', 'textarea')])] },
     ],
@@ -155,7 +154,7 @@ export const PUBLIC_PAGE_DEFINITIONS = {
     sections: [
       { title: 'CTA band', fields: [text('ctaLabel', 'Label'), text('ctaHeading', 'Heading'), text('ctaText', 'Description', 'textarea'), text('primaryButton', 'Primary button'), text('secondaryButton', 'Secondary button')] },
       { title: 'Brand and links', fields: [text('brandStatement', 'Brand statement', 'textarea'), text('certifications', 'Certification badges', 'lines'), list('quickLinks', 'Quick links', [text('label', 'Label'), text('to', 'Destination')]), list('entities', 'Entities', [text('code', 'Code'), text('name', 'Name'), text('location', 'Location'), text('to', 'Destination')])] },
-      { title: 'Contact details', fields: [text('address', 'Address', 'textarea'), text('phone', 'Phone'), text('email', 'Email'), text('cin', 'CIN'), text('established', 'Established line'), text('linkedinUrl', 'LinkedIn URL'), text('xUrl', 'X / Twitter URL'), text('bottomBadges', 'Bottom badges', 'lines')] },
+      { title: 'Contact details', fields: [text('address', 'Address', 'textarea'), text('phone', 'Phone'), text('email', 'Email'), text('cin', 'CIN'), text('established', 'Established line'), text('linkedinUrl', 'LinkedIn URL'), text('instagramUrl', 'Instagram URL'), text('bottomBadges', 'Bottom badges', 'lines')] },
     ],
   },
   heroes: {

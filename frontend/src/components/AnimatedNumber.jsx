@@ -50,7 +50,7 @@ export default function AnimatedNumber({ value, suffix = "" }) {
 
   return (
     <span ref={elementRef}>
-      {displayValue.toLocaleString()}
+      {displayValue.toLocaleString("en-IN")}
       {textSuffix}
     </span>
   );

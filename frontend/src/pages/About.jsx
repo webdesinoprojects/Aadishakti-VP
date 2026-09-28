@@ -65,7 +65,7 @@ export default function About() {
                   loading="lazy"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
-                <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", background: "rgba(10,10,10,0.84)", borderTop: "1px solid rgba(255,255,255,0.08)", padding: "10px 16px", fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--red-core)", letterSpacing: "0.12em" }}>
+                <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", background: "rgba(10,10,10,0.84)", borderTop: "1px solid rgba(255,255,255,0.08)", padding: "10px 16px", fontSize: "11px", fontFamily: "var(--font-mono)", color: "#FFFFFF", letterSpacing: "0.12em" }}>
                   {content.overviewImageCaption}
                 </div>
               </div>

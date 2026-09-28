@@ -298,18 +298,18 @@ body.bar-visible .top-nav { top: 36px; }
 .entity-card-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10,10,10,0.62);
+  background: rgba(10,10,10,0.72);
   transition: background 0.3s ease;
   z-index: 1;
 }
 
-.entity-card:hover .entity-card-overlay { background: rgba(10,10,10,0.48); }
+.entity-card:hover .entity-card-overlay { background: rgba(10,10,10,0.64); }
 
 .entity-card-glass {
   position: relative;
   z-index: 2;
   width: 100%;
-  background: rgba(8, 8, 8, 0.42);
+  background: rgba(8, 8, 8, 0.58);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid rgba(255,255,255,0.12);
@@ -565,7 +565,7 @@ body.bar-visible .page-hero { padding-top: 196px; }
 
 .hero-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .hero-stat-num {
@@ -593,7 +593,7 @@ body.bar-visible .page-hero { padding-top: 196px; }
   }
   
   .hero-stats-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px;
     text-align: center;
   }
@@ -747,7 +747,7 @@ body.bar-visible .page-hero { padding-top: 196px; }
 
 .hero-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .hero-stat-num {
@@ -775,7 +775,7 @@ body.bar-visible .page-hero { padding-top: 196px; }
   }
   
   .hero-stats-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px;
     text-align: center;
   }

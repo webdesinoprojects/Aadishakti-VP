@@ -125,7 +125,7 @@ export const productsData = [
     name: "Lead Balls & Lead Anodes",
     grade: "MILLING & ELECTROWINNING",
     purity: "Pure / Alloy Variants",
-    img: ASSETS.mundraPlant ? ASSETS.mundraPlant[0] : "",
+    img: "/images/review/lead-balls-anodes.jpeg",
     overview:
       "Precision-cast lead balls used in fine chemical grinding ball mills, alongside high-performance extruded/cast lead anodes for electroplating and electrowinning cells.",
     specs: [
@@ -147,7 +147,7 @@ export const productsData = [
     name: "Alloy Dust (Customised Product)",
     grade: "SPECIALTY LEAD DUST",
     purity: "As per Client Specification",
-    img: ASSETS.roorkeeOffice ? ASSETS.roorkeeOffice[0] : "",
+    img: "/images/review/alloy-dust.jpeg",
     overview:
       "Customised lead alloy dust tailored for specialized chemical reactions, powder metallurgy, and proprietary industrial friction formulations. Engineered to precise particle size distributions.",
     specs: [

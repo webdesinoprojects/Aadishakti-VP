@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Fragment } from "react";
 import { ASSETS } from "../assets/assetMap";
 import SectionLabel from "./SectionLabel";
@@ -7,6 +7,7 @@ import { DEFAULT_FOOTER_CONTENT, mergeCmsContent } from "../data/publicCmsDefaul
 
 
 export default function Footer() {
+  const location = useLocation();
   const { cms } = useCms();
   const content = mergeCmsContent(DEFAULT_FOOTER_CONTENT, cms?.footerContent);
   const year = new Date().getFullYear();
@@ -22,6 +23,7 @@ export default function Footer() {
       {/* ══════════════════════════════════
           PRE-FOOTER — VIDEO CTA BAND
       ══════════════════════════════════ */}
+      {location.pathname !== "/careers" && (
       <div style={{ position: "relative", overflow: "hidden", padding: "60px 0", display: "flex", alignItems: "center", marginTop: "40px" }}>
         {/* Background Video */}
         <video
@@ -66,6 +68,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      )}
 
       {/* ══════════════════════════════════
           MAIN FOOTER GRID
@@ -118,12 +121,12 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href={content.xUrl} target="_blank" rel="noreferrer" aria-label="X / Twitter"
+                href={content.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram"
                 className="footer-social-btn"
                 style={{ width: "38px", height: "38px", border: "1px solid var(--border-light)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", background: "transparent", transition: "all 0.22s ease" }}
               >
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2A3.75 3.75 0 0 0 4 7.75v8.5A3.75 3.75 0 0 0 7.75 20h8.5A3.75 3.75 0 0 0 20 16.25v-8.5A3.75 3.75 0 0 0 16.25 4h-8.5ZM17.5 5.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>
                 </svg>
               </a>
             </div>
