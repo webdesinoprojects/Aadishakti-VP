@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import PageHero from "../components/PageHero";
+import ImageLightbox from "../components/ImageLightbox";
 import { useCms } from "../context/CmsContext";
 import { DEFAULT_GALLERY_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
 
 export default function Gallery() {
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const { cms } = useCms();
   const content = mergeCmsContent(DEFAULT_GALLERY_PAGE, cms?.galleryPage);
   const location = useLocation();
@@ -43,6 +46,9 @@ export default function Gallery() {
   const allCategories = content.categories;
 
   const currentImages = Array.isArray(galleryData) ? galleryData.filter(item => item.category === activeCategory) : (galleryData[activeCategory] || []);
+  const currentImageSources = currentImages
+    .map(item => typeof item === 'string' ? item : (item.image || item.img))
+    .filter(Boolean);
   const currentTitle = allCategories.find(c => c.id === activeCategory)?.title || "Gallery";
 
   return (
@@ -91,7 +97,14 @@ export default function Gallery() {
             {currentImages.map((item, idx) => {
               const imgSrc = typeof item === 'string' ? item : (item.image || item.img);
               return (
-              <div key={idx} className="dominance-card" style={{ padding: 0, overflow: "hidden", height: "200px" }}>
+              <button
+                key={idx}
+                type="button"
+                className="dominance-card"
+                aria-label={`Open ${currentTitle} image ${idx + 1}`}
+                onClick={() => setLightboxIndex(idx)}
+                style={{ padding: 0, overflow: "hidden", height: "200px", cursor: "zoom-in", width: "100%", border: "1px solid var(--border-light)", background: "transparent" }}
+              >
                 <img 
                   src={imgSrc} 
                   alt={`${currentTitle} ${idx + 1}`} 
@@ -99,7 +112,7 @@ export default function Gallery() {
                   onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
                   onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                 />
-              </div>
+              </button>
             )})}
             {currentImages.length === 0 && (
               <p style={{ color: "var(--text-secondary)" }}>{content.emptyText}</p>
@@ -108,6 +121,13 @@ export default function Gallery() {
 
         </div>
       </section>
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          images={currentImageSources}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
     </div>
   );
 }

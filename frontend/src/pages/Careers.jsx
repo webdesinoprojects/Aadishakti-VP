@@ -2,19 +2,17 @@ import { useState } from "react";
 import { buildApiUrl } from "../config/api";
 import PageHero from "../components/PageHero";
 import SectionLabel from "../components/SectionLabel";
-import { Loader2, Paperclip, X } from "lucide-react";
+import { CheckCircle2, Loader2, Paperclip, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCms } from "../context/CmsContext";
 import CountrySelect from "../components/CountrySelect";
 import { DEFAULT_CAREERS_PAGE, mergeCmsContent } from "../data/publicCmsDefaults";
-import { usePortalToast } from "../portal/PortalToastContext";
 
 export default function Careers() {
   const { cms } = useCms();
   const pageContent = mergeCmsContent(DEFAULT_CAREERS_PAGE, cms?.careersPage);
   const location = useLocation();
   const navigate = useNavigate();
-  const toast = usePortalToast();
 
   // Parse URL query parameters
   const searchParams = new URLSearchParams(location.search);
@@ -22,6 +20,7 @@ export default function Careers() {
   const activeCategory = searchParams.get("category") || "factory";
 
   const [showModal, setShowModal] = useState(false);
+  const [applicationSuccess, setApplicationSuccess] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
@@ -151,7 +150,7 @@ export default function Careers() {
       setResume(null);
       setSubmitStatus(null);
       setShowModal(false);
-      toast.success("Application submitted successfully. Our HR desk will connect shortly.");
+      setApplicationSuccess(true);
     } catch (err) {
       console.error(err);
       setSubmitStatus({ type: "error", msg: err.message || "An unexpected error occurred." });
@@ -532,6 +531,57 @@ export default function Careers() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {applicationSuccess && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="application-success-title"
+          onClick={() => setApplicationSuccess(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 3100,
+            display: "grid",
+            placeItems: "center",
+            padding: "24px",
+            background: "rgba(0,0,0,0.72)",
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: "min(520px, 100%)",
+              background: "#FFFFFF",
+              borderTop: "4px solid var(--red-core)",
+              boxShadow: "0 28px 80px rgba(0,0,0,0.3)",
+              padding: "42px 36px",
+              textAlign: "center",
+              position: "relative",
+            }}
+          >
+            <button
+              type="button"
+              aria-label="Close confirmation"
+              onClick={() => setApplicationSuccess(false)}
+              style={{ position: "absolute", top: "16px", right: "16px", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-primary)" }}
+            >
+              <X size={24} />
+            </button>
+            <CheckCircle2 size={54} color="#159A65" strokeWidth={1.7} style={{ marginBottom: "20px" }} />
+            <h2 id="application-success-title" style={{ fontSize: "26px", fontWeight: 800, marginBottom: "12px" }}>
+              Application submitted
+            </h2>
+            <p style={{ color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "28px" }}>
+              Thank you for applying. Our HR desk will review your application and connect with you shortly.
+            </p>
+            <button type="button" className="btn-solid-red" onClick={() => setApplicationSuccess(false)}>
+              CLOSE
+            </button>
           </div>
         </div>
       )}
