@@ -557,8 +557,7 @@ body.bar-visible .page-hero { padding-top: 196px; }
   background: var(--bg-primary);
   border-top: 1px solid var(--border-light);
   padding: 28px 0;
-  position: absolute;
-  bottom: 0;
+  position: relative;
   width: 100%;
   z-index: 5;
 }
@@ -569,7 +568,8 @@ body.bar-visible .page-hero { padding-top: 196px; }
 }
 
 .hero-stat-num {
-  font-size: clamp(28px, 3.5vw, 48px);
+  font-size: clamp(24px, 3.2vw, 48px);
+  white-space: nowrap;
 }
 
 .hero-stat-label {
@@ -739,8 +739,7 @@ body.bar-visible .page-hero { padding-top: 196px; }
   background: var(--bg-primary);
   border-top: 1px solid var(--border-light);
   padding: 28px 0;
-  position: absolute;
-  bottom: 0;
+  position: relative;
   width: 100%;
   z-index: 5;
 }
@@ -751,7 +750,8 @@ body.bar-visible .page-hero { padding-top: 196px; }
 }
 
 .hero-stat-num {
-  font-size: clamp(28px, 3.5vw, 48px);
+  font-size: clamp(24px, 3.2vw, 48px);
+  white-space: nowrap;
 }
 
 .hero-stat-label {

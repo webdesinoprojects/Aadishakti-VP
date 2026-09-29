@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ImageLightbox({ images, initialIndex = 0, onClose }) {
@@ -24,25 +25,46 @@ export default function ImageLightbox({ images, initialIndex = 0, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNext, handlePrev, onClose]);
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
   if (!images || images.length === 0) return null;
 
-  return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      background: 'rgba(0,0,0,0.9)', zIndex: 99999, display: 'flex',
-      alignItems: 'center', justifyContent: 'center'
-    }}>
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Image preview"
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, width: '100vw', height: '100dvh',
+        background: 'rgba(0,0,0,0.94)', zIndex: 100000, display: 'flex',
+        alignItems: 'center', justifyContent: 'center', padding: '72px clamp(16px, 7vw, 84px) 50px'
+      }}
+    >
       <button 
+        type="button"
+        aria-label="Close image preview"
         onClick={onClose}
-        style={{ position: 'absolute', top: '20px', right: '30px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}
+        style={{ position: 'absolute', top: '22px', right: '28px', width: '48px', height: '48px', borderRadius: '50%', background: '#FFFFFF', border: 'none', color: '#111111', cursor: 'pointer', display: 'grid', placeItems: 'center', zIndex: 3, boxShadow: '0 8px 24px rgba(0,0,0,0.28)' }}
       >
-        <X size={36} />
+        <X size={28} />
       </button>
 
       {images.length > 1 && (
         <button 
-          onClick={handlePrev}
-          style={{ position: 'absolute', left: '30px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', cursor: 'pointer', padding: '15px', borderRadius: '50%' }}
+          type="button"
+          aria-label="Previous image"
+          onClick={(event) => {
+            event.stopPropagation();
+            handlePrev();
+          }}
+          style={{ position: 'absolute', left: '24px', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)', color: '#fff', cursor: 'pointer', padding: '12px', borderRadius: '50%', zIndex: 2 }}
         >
           <ChevronLeft size={36} />
         </button>
@@ -50,14 +72,20 @@ export default function ImageLightbox({ images, initialIndex = 0, onClose }) {
 
       <img 
         src={images[currentIndex]} 
-        alt={`Proof ${currentIndex + 1}`} 
-        style={{ maxHeight: '85vh', maxWidth: '85vw', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 50px rgba(0,0,0,0.5)' }} 
+        alt={`Gallery image ${currentIndex + 1}`}
+        onClick={(event) => event.stopPropagation()}
+        style={{ maxHeight: 'calc(100dvh - 122px)', maxWidth: '92vw', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 50px rgba(0,0,0,0.5)' }}
       />
 
       {images.length > 1 && (
         <button 
-          onClick={handleNext}
-          style={{ position: 'absolute', right: '30px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', cursor: 'pointer', padding: '15px', borderRadius: '50%' }}
+          type="button"
+          aria-label="Next image"
+          onClick={(event) => {
+            event.stopPropagation();
+            handleNext();
+          }}
+          style={{ position: 'absolute', right: '24px', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)', color: '#fff', cursor: 'pointer', padding: '12px', borderRadius: '50%', zIndex: 2 }}
         >
           <ChevronRight size={36} />
         </button>
@@ -68,6 +96,7 @@ export default function ImageLightbox({ images, initialIndex = 0, onClose }) {
           {currentIndex + 1} / {images.length}
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }
