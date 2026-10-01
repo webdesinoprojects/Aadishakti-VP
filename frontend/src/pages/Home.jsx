@@ -333,18 +333,6 @@ export default function Home() {
                   {content.overviewFootnote}
                 </p>
 
-                <div className="home-stats-row" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginTop: "24px" }}>
-                  {content.overviewStats.map((s) => (
-                    <div key={s.label}>
-                      <div style={{ fontFamily: "var(--font-primary)", fontWeight: 900, fontSize: "clamp(22px, 2.5vw, 32px)", color: "var(--text-primary)", lineHeight: 1 }}>
-                        {s.value}
-                      </div>
-                      <div style={{ marginTop: "6px", fontFamily: "var(--font-primary)", fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)" }}>
-                        {s.label}
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               {/* Right â€” image mosaic */}
@@ -400,7 +388,7 @@ export default function Home() {
             <SectionLabel text={content.strengthsLabel} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}>
               <h2 style={{ fontSize: "var(--fs-h2)", fontWeight: 900 }}>{content.strengthsHeading}</h2>
-              <Link to="/about" className="btn-ghost-steel">{content.strengthsButton}</Link>
+              <Link to="/about" className="btn-solid-red">{content.strengthsButton}</Link>
             </div>
             <div className="grid-3" style={{ gap: "20px" }}>
               {strengthItems.map((s) => (

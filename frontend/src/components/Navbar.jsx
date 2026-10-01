@@ -13,9 +13,6 @@ const companyLinks = [
 
 const esgLinks = [
   { to: "/sustainability?tab=environment", label: "Environment & Climate" },
-  { to: "/sustainability?tab=social",      label: "Corporate Social Responsibility" },
-  { to: "/sustainability?tab=governance",  label: "Governance & Policies" },
-  { to: "/sustainability?tab=reports",     label: "Sustainability Reports" },
 ];
 
 const mediaLinks = [

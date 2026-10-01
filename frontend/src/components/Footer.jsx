@@ -21,30 +21,27 @@ export default function Footer() {
       </div>
 
       {/* ══════════════════════════════════
-          PRE-FOOTER — VIDEO CTA BAND
+          PRE-FOOTER — PLANT CTA BAND
       ══════════════════════════════════ */}
       {location.pathname !== "/careers" && (
       <div style={{ position: "relative", overflow: "hidden", padding: "60px 0", display: "flex", alignItems: "center", marginTop: "40px" }}>
-        {/* Background Video */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
+        {/* Aadishakti plant background */}
+        <img
+          src="/images/review/aadishakti-factory.jpeg"
+          alt="Aadishakti manufacturing plant"
           style={{
             position: "absolute", inset: 0,
             width: "100%", height: "100%",
             objectFit: "cover",
+            objectPosition: "center 52%",
             zIndex: 0,
           }}
-        >
-          <source src="/corporate-video.mp4" type="video/mp4" />
-        </video>
+        />
 
         {/* Frosted/dark overlay — stronger on left, fades right */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 1,
-          background: "linear-gradient(100deg, rgba(10,10,10,0.82) 0%, rgba(10,10,10,0.65) 45%, rgba(10,10,10,0.25) 100%)",
+          background: "linear-gradient(100deg, rgba(10,10,10,0.88) 0%, rgba(10,10,10,0.72) 46%, rgba(10,10,10,0.38) 100%)",
         }} />
 
         {/* Content */}

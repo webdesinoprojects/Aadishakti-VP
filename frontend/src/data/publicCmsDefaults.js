@@ -13,9 +13,6 @@ export const DEFAULT_SITE_NAVIGATION = {
   ],
   esgLinks: [
     { to: '/sustainability?tab=environment', label: 'Environment & Climate', previewImage: ASSETS.mundraPlant[4], previewEyebrow: 'ZERO LIQUID DISCHARGE', previewText: 'Minimizing our environmental footprint through advanced recycling.' },
-    { to: '/sustainability?tab=social', label: 'Corporate Social Responsibility', previewImage: ASSETS.gallery[3], previewEyebrow: 'COMMUNITY FIRST', previewText: 'Empowering local communities around our Mundra and Roorkee facilities.' },
-    { to: '/sustainability?tab=governance', label: 'Governance & Policies', previewImage: ASSETS.roorkeeOffice[1], previewEyebrow: 'TRANSPARENCY', previewText: 'Upholding the highest standards of ethics and compliance.' },
-    { to: '/sustainability?tab=reports', label: 'Sustainability Reports', previewImage: ASSETS.heroBg3, previewEyebrow: 'ESG REPORTING', previewText: 'Detailed disclosures of our environmental and social performance.' },
   ],
   mediaLinks: [
     { to: '/media?type=blogs', label: 'Blogs', previewImage: ASSETS.gallery[0], previewEyebrow: 'LATEST INSIGHTS', previewText: 'Read our latest technical blogs on lead recycling.' },
@@ -206,11 +203,6 @@ export const DEFAULT_HOME_PAGE = {
   overviewLead: 'Aadishakti Group transforms used lead-acid battery scrap into high-purity refined products for energy storage and industrial applications. Through strategic smelting facilities in Mundra and Roorkee, we combine process discipline, scale, and supply consistency.',
   overviewBody: "Our Mundra facility (AGRPL) operates in Kutch, Gujarat, adjacent to Adani Port — giving us unmatched access to international battery scrap. Our Roorkee division (AMRPL) serves North India's major battery manufacturers with domestic supply consistency.",
   overviewFootnote: 'Committed to BIS standards, Basel Convention compliance, and zero-liquid-discharge operations, we deliver certified quality with environmental responsibility built in.',
-  overviewStats: [
-    { value: '50,000+', label: 'MT Annual Capacity' },
-    { value: '₹1000+', label: 'Crore Group Turnover' },
-    { value: '4+', label: 'Active Certifications' },
-  ],
   overviewImages: [
     { image: ASSETS.mundraPlant[0], alt: 'Mundra plant exterior' },
     { image: ASSETS.mundraPlant[11], alt: 'Production floor' },
