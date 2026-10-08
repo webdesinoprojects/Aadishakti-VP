@@ -120,8 +120,31 @@ export const productsData = [
     ]
   },
   {
-    key: "lead-balls-anodes",
+    key: "alloy-e-sheath",
     num: "06",
+    name: "Lead Alloy E Sheath",
+    grade: "EN 12548 / POWER CABLE SHEATHING",
+    purity: "PB021K / Customer-Specific Alloy",
+    img: "/images/products/alloy-e-sheath.jpeg",
+    overview:
+      "A customised lead-based Alloy E engineered for high-voltage and extra-high-voltage power cable sheathing, with controlled chemistry, consistent grain structure, and dependable delivery performance.",
+    specs: [
+      { elem: "Standard", val: "EN 12548" },
+      { elem: "Material Number", val: "PB021K" },
+      { elem: "Primary Application", val: "Power Cable Sheathing" },
+      { elem: "Lead (Pb)", val: "Balance" },
+    ],
+    packaging: "42 pieces per export-worthy, pallet-free bundle with high-strength ISI-grade plastic strapping and colour-coded identification tags.",
+    applications: [
+      "Power Cable Sheathing",
+      "High-Voltage Cable Systems",
+      "Extra-High-Voltage Cable Systems"
+    ],
+    status: "published"
+  },
+  {
+    key: "lead-balls-anodes",
+    num: "07",
     name: "Lead Balls & Lead Anodes",
     grade: "MILLING & ELECTROWINNING",
     purity: "Pure / Alloy Variants",
@@ -139,11 +162,12 @@ export const productsData = [
       "Metal Refining",
       "Milling Processes",
       "Corrosion Protection"
-    ]
+    ],
+    status: "draft"
   },
   {
     key: "alloy-dust",
-    num: "07",
+    num: "08",
     name: "Alloy Dust (Customised Product)",
     grade: "SPECIALTY LEAD DUST",
     purity: "As per Client Specification",
@@ -165,11 +189,11 @@ export const productsData = [
   },
   {
     key: "plastic-granules",
-    num: "08",
+    num: "09",
     name: "Plastic Granules",
     grade: "PP COPOLYMER GRANULES",
     purity: "High Impact Battery Grade",
-    img: ASSETS.mundraPlant ? ASSETS.mundraPlant[4] : "",
+    img: "/images/products/plastic-granules.jpeg",
     overview:
       "Recycled and compounded Polypropylene (PP) copolymer granules derived from battery casings. Extruded and pelletized for high-impact strength, suitable for molding new battery containers and automotive components.",
     specs: [

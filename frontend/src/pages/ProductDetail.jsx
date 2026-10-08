@@ -6,6 +6,7 @@ import SectionLabel from "../components/SectionLabel";
 import { useCms } from "../context/CmsContext";
 import { buildProductCatalog } from "../data/productCatalog";
 import { Download } from "lucide-react";
+import AlloyEDetail from "./AlloyEDetail";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -18,6 +19,10 @@ export default function ProductDetail() {
   // If no product matches the slug, redirect to main products page
   if (!product) {
     return <Navigate to="/products" replace />;
+  }
+
+  if (product.key === "alloy-e-sheath") {
+    return <AlloyEDetail product={product} />;
   }
 
   return (

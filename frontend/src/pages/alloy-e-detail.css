@@ -1,0 +1,336 @@
+.alloy-e-page {
+  position: relative;
+  z-index: 5;
+  background: var(--bg-primary);
+}
+
+.alloy-e-intro-grid,
+.alloy-e-logistics-grid,
+.alloy-e-footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 6vw, 88px);
+  align-items: start;
+}
+
+.alloy-e-product-visual {
+  position: sticky;
+  top: 112px;
+}
+
+.alloy-e-image-frame {
+  position: relative;
+  min-height: 440px;
+  padding: clamp(24px, 4vw, 52px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f8f8f6, #ececea);
+  border: 1px solid var(--border-light);
+}
+
+.alloy-e-image-frame::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(204, 34, 0, 0.14);
+  pointer-events: none;
+}
+
+.alloy-e-image-frame img,
+.alloy-e-packaging-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+}
+
+.alloy-e-image-frame > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  padding: 14px 18px;
+  background: var(--red-core);
+  color: #fff;
+  font: 700 12px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+}
+
+.alloy-e-fact-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 28px;
+  padding: 24px 28px;
+  background: #171717;
+  color: #fff;
+}
+
+.alloy-e-fact-card small {
+  color: #aeadab;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.alloy-e-fact-card strong {
+  font-size: 14px;
+}
+
+.alloy-e-copy h2,
+.alloy-e-section-heading h2,
+.alloy-e-analysis > .container > h2,
+.alloy-e-packaging h2,
+.alloy-e-footer-grid h2 {
+  margin: 0 0 24px;
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+}
+
+.alloy-e-copy > p,
+.alloy-e-section-heading p,
+.alloy-e-packaging > p,
+.alloy-e-analysis-card p {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.alloy-e-standard {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 22px;
+  margin-top: 34px;
+  padding: 28px;
+  border-left: 4px solid var(--red-core);
+  background: #f6f6f4;
+}
+
+.alloy-e-standard > span,
+.alloy-e-card-index {
+  color: var(--red-core);
+  font: 700 12px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+}
+
+.alloy-e-standard h3,
+.alloy-e-analysis-card h3,
+.alloy-e-address-card h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.alloy-e-standard p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.alloy-e-composition {
+  background: #151515;
+  color: #fff;
+}
+
+.alloy-e-composition h2 {
+  color: #fff;
+}
+
+.alloy-e-composition .section-label {
+  color: #ef4325;
+}
+
+.alloy-e-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.7fr);
+  gap: 48px;
+  align-items: end;
+}
+
+.alloy-e-section-heading p {
+  color: #bcbcb7;
+}
+
+.alloy-e-table-wrap {
+  margin-top: 34px;
+  overflow-x: auto;
+  border: 1px solid #424242;
+}
+
+.alloy-e-table-wrap table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.alloy-e-table-wrap th,
+.alloy-e-table-wrap td {
+  padding: 16px 12px;
+  border-right: 1px solid #424242;
+  white-space: nowrap;
+}
+
+.alloy-e-table-wrap th:last-child,
+.alloy-e-table-wrap td:last-child {
+  border-right: 0;
+}
+
+.alloy-e-table-wrap th {
+  background: #252525;
+  color: #bfbfbb;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.alloy-e-table-wrap td {
+  border-top: 1px solid #424242;
+  color: #fff;
+  font: 600 13px/1.4 var(--font-mono);
+}
+
+.alloy-e-analysis {
+  background: #f5f5f3;
+}
+
+.alloy-e-analysis-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 34px;
+  border: 1px solid var(--border-light);
+  background: #fff;
+}
+
+.alloy-e-analysis-card.has-image {
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+}
+
+.alloy-e-analysis-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 330px;
+  object-fit: cover;
+}
+
+.alloy-e-analysis-card > div {
+  padding: clamp(34px, 5vw, 68px);
+}
+
+.alloy-e-analysis-card h3 {
+  max-width: 760px;
+  margin-top: 18px;
+  font-size: clamp(24px, 3vw, 36px);
+}
+
+.alloy-e-logistics-grid {
+  align-items: center;
+}
+
+.alloy-e-packaging ul {
+  margin: 30px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alloy-e-packaging li {
+  position: relative;
+  padding: 15px 0 15px 28px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  line-height: 1.55;
+}
+
+.alloy-e-packaging li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22px;
+  width: 9px;
+  height: 9px;
+  background: var(--red-core);
+}
+
+.alloy-e-packaging-visual {
+  min-height: 430px;
+  padding: clamp(24px, 4vw, 50px);
+  background: #f3f3f1;
+  border: 1px solid var(--border-light);
+}
+
+.alloy-e-footer-section {
+  background: #ecece8;
+}
+
+.alloy-e-certifications {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.alloy-e-certifications span {
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #d8d8d4;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.alloy-e-address-card {
+  padding: clamp(30px, 4vw, 48px);
+  background: #fff;
+  border-top: 4px solid var(--red-core);
+}
+
+.alloy-e-address-card p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.alloy-e-address-card > a:not(.btn-solid-red) {
+  display: block;
+  margin: 18px 0 28px;
+  color: var(--red-core);
+  font-weight: 700;
+}
+
+.alloy-e-address-card .btn-solid-red {
+  display: inline-flex;
+}
+
+@media (max-width: 900px) {
+  .alloy-e-intro-grid,
+  .alloy-e-logistics-grid,
+  .alloy-e-footer-grid,
+  .alloy-e-section-heading,
+  .alloy-e-analysis-card.has-image {
+    grid-template-columns: 1fr;
+  }
+
+  .alloy-e-product-visual {
+    position: static;
+  }
+
+  .alloy-e-section-heading {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 560px) {
+  .alloy-e-image-frame,
+  .alloy-e-packaging-visual {
+    min-height: 300px;
+  }
+
+  .alloy-e-fact-card {
+    grid-template-columns: 1fr;
+  }
+
+  .alloy-e-standard {
+    grid-template-columns: 1fr;
+  }
+}

@@ -9,6 +9,8 @@ const companyLinks = [
   { to: "/businesses",               label: "Businesses" },
   { to: "/businesses?plant=mundra",  label: "AGRPL — Mundra Plant",  sub: true },
   { to: "/businesses?plant=roorkee", label: "AMRPL — Roorkee Plant", sub: true },
+  { to: "/businesses?plant=pipe-coil", label: "AADISHAKTI METAL WORLD LLP", sub: true },
+  { to: "/businesses?plant=oxide", label: "AADISHAKTI METALS", sub: true },
 ];
 
 const esgLinks = [

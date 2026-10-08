@@ -3,6 +3,7 @@ import {
   DEFAULT_HOME_PAGE,
   DEFAULT_BUSINESSES_PAGE,
   DEFAULT_ABOUT_PAGE,
+  DEFAULT_ALLOY_E_PAGE,
   DEFAULT_CONTACT_PAGE,
   DEFAULT_FOOTER_CONTENT,
   DEFAULT_PAGE_HERO_IMAGES,
@@ -40,6 +41,21 @@ export const PUBLIC_PAGE_DEFINITIONS = {
     sections: [
       { title: 'Page hero', fields: [text('heroTitle', 'Hero title'), text('heroImage', 'Hero background', 'image')] },
       { title: 'Business divisions', fields: [list('divisions', 'Divisions', [text('id', 'Anchor ID'), text('label', 'Section label'), text('heading', 'Heading'), text('company', 'Company name'), text('lead', 'Lead paragraph', 'textarea'), text('body', 'Body paragraph', 'textarea'), text('image', 'Background image', 'image'), text('badges', 'Badges', 'lines'), text('contactLines', 'Contact lines', 'lines'), list('metrics', 'Metrics', [text('value', 'Value'), text('label', 'Label')])])] },
+    ],
+  },
+  alloyE: {
+    title: 'Alloy E Product Page',
+    description: 'Manage the complete public Alloy E technical data sheet, chemistry, packaging, certifications, and contact details.',
+    singletonKey: 'alloyEPage',
+    publicRoute: '/products/alloy-e-sheath',
+    defaults: DEFAULT_ALLOY_E_PAGE,
+    sections: [
+      { title: 'Introduction', fields: [text('eyebrow', 'Section label'), text('heading', 'Page heading'), text('introduction', 'Introduction paragraphs', 'lines')] },
+      { title: 'Standard and application', fields: [text('standardHeading', 'Heading'), text('standardText', 'Description', 'textarea')] },
+      { title: 'Chemical composition', fields: [text('compositionHeading', 'Heading'), list('composition', 'Composition rows', [text('materialNumber', 'Material number'), text('ag', 'Ag'), text('as', 'As'), text('bi', 'Bi'), text('cd', 'Cd'), text('cu', 'Cu'), text('ni', 'Ni'), text('te', 'Te'), text('zn', 'Zn'), text('sb', 'Sb'), text('sn', 'Sn'), text('pb', 'Pb')])] },
+      { title: 'Mechanical properties', fields: [text('mechanicalHeading', 'Section heading'), text('grainHeading', 'Grain analysis heading'), text('grainText', 'Grain analysis description', 'textarea'), text('grainImage', 'Grain structure image', 'image')] },
+      { title: 'Packaging', fields: [text('packagingHeading', 'Heading'), text('packagingText', 'Description', 'textarea'), text('packagingBullets', 'Packaging details', 'lines'), text('packagingImage', 'Packaging image', 'image')] },
+      { title: 'Certifications and address', fields: [text('certificationsHeading', 'Certifications heading'), text('certifications', 'Certifications', 'lines'), text('addressHeading', 'Address heading'), text('address', 'Head office address', 'textarea'), text('website', 'Website URL')] },
     ],
   },
   navigation: {
@@ -173,4 +189,4 @@ function previewFields() {
   ];
 }
 
-export const PUBLIC_PAGE_ORDER = ['home', 'businesses', 'navigation', 'heroes', 'about', 'contact', 'footer', 'sustainability', 'investors', 'sourcing', 'media', 'gallery', 'careers'];
+export const PUBLIC_PAGE_ORDER = ['home', 'businesses', 'alloyE', 'navigation', 'heroes', 'about', 'contact', 'footer', 'sustainability', 'investors', 'sourcing', 'media', 'gallery', 'careers'];

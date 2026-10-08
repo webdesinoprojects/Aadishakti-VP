@@ -17,9 +17,12 @@ export const normalizeCmsProduct = (product, index = 0) => ({
   packaging: product.packaging || '',
   applications: Array.isArray(product.features) ? product.features.filter((item) => typeof item === 'string') : [],
   datasheet: product.datasheet || '',
+  status: product.status || 'published',
 });
 
 export const buildProductCatalog = (cmsProducts) => {
-  if (!Array.isArray(cmsProducts) || !cmsProducts.length) return productsData;
-  return cmsProducts.map(normalizeCmsProduct);
+  const products = !Array.isArray(cmsProducts) || !cmsProducts.length
+    ? productsData
+    : cmsProducts.map(normalizeCmsProduct);
+  return products.filter((product) => !['draft', 'archived'].includes(String(product.status || 'published').toLowerCase()));
 };
